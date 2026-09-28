@@ -2,22 +2,22 @@
 
 Claude Code usage across all my devices, rebuilt automatically every day (and after every sync). Times are Asia/Kuala_Lumpur. Updated 2026-09-28.
 
-Tracking since 2026-07-25 · 1 device · 114,241 replies · 3,881 prompts
+Tracking since 2026-07-25 · 1 device · 114,272 replies · 3,884 prompts
 
 **Jump to:** [macbook-pro](#device-macbook-pro)
 
 | Device | Cost, 7 days | Cost, 30 days | Output, 30 days | Last active | Sync |
 | --- | ---: | ---: | ---: | ---: | --- |
-| [macbook-pro](#device-macbook-pro) | $2,040 | $10,169 | 38.2M | 2026-09-28 | ok |
+| [macbook-pro](#device-macbook-pro) | $2,044 | $10,174 | 38.2M | 2026-09-28 | ok |
 
 ## Device: macbook-pro
 
 |  | Last 7 days | vs previous 7 | Last 30 days | All time |
 | --- | ---: | ---: | ---: | ---: |
-| API-equivalent cost | $2,040 | ▲ 19% | $10,169 | $20,709 |
-| Output tokens | 7.4M | ▼ 12% | 38.2M | 80.1M |
-| Prompts | 363 | ▼ 6% | 1,944 | 3,881 |
-| Sessions | 27 | ▼ 18% | 126 | 364 |
+| API-equivalent cost | $2,044 | ▲ 19% | $10,174 | $20,713 |
+| Output tokens | 7.4M | ▼ 11% | 38.2M | 80.2M |
+| Prompts | 366 | ▼ 5% | 1,947 | 3,884 |
+| Sessions | 28 | ▼ 15% | 126 | 364 |
 | Active hours | 70 | ▲ 8% | 314 | 710 |
 | Active days | 7 / 7 |  | 29 / 30 | 63 |
 | Cache hit ratio | 98% |  | 98% | 98% |
@@ -31,8 +31,8 @@ Tracking since 2026-07-25 · 1 device · 114,241 replies · 3,881 prompts
 | Model | Replies | Output | API cost | Share |
 | --- | ---: | ---: | ---: | ---: |
 | claude-opus-5 | 26,730 | 22.4M | $7,196 | 71% |
-| claude-sonnet-5 | 17,883 | 12.8M | $2,426 | 24% |
-| claude-opus-5-5 | 2,560 | 2.9M | $462 | 5% |
+| claude-sonnet-5 | 17,891 | 12.8M | $2,427 | 24% |
+| claude-opus-5-5 | 2,583 | 2.9M | $465 | 5% |
 | claude-opus-4-8 | 201 | 207.2K | $85.32 | 1% |
 
 <img src="reports/charts/macbook-pro/projects.svg" alt="Top projects by cost" width="760">
@@ -71,14 +71,14 @@ Subscription limits count usage in 5-hour windows across all devices, so these a
 
 | Tool | Calls |
 | --- | ---: |
-| Bash | 35,214 |
-| Read | 2,975 |
-| Edit | 2,527 |
-| Write | 920 |
+| Bash | 35,236 |
+| Read | 2,977 |
+| Edit | 2,528 |
+| Write | 921 |
 | Claude_Browser: computer | 655 |
 | Claude_Browser: javascript_tool | 457 |
 | WebFetch | 410 |
-| Artifact | 331 |
+| Artifact | 334 |
 | Claude_Browser: browser_batch | 320 |
 | WebSearch | 288 |
 
