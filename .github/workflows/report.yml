@@ -1,0 +1,45 @@
+name: Build usage report
+
+on:
+  schedule:
+    - cron: "30 0 * * *"        # 08:30 Malaysia time, after the devices' 08:00 sync
+  push:
+    branches: [main]
+    paths: ["devices/**", "report/**", "config.json", "aliases.json"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: report
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test
+        run: python -m unittest discover -s tests
+      - name: Build report
+        run: python report/build.py
+      - name: Commit report
+        run: |
+          git config user.name "claude-usage-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md reports
+          if git diff --cached --quiet; then
+            echo "Report unchanged"
+            exit 0
+          fi
+          git commit -q -m "report: $(TZ=Asia/Kuala_Lumpur date +%Y-%m-%d\ %H:%M)"
+          for i in 1 2 3; do
+            git pull --rebase -q && git push -q && exit 0
+            sleep $((i * 5))
+          done
+          exit 1
