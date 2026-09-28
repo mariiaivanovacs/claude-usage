@@ -8,7 +8,8 @@ Tracking since 2026-07-28 · 2 devices · 48,989 replies · 1,898 prompts
 
 ## Device: demo-laptop
 
-**This week so far (Mon 28 Sep – today):** 6.5M input · 6K output · 100% from cache · 0 prompts · $1.46 API-equivalent  
+**This week so far (Mon 28 Sep – today):**  
+6.5M input · 6K output · 100% from cache · 0 prompts · $1.46 API-equivalent  
 vs the same days last week: output ▼ 62% · prompts ▼ 100% · cost ▼ 26%
 
 <img src="reports/charts/demo-laptop/projects.svg" alt="projects" width="760">
@@ -19,7 +20,8 @@ vs the same days last week: output ▼ 62% · prompts ▼ 100% · cost ▼ 26%
 
 ## Device: macbook-pro
 
-**This week so far (Mon 28 Sep – today):** 294.5M input · 624.9K output · 98% from cache · 37 prompts · $121 API-equivalent  
+**This week so far (Mon 28 Sep – today):**  
+294.5M input · 624.9K output · 98% from cache · 37 prompts · $121 API-equivalent  
 vs the same days last week: output ▼ 15% · prompts ▲ 12% · cost ▼ 28%
 
 <img src="reports/charts/macbook-pro/projects.svg" alt="projects" width="760">
