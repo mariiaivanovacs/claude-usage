@@ -4,7 +4,7 @@ Claude Code usage across all my devices, rebuilt automatically every day (and af
 
 Tracking since 2026-07-28 · 2 devices · 48,989 replies · 1,898 prompts
 
-**Jump to:** [demo-laptop](#device-demo-laptop) · [macbook-pro](#device-macbook-pro) · [All devices](#all-devices) · [By month](#by-month)
+**Jump to:** [demo-laptop](#device-demo-laptop) · [macbook-pro](#device-macbook-pro) · [All devices](#all-devices) · [Plan](#plan) · [By month](#by-month)
 
 ## Device: demo-laptop
 
@@ -59,6 +59,33 @@ Subscription limits count usage in 5-hour windows across all devices together.
 | Mon 28 Sep 10:00 | $73.24 | 397.6K | demo-laptop, macbook-pro |
 | Mon 28 Sep 05:00 | $47.79 | 228.7K | demo-laptop, macbook-pro |
 | Mon 28 Sep 00:00 | $0.98 | 4.5K | demo-laptop, macbook-pro |
+
+## Plan
+
+_Set your plan to see the %% of its price used each week: `python3 collector/collect.py plan "Max 20x" 200`._
+
+Only projects this tracker collects are counted. **/usage** is the weekly-limit %% you recorded by hand that week (the latest reading; the limit resets on its own schedule, not on Mondays).
+
+### September 2026
+
+| Week (Mon–Sun) | API cost | % of plan's weekly price | /usage | Status |
+| --- | ---: | ---: | ---: | --- |
+| 07 Sep – 13 Sep | $1,964 | – | – | final |
+| 14 Sep – 20 Sep | $269 | – | – | final |
+| 21 Sep – 27 Sep | $1,609 | – | – | final |
+| 28 Sep – 04 Oct | $122 | – | – | in progress |
+
+### August 2026
+
+| Week (Mon–Sun) | API cost | % of plan's weekly price | /usage | Status |
+| --- | ---: | ---: | ---: | --- |
+| 03 Aug – 09 Aug | $39.21 | – | – | final |
+| 10 Aug – 16 Aug | $962 | – | – | final |
+| 17 Aug – 23 Aug | $857 | – | – | final |
+| 24 Aug – 30 Aug | $431 | – | – | final |
+| 31 Aug – 06 Sep | $1,038 | – | – | final |
+
+_Record a reading: open `/usage` in Claude Code, then run `python3 ~/.claude-usage/repo/collector/collect.py usage 42` (add `--session 15`, `--resets "Thu 10:00"`, or `--at "2026-09-28 14:30"` for an earlier reading)._
 
 ## By month
 
@@ -124,6 +151,17 @@ python3 collect.py only remove "my-org/*"
 - Without `--shared` the pattern stays in `~/.claude-usage/config.json` on that device and is never pushed, so the repo doesn't even show which projects are hidden.
 - With `--shared` it goes into [`exclude.json`](exclude.json) and every device applies it on its next sync.
 - Adding a rule also removes that project's already-pushed data from the device's files; removing one re-imports it from the local logs. Commit messages don't say what was hidden, but older commits still contain the data until the repo history is rewritten.
+
+### Plan and /usage readings
+
+```bash
+python3 ~/.claude-usage/repo/collector/collect.py plan "Max 20x" 200    # once: plan name and USD per month
+python3 ~/.claude-usage/repo/collector/collect.py usage 42              # the weekly % that /usage shows now
+python3 ~/.claude-usage/repo/collector/collect.py usage 42 --session 15 --resets "Thu 10:00"
+python3 ~/.claude-usage/repo/collector/collect.py usage 38 --at "2026-09-27 21:00"   # a reading taken earlier
+```
+
+The **Plan** section shows, per calendar month, each Monday–Sunday week's API-equivalent cost as a % of the plan's weekly price (monthly × 12 ÷ 52), next to the latest `/usage` reading recorded that week. Past weeks stay fixed; the current week grows until Sunday. Readings are stored in `limits/<device>.jsonl` and kept in the monthly archive.
 
 ### Rename a device
 

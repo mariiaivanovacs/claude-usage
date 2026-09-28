@@ -546,6 +546,57 @@
  "in_progress": false,
  "last_day": "2026-08-31",
  "month": "2026-08",
+ "plan": {
+  "monthly_usd": null,
+  "name": null
+ },
+ "plan_weeks": [
+  {
+   "cost_usd": 39.2078,
+   "last_weekly_pct": null,
+   "pct_of_plan_week": null,
+   "status": "final",
+   "usage_checks": [],
+   "week_end": "2026-08-09",
+   "week_start": "2026-08-03"
+  },
+  {
+   "cost_usd": 961.6196,
+   "last_weekly_pct": null,
+   "pct_of_plan_week": null,
+   "status": "final",
+   "usage_checks": [],
+   "week_end": "2026-08-16",
+   "week_start": "2026-08-10"
+  },
+  {
+   "cost_usd": 856.8683,
+   "last_weekly_pct": null,
+   "pct_of_plan_week": null,
+   "status": "final",
+   "usage_checks": [],
+   "week_end": "2026-08-23",
+   "week_start": "2026-08-17"
+  },
+  {
+   "cost_usd": 431.4601,
+   "last_weekly_pct": null,
+   "pct_of_plan_week": null,
+   "status": "final",
+   "usage_checks": [],
+   "week_end": "2026-08-30",
+   "week_start": "2026-08-24"
+  },
+  {
+   "cost_usd": 1038.4132,
+   "last_weekly_pct": null,
+   "pct_of_plan_week": null,
+   "status": "final",
+   "usage_checks": [],
+   "week_end": "2026-09-06",
+   "week_start": "2026-08-31"
+  }
+ ],
  "pricing": "2026-06-24",
  "timezone": "Asia/Kuala_Lumpur",
  "total": {

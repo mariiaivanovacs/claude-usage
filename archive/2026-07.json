@@ -517,6 +517,48 @@
  "in_progress": false,
  "last_day": "2026-07-31",
  "month": "2026-07",
+ "plan": {
+  "monthly_usd": null,
+  "name": null
+ },
+ "plan_weeks": [
+  {
+   "cost_usd": 0,
+   "last_weekly_pct": null,
+   "pct_of_plan_week": null,
+   "status": "partial",
+   "usage_checks": [],
+   "week_end": "2026-07-12",
+   "week_start": "2026-07-06"
+  },
+  {
+   "cost_usd": 0,
+   "last_weekly_pct": null,
+   "pct_of_plan_week": null,
+   "status": "partial",
+   "usage_checks": [],
+   "week_end": "2026-07-19",
+   "week_start": "2026-07-13"
+  },
+  {
+   "cost_usd": 0,
+   "last_weekly_pct": null,
+   "pct_of_plan_week": null,
+   "status": "partial",
+   "usage_checks": [],
+   "week_end": "2026-07-26",
+   "week_start": "2026-07-20"
+  },
+  {
+   "cost_usd": 981.6384,
+   "last_weekly_pct": null,
+   "pct_of_plan_week": null,
+   "status": "partial",
+   "usage_checks": [],
+   "week_end": "2026-08-02",
+   "week_start": "2026-07-27"
+  }
+ ],
  "pricing": "2026-06-24",
  "timezone": "Asia/Kuala_Lumpur",
  "total": {
