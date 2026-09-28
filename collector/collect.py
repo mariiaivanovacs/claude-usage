@@ -20,7 +20,7 @@ Standard library only; Python 3.8+; macOS, Linux and Windows.
     collect.py rename NEW-NAME              rename this device (history moves with it)
 
 Excluded projects are dropped on the device, before anything is written or pushed.
-A PATTERN is a project name glob ("maria/tropin-trade-bot", "*secret*") or a folder
+A PATTERN is a project name glob ("owner/some-repo", "*secret*") or a folder
 ("~/Desktop/private", which covers everything inside it). Local patterns live in
 ~/.claude-usage/config.json and never leave the device; --shared patterns go to
 exclude.json in the repo and apply to every device.

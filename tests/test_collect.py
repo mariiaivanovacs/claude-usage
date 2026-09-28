@@ -102,7 +102,7 @@ class ProjectTests(unittest.TestCase):
         self.assertEqual(collect.project_name("/gone/Infinity8/website/src/app/api", c, "/gone/Infinity8"),
                          "infinity8")
         # cd into /tmp from a project -> still that project
-        self.assertEqual(collect.project_name("/private/tmp", c, "/gone/Bots_work"), "bots_work")
+        self.assertEqual(collect.project_name("/private/tmp", c, "/gone/side_work"), "side_work")
 
     def test_real_git_repo(self):
         repo = TMP / "gitrepo"
@@ -231,9 +231,9 @@ class ExcludeTests(unittest.TestCase):
         collect.write_json(collect.CONFIG, {"device": "dev1"})
 
     def test_patterns(self):
-        ex = collect.Filter(["Maria/Tropin*", "~/Desktop/private", "C:\\Work\\Secret"])
-        self.assertTrue(ex.hit("/x/bot", "maria/tropin-trade-bot"))           # name glob, any case
-        self.assertFalse(ex.hit("/x/bot", "maria/avito_bitrix_bot"))
+        ex = collect.Filter(["Owner/Side*", "~/Desktop/private", "C:\\Work\\Secret"])
+        self.assertTrue(ex.hit("/x/bot", "owner/side-bot"))           # name glob, any case
+        self.assertFalse(ex.hit("/x/bot", "owner/other-bot"))
         home = os.path.expanduser("~")
         self.assertTrue(ex.hit(home + "/Desktop/private", "whatever"))          # the folder itself
         self.assertTrue(ex.hit(home + "/Desktop/private/app/.claude/worktrees/w1", "app"))  # inside it
@@ -246,14 +246,14 @@ class ExcludeTests(unittest.TestCase):
         f = collect.Filter(exclude=["*secret*"], only=["~/Desktop/Infinity8", "geco-ai-labs/*"])
         self.assertFalse(f.hit(home + "/Desktop/Infinity8/website/src", "infinity8", home + "/Desktop/Infinity8"))
         self.assertFalse(f.hit("/anywhere/else", "geco-ai-labs/sg_geco-ai_websitepoc"))    # by repo name
-        self.assertTrue(f.hit(home + "/Desktop/Bots_work/bot", "maria/tropin-trade-bot", home + "/Desktop/Bots_work"))
+        self.assertTrue(f.hit(home + "/Desktop/side_work/bot", "owner/side-bot", home + "/Desktop/side_work"))
         # started in an allowed folder, then worked inside another repo -> stays out
-        self.assertTrue(f.hit(home + "/Desktop/Bots_work/bot", "maria/tropin-trade-bot", home + "/Desktop/Infinity8"))
+        self.assertTrue(f.hit(home + "/Desktop/side_work/bot", "owner/side-bot", home + "/Desktop/Infinity8"))
         # exclude still wins inside the allowed set
         self.assertTrue(f.hit(home + "/Desktop/Infinity8/x", "geco-ai-labs/secret-thing"))
         # already-written events carry only a name: decided through the name cache
         paths = {"website": [(home + "/Desktop/Infinity8/website", home + "/Desktop/Infinity8")],
-                 "app": [(home + "/Desktop/other_work", home + "/Desktop/other_work")]}
+                 "app": [(home + "/Desktop/misc", home + "/Desktop/misc")]}
         self.assertFalse(f.hides_name("website", paths))
         self.assertTrue(f.hides_name("app", paths))
         self.assertTrue(f.hides_name("never-seen", paths))

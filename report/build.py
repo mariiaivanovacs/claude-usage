@@ -378,7 +378,10 @@ def build(root=ROOT, now=None):
     replies, others = load(root)
     today = (now or datetime.now(TZ)).astimezone(TZ).date()
     out = root / "reports"
-    shutil.rmtree(out / "charts", ignore_errors=True)       # no stale charts of renamed devices
+    # rebuilt from scratch every time: a week or device with no data left (e.g. after a
+    # project is hidden) must not keep an old file with its details
+    shutil.rmtree(out / "charts", ignore_errors=True)
+    shutil.rmtree(out / "weekly", ignore_errors=True)
     (out / "charts").mkdir(parents=True, exist_ok=True)
     (out / "weekly").mkdir(parents=True, exist_ok=True)
 

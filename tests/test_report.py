@@ -121,6 +121,10 @@ class ReportTests(unittest.TestCase):
         csv_lines = (root / "reports" / "daily.csv").read_text().splitlines()
         self.assertEqual(csv_lines[0].split(",")[0], "date")
         self.assertTrue((root / "reports" / "weekly" / "2026-W39.md").exists())
+        # a stale file from an earlier build (a week with no data left) is removed
+        (root / "reports" / "weekly" / "2020-W01.md").write_text("old")
+        build.build(root, now=datetime.fromisoformat("2026-09-28T12:00:00+08:00"))
+        self.assertFalse((root / "reports" / "weekly" / "2020-W01.md").exists())
 
 
 if __name__ == "__main__":

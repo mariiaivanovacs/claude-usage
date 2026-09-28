@@ -32,14 +32,14 @@ Excluded projects are dropped on the device itself, so nothing about them is wri
 
 ```bash
 python3 collect.py exclude list                                # patterns + every project seen on this device
-python3 collect.py exclude add "maria/tropin-trade-bot"        # a project name (from the list)
+python3 collect.py exclude add "owner/some-repo"               # a project name (from the list)
 python3 collect.py exclude add "*client*"                      # a name pattern
 python3 collect.py exclude add "~/Desktop/private"             # a folder and everything inside it
-python3 collect.py exclude add "maria/tropin-trade-bot" --shared   # all devices (goes into exclude.json)
+python3 collect.py exclude add "owner/some-repo" --shared          # all devices (goes into exclude.json)
 python3 collect.py exclude remove "*client*"                   # un-exclude: its history is re-imported
-python3 collect.py only add "~/Desktop/Infinity8"              # allow-list: keep ONLY matching projects
-python3 collect.py only add "geco-ai-labs/*"                   # (folders or repo names; exclude still applies inside)
-python3 collect.py only remove "geco-ai-labs/*"
+python3 collect.py only add "~/Desktop/client-work"             # allow-list: keep ONLY matching projects
+python3 collect.py only add "my-org/*"                          # (folders or repo names; exclude still applies inside)
+python3 collect.py only remove "my-org/*"
 ```
 
 - `only` is an allow-list: once it has any pattern, every other project on that device is dropped, including new ones. A folder pattern checks where Claude actually worked, so a session started in an allowed folder that moves into another repo stays out.
@@ -55,6 +55,6 @@ python3 collect.py only remove "geco-ai-labs/*"
 ### Settings
 
 - `config.json`: time zone for the report, `device_order` (e.g. `["macbook-pro", "work-pc", "home-pc"]`) for the order of the device sections, and `plan_monthly_usd` / `plan_name` to compare API-equivalent cost with your subscription.
-- `aliases.json`: rename or merge projects, e.g. `{"website": "geco-ai-labs/sg_geco-ai_websitepoc"}`.
+- `aliases.json`: rename or merge projects, e.g. `{"website": "my-org/website"}`.
 - `report/pricing.json`: API list prices used for the cost figures.
 - Run the report by hand: `python3 report/build.py`. Run a device sync by hand: `python3 collector/collect.py`. Log: `~/.claude-usage/collect.log`.
