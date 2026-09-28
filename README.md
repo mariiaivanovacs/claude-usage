@@ -2,23 +2,23 @@
 
 Claude Code usage across all my devices, rebuilt automatically every day (and after every sync). Times are Asia/Kuala_Lumpur. Updated 2026-09-28.
 
-Tracking since 2026-07-28 · 1 device · 33,919 replies · 1,316 prompts
+Tracking since 2026-07-28 · 1 device · 33,949 replies · 1,318 prompts
 
 **Jump to:** [macbook-pro](#device-macbook-pro)
 
 | Device | Cost, 7 days | Cost, 30 days | Output, 30 days | Last active | Sync |
 | --- | ---: | ---: | ---: | ---: | --- |
-| [macbook-pro](#device-macbook-pro) | $1,218 | $3,975 | 15.3M | 2026-09-28 | ok |
+| [macbook-pro](#device-macbook-pro) | $1,221 | $3,977 | 15.3M | 2026-09-28 | ok |
 
 ## Device: macbook-pro
 
 |  | Last 7 days | vs previous 7 | Last 30 days | All time |
 | --- | ---: | ---: | ---: | ---: |
-| API-equivalent cost | $1,218 | ▲ 339% | $3,975 | $6,479 |
-| Output tokens | 5M | ▲ 114% | 15.3M | 24M |
-| Prompts | 246 | ▲ 382% | 680 | 1,316 |
+| API-equivalent cost | $1,221 | ▲ 340% | $3,977 | $6,482 |
+| Output tokens | 5M | ▲ 115% | 15.3M | 24M |
+| Prompts | 248 | ▲ 386% | 682 | 1,318 |
 | Sessions | 10 | ▲ 43% | 35 | 80 |
-| Active hours | 55 | ▲ 244% | 190 | 391 |
+| Active hours | 56 | ▲ 250% | 191 | 392 |
 | Active days | 6 / 7 |  | 23 / 30 | 52 |
 | Cache hit ratio | 98% |  | 98% | 98% |
 
@@ -32,7 +32,7 @@ Tracking since 2026-07-28 · 1 device · 33,919 replies · 1,316 prompts
 | --- | ---: | ---: | ---: | ---: |
 | claude-opus-5 | 9,375 | 7.4M | $2,533 | 64% |
 | claude-sonnet-5 | 6,918 | 4.8M | $939 | 24% |
-| claude-opus-5-5 | 2,648 | 3M | $475 | 12% |
+| claude-opus-5-5 | 2,678 | 3M | $477 | 12% |
 | claude-opus-4-8 | 98 | 81.8K | $28.07 | 1% |
 
 <img src="reports/charts/macbook-pro/projects.svg" alt="Top projects by cost" width="760">
@@ -58,7 +58,7 @@ Subscription limits count usage in 5-hour windows across all devices, so these a
 | Habit (last 30 days) | Value |
 | --- | ---: |
 | Work done by subagents (share of cost) | 3% |
-| Prompts per session (average) | 19.4 |
+| Prompts per session (average) | 19.5 |
 | Prompt length (median characters) | 200 |
 | Replies you interrupted | 13 |
 | 5-hour windows used | 51 (2.2 per active day) |
@@ -71,16 +71,16 @@ Subscription limits count usage in 5-hour windows across all devices, so these a
 
 | Tool | Calls |
 | --- | ---: |
-| Bash | 14,676 |
-| Read | 1,386 |
-| Edit | 782 |
+| Bash | 14,694 |
+| Read | 1,389 |
+| Edit | 783 |
 | WebFetch | 324 |
-| Write | 311 |
+| Write | 312 |
 | WebSearch | 216 |
 | Artifact | 215 |
 | Claude_Browser: javascript_tool | 132 |
 | Claude_Browser: computer | 117 |
-| AskUserQuestion | 112 |
+| AskUserQuestion | 113 |
 
 </td><td valign="top">
 
@@ -122,13 +122,13 @@ Subscription limits count usage in 5-hour windows across all devices, so these a
 
 Each device syncs its own Claude Code usage here every day at **08:00 Malaysia time**, and after every Claude Code session ends. Nothing needs to be done after installing.
 
-**macOS / Linux** (needs `git`, `python3`, and push access to this repo, e.g. via `gh auth login`):
+**macOS / Linux:** copy [`setup-device.sh`](setup-device.sh) to the device and run it:
 
 ```bash
-git clone --filter=blob:none --no-checkout https://github.com/mariiaivanovacs/claude-usage.git ~/.claude-usage/repo
-cd ~/.claude-usage/repo && git sparse-checkout set --no-cone '/*' '!/devices/*' && git checkout main
-./install/install.sh
+bash setup-device.sh
 ```
+
+It checks git, python3 and GitHub access (and signs you in with `gh` if needed), downloads the tracker, then asks what to call the device. **That name is what the dashboard and its charts show ("Device: work-laptop")**, so pick one you'll recognise.
 
 **Windows** (PowerShell; needs Git and Python 3):
 
