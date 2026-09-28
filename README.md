@@ -2,20 +2,20 @@
 
 Claude Code usage across all my devices, rebuilt automatically every day (and after every sync). Times are Asia/Kuala_Lumpur. Updated 2026-09-28.
 
-Tracking since 2026-07-28 · 1 device · 33,900 replies · 1,316 prompts
+Tracking since 2026-07-28 · 1 device · 33,919 replies · 1,316 prompts
 
 **Jump to:** [macbook-pro](#device-macbook-pro)
 
 | Device | Cost, 7 days | Cost, 30 days | Output, 30 days | Last active | Sync |
 | --- | ---: | ---: | ---: | ---: | --- |
-| [macbook-pro](#device-macbook-pro) | $1,215 | $3,972 | 15.2M | 2026-09-28 | ok |
+| [macbook-pro](#device-macbook-pro) | $1,218 | $3,975 | 15.3M | 2026-09-28 | ok |
 
 ## Device: macbook-pro
 
 |  | Last 7 days | vs previous 7 | Last 30 days | All time |
 | --- | ---: | ---: | ---: | ---: |
-| API-equivalent cost | $1,215 | ▲ 338% | $3,972 | $6,476 |
-| Output tokens | 5M | ▲ 113% | 15.2M | 24M |
+| API-equivalent cost | $1,218 | ▲ 339% | $3,975 | $6,479 |
+| Output tokens | 5M | ▲ 114% | 15.3M | 24M |
 | Prompts | 246 | ▲ 382% | 680 | 1,316 |
 | Sessions | 10 | ▲ 43% | 35 | 80 |
 | Active hours | 55 | ▲ 244% | 190 | 391 |
@@ -32,7 +32,7 @@ Tracking since 2026-07-28 · 1 device · 33,900 replies · 1,316 prompts
 | --- | ---: | ---: | ---: | ---: |
 | claude-opus-5 | 9,375 | 7.4M | $2,533 | 64% |
 | claude-sonnet-5 | 6,918 | 4.8M | $939 | 24% |
-| claude-opus-5-5 | 2,629 | 3M | $472 | 12% |
+| claude-opus-5-5 | 2,648 | 3M | $475 | 12% |
 | claude-opus-4-8 | 98 | 81.8K | $28.07 | 1% |
 
 <img src="reports/charts/macbook-pro/projects.svg" alt="Top projects by cost" width="760">
@@ -71,16 +71,16 @@ Subscription limits count usage in 5-hour windows across all devices, so these a
 
 | Tool | Calls |
 | --- | ---: |
-| Bash | 14,663 |
-| Read | 1,384 |
-| Edit | 781 |
+| Bash | 14,676 |
+| Read | 1,386 |
+| Edit | 782 |
 | WebFetch | 324 |
-| Write | 310 |
+| Write | 311 |
 | WebSearch | 216 |
-| Artifact | 214 |
+| Artifact | 215 |
 | Claude_Browser: javascript_tool | 132 |
 | Claude_Browser: computer | 117 |
-| AskUserQuestion | 111 |
+| AskUserQuestion | 112 |
 
 </td><td valign="top">
 
