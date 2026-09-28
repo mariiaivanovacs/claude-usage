@@ -2,17 +2,17 @@
 
 Claude Code usage across all my devices, rebuilt automatically every day (and after every sync). Times are Asia/Kuala_Lumpur. Updated 2026-09-28.
 
-Tracking since 2026-07-25 · 1 device · 114,174 replies · 3,878 prompts
+Tracking since 2026-07-25 · 1 device · 114,241 replies · 3,881 prompts
 
 ## At a glance
 
 |  | Last 7 days | vs previous 7 | Last 30 days | All time |
 | --- | ---: | ---: | ---: | ---: |
-| API-equivalent cost | $2,014 | ▲ 17% | $10,144 | $20,683 |
-| Output tokens | 7.3M | ▼ 12% | 38.1M | 80.1M |
-| Prompts | 360 | ▼ 6% | 1,941 | 3,878 |
+| API-equivalent cost | $2,040 | ▲ 19% | $10,169 | $20,709 |
+| Output tokens | 7.4M | ▼ 12% | 38.2M | 80.1M |
+| Prompts | 363 | ▼ 6% | 1,944 | 3,881 |
 | Sessions | 27 | ▼ 18% | 126 | 364 |
-| Active hours | 69 | ▲ 6% | 313 | 709 |
+| Active hours | 70 | ▲ 8% | 314 | 710 |
 | Active days | 7 / 7 |  | 29 / 30 | 63 |
 | Cache hit ratio | 98% |  | 98% | 98% |
 
@@ -26,7 +26,7 @@ Tracking since 2026-07-25 · 1 device · 114,174 replies · 3,878 prompts
 | --- | ---: | ---: | ---: | ---: |
 | claude-opus-5 | 26,730 | 22.4M | $7,196 | 71% |
 | claude-sonnet-5 | 17,883 | 12.8M | $2,426 | 24% |
-| claude-opus-5-5 | 2,493 | 2.8M | $436 | 4% |
+| claude-opus-5-5 | 2,560 | 2.9M | $462 | 5% |
 | claude-opus-4-8 | 201 | 207.2K | $85.32 | 1% |
 
 ## Where and when
@@ -35,7 +35,7 @@ Tracking since 2026-07-25 · 1 device · 114,174 replies · 3,878 prompts
 
 | Device | Last active | Cost, 30 days | Sync |
 | --- | ---: | ---: | ---: |
-| macbook-pro | 2026-09-28 | $10,144 | ok |
+| macbook-pro | 2026-09-28 | $10,169 | ok |
 
 <img src="reports/charts/projects.svg" alt="Top projects by cost" width="760">
 
@@ -60,7 +60,7 @@ Subscription limits count usage in 5-hour windows, so these are the stretches cl
 | Habit (last 30 days) | Value |
 | --- | ---: |
 | Work done by subagents (share of cost) | 2% |
-| Prompts per session (average) | 16.0 |
+| Prompts per session (average) | 16.1 |
 | Prompt length (median characters) | 144 |
 | Replies you interrupted | 103 |
 | 5-hour windows used | 81 (2.8 per active day) |
@@ -73,14 +73,14 @@ Subscription limits count usage in 5-hour windows, so these are the stretches cl
 
 | Tool | Calls |
 | --- | ---: |
-| Bash | 35,171 |
-| Read | 2,961 |
+| Bash | 35,214 |
+| Read | 2,975 |
 | Edit | 2,527 |
-| Write | 918 |
+| Write | 920 |
 | Claude_Browser: computer | 655 |
 | Claude_Browser: javascript_tool | 457 |
 | WebFetch | 410 |
-| Artifact | 329 |
+| Artifact | 331 |
 | Claude_Browser: browser_batch | 320 |
 | WebSearch | 288 |
 

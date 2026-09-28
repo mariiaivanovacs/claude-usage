@@ -784,4 +784,4 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-09-26,macbook-pro,2026-10-31-oyw-leading-scholarship-2026,claude-opus-5,5,10,9314,449517,79262,1.2503
 2026-09-26,macbook-pro,nzt_eco,claude-opus-5,19,38,11607,1422808,99000,1.9918
 2026-09-27,macbook-pro,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,55,112,72292,25974674,996802,14.6156
-2026-09-28,macbook-pro,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,427,854,402919,204457428,3832280,79.6115
+2026-09-28,macbook-pro,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,494,988,478435,241187705,5947744,105.1578
