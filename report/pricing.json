@@ -1,4 +1,5 @@
 {
+  "version": "2026-06-24",
   "_note": "USD per million tokens, Anthropic first-party API list prices (Claude API docs, cached 2026-06-24). cache_read defaults to 0.1 x input; cache writes are 1.25 x input (5 min) and 2 x input (1 hour). 'fast' is the fast-mode price where it exists. Used to show what your subscription usage would have cost on the API.",
   "models": {
     "claude-fable-5-1":  {"input": 10, "output": 50, "cache_read": 0.25},

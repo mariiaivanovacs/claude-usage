@@ -119,9 +119,10 @@ def stacked_columns(title, subtitle, labels, series, fmt, tick_every=1, percent=
     return card(h, title, subtitle, "".join(body))
 
 
-def hbars(title, subtitle, rows, fmt, cls="s0"):
-    """rows: [(label, value)] largest first; one series, value at the tip."""
-    left, right, top, rh = 250, 90, 72, 26
+def hbars(title, subtitle, rows, fmt, cls="s0", classes=None, tips=None):
+    """rows: [(label, value)] largest first, value at the tip.
+    classes: per-row colour (identity, e.g. a model); tips: per-row tip text."""
+    left, right, top, rh = 250, 150 if tips else 90, 72, 26
     h = top + rh * max(len(rows), 1) + 16
     vmax = max([v for _, v in rows] or [1]) or 1
     body = []
@@ -131,11 +132,13 @@ def hbars(title, subtitle, rows, fmt, cls="s0"):
         short = lab if len(lab) <= 34 else lab[:33] + "…"
         body.append('<text class="ts" x="%d" y="%.1f" font-size="12" text-anchor="end">%s<title>%s</title></text>'
                     % (left - 10, y + 15, escape(short), escape(lab)))
+        tip = tips[i] if tips else fmt(v)
         body.append('<path class="%s" d="M%d %dh%.1fa4 4 0 0 1 4 4v10a4 4 0 0 1-4 4h-%.1fz">'
                     '<title>%s: %s</title></path>'
-                    % (cls, left, y + 2, max(w - 4, 0), max(w - 4, 0), escape(lab), fmt(v)))
+                    % (classes[i] if classes else cls, left, y + 2, max(w - 4, 0), max(w - 4, 0),
+                       escape(lab), escape(tip)))
         body.append('<text class="tp" x="%.1f" y="%.1f" font-size="12">%s</text>'
-                    % (left + w + 8, y + 15, fmt(v)))
+                    % (left + w + 8, y + 15, escape(tip)))
     return card(h, title, subtitle, "".join(body))
 
 
@@ -219,6 +222,108 @@ def line(title, subtitle, labels, values, fmt, tick_every=7, vmax=None, vmin=0.0
         i, (x, y), v = pts[-1]
         body.append('<circle class="s%d ring" cx="%.1f" cy="%.1f" r="4.5" stroke-width="2"/>' % (cls, x, y))
         body.append('<text class="tp" x="%.1f" y="%.1f" font-size="12">%s</text>' % (x + 9, y + 4, fmt(v)))
+    for i, lab in enumerate(labels):
+        if i % tick_every == 0:
+            body.append('<text class="tm" x="%.1f" y="%d" font-size="11" text-anchor="middle">%s</text>'
+                        % (left + step * i, h - bottom + 18, escape(lab)))
+    return card(h, title, subtitle, "".join(body))
+
+
+def share_bars(title, subtitle, rows, segments, fmt):
+    """One 100% bar per row (e.g. device), split into segments (e.g. models).
+    rows: [label]; segments: [(name, css_class, [value per row])]."""
+    leg, ly = legend([sg[0] for sg in segments], [sg[1] for sg in segments], 76)
+    left, right, top, rh = 150, 20, ly + 20, 34
+    h = top + rh * max(len(rows), 1) + 36
+    pw = W - left - right
+    body = [leg]
+    for x in (0, .25, .5, .75, 1):
+        gx = left + pw * x
+        body.append('<line class="%s" x1="%.1f" x2="%.1f" y1="%d" y2="%d"/>'
+                    % ("base" if x == 0 else "grid", gx, gx, top - 6, top + rh * len(rows) - 6))
+        body.append('<text class="tm" x="%.1f" y="%d" font-size="11" text-anchor="middle">%d%%</text>'
+                    % (gx, top + rh * len(rows) + 10, x * 100))
+    for i, lab in enumerate(rows):
+        y = top + i * rh
+        total = sum(sg[2][i] for sg in segments) or 1
+        body.append('<text class="ts" x="%d" y="%.1f" font-size="12" text-anchor="end">%s</text>'
+                    % (left - 10, y + 15, escape(lab)))
+        x = left
+        segs = [(n, c, v) for n, c, vals in segments for v in [vals[i]] if v > 0]
+        for j, (name, cls, v) in enumerate(segs):
+            w = pw * v / total
+            gap = 2 if j < len(segs) - 1 and w > 4 else 0
+            body.append('<rect class="%s" x="%.1f" y="%d" width="%.1f" height="20" rx="%d">'
+                        '<title>%s · %s: %s (%d%%)</title></rect>'
+                        % (cls, x, y, max(w - gap, 0.5), 3 if w > 8 else 0, escape(lab), escape(name), fmt(v),
+                           round(100 * v / total)))
+            x += w
+    return card(h, title, subtitle, "".join(body))
+
+
+def _ink_for(q):
+    """Text colour that stays readable on a sequential cell."""
+    return "#ffffff" if q >= 3 else "#0b0b0b"
+
+
+def matrix(title, subtitle, row_labels, col_labels, values, fmt):
+    """Rows x columns grid (e.g. project x device), sequential shading, value in each cell."""
+    left, top, ch = 250, 84, 30
+    cw = min(150, (W - left - 20) / max(len(col_labels), 1))
+    h = top + ch * max(len(row_labels), 1) + 20
+    vmax = max([v for row in values for v in row] or [0]) or 1
+    body = []
+    for j, c in enumerate(col_labels):
+        body.append('<text class="ts" x="%.1f" y="%d" font-size="12" text-anchor="middle">%s</text>'
+                    % (left + j * cw + cw / 2, top - 10, escape(c)))
+    for i, r in enumerate(row_labels):
+        y = top + i * ch
+        short = r if len(r) <= 34 else r[:33] + "…"
+        body.append('<text class="ts" x="%d" y="%.1f" font-size="12" text-anchor="end">%s<title>%s</title></text>'
+                    % (left - 10, y + 19, escape(short), escape(r)))
+        for j, v in enumerate(values[i]):
+            x = left + j * cw
+            if v > 0:
+                q = min(int(len(SEQ) * v / vmax), len(SEQ) - 1)
+                body.append('<rect class="q%d" x="%.1f" y="%d" width="%.1f" height="%d" rx="3">'
+                            '<title>%s · %s: %s</title></rect>' % (q, x, y, cw - 2, ch - 2, escape(r),
+                                                                  escape(col_labels[j]), fmt(v)))
+                body.append('<text x="%.1f" y="%d" font-size="12" text-anchor="middle" fill="%s" '
+                            'class="mx%d">%s</text>' % (x + cw / 2, y + 19, _ink_for(q), q, fmt(v)))
+            else:
+                body.append('<rect class="qe" x="%.1f" y="%d" width="%.1f" height="%d" rx="3"/>'
+                            % (x, y, cw - 2, ch - 2))
+    # dark mode: the sequential ramp flips, so flip the ink too
+    flip = "".join(".mx%d{fill:%s}" % (q, "#0b0b0b" if q >= 4 else "#ffffff") for q in range(len(SEQ)))
+    body.append("<style>@media (prefers-color-scheme:dark){%s}</style>" % flip)
+    return card(h, title, subtitle, "".join(body))
+
+
+def lines(title, subtitle, labels, series, fmt, tick_every=3):
+    """Several series over the same x (e.g. prompts per hour, one line per device).
+    series: [(name, index into the palette, [values])]."""
+    leg, ly = legend([s[0] for s in series], ["s%d" % s[1] for s in series], 76)
+    top, bottom, left, right = ly + 20, 40, 64, 30
+    h = top + 180 + bottom
+    ph = h - top - bottom
+    vmax, ticks = nice_max(max([v for s in series for v in s[2]] or [0]))
+    body = [leg]
+    for t in ticks:
+        y = top + ph - ph * t / vmax
+        body.append('<line class="%s" x1="%d" x2="%d" y1="%.1f" y2="%.1f"/>'
+                    % ("base" if t == 0 else "grid", left, W - right, y, y))
+        body.append('<text class="tm" x="%d" y="%.1f" font-size="11" text-anchor="end">%s</text>'
+                    % (left - 8, y + 4, fmt(t)))
+    n = max(len(labels), 1)
+    step = (W - left - right) / max(n - 1, 1)
+    for name, idx, vals in series:
+        pts = [(left + step * i, top + ph - ph * v / vmax) for i, v in enumerate(vals)]
+        d = "M" + "L".join("%.1f %.1f" % p for p in pts)
+        body.append('<path class="l%d" d="%s" fill="none" stroke-width="2" stroke-linejoin="round" '
+                    'stroke-linecap="round"/>' % (idx, d))
+        for i, (x, y) in enumerate(pts):
+            body.append('<circle cx="%.1f" cy="%.1f" r="6" fill="transparent"><title>%s %s: %s</title></circle>'
+                        % (x, y, escape(name), escape(labels[i]), fmt(vals[i])))
     for i, lab in enumerate(labels):
         if i % tick_every == 0:
             body.append('<text class="tm" x="%.1f" y="%d" font-size="11" text-anchor="middle">%s</text>'
