@@ -5,7 +5,7 @@ on:
     - cron: "30 0 * * *"        # 08:30 Malaysia time, after the devices' 08:00 sync
   push:
     branches: [main]
-    paths: ["devices/**", "report/**", "config.json", "aliases.json"]
+    paths: ["devices/**", "limits/**", "report/**", "config.json", "aliases.json", "exclude.json"]
   workflow_dispatch:
 
 permissions:

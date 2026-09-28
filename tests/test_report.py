@@ -132,6 +132,7 @@ class ReportTests(unittest.TestCase):
         html = (root / "reports" / "dashboard.html").read_text()
         self.assertEqual(html.count("<svg"), len(svgs))
         self.assertIn('id="device-mac"', html)
+        self.assertIn("this month so far (01 Sep – today)", (root / "reports/charts/all/hours.svg").read_text())
         # the model-share chart only lists devices active this week
         self.assertNotIn(">old-pc<", (root / "reports/charts/all/model-share.svg").read_text())
 

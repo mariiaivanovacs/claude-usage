@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # One file to set up Claude usage tracking on a Mac or Linux machine.
 #
-#   bash setup-device.sh
+#   bash setup-device.sh                      # asks for the device name and what to track
+#   bash setup-device.sh --only "~/Desktop/client-work" --only "my-org/*"
 #
 # It checks git / python3 / GitHub access, downloads the tracker (only this
 # device's data folder), asks what to call this device on the dashboard, then
@@ -21,7 +22,7 @@ python3 -c 'import sys; sys.exit(sys.version_info < (3, 8))' || die "python3 is 
 [ -d "$HOME/.claude/projects" ] || [ -n "${CLAUDE_CONFIG_DIR:-}" ] \
   || echo "Note: no Claude Code history found yet (~/.claude/projects). The tracker will pick it up once you use Claude Code."
 
-URL="https://github.com/$REPO.git"
+URL="${CLAUDE_USAGE_REPO_URL:-https://github.com/$REPO.git}"
 if ! git ls-remote "$URL" >/dev/null 2>&1; then
   if command -v gh >/dev/null; then
     say "Sign in to GitHub (the tracker repo is private)"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Install the Claude usage collector on macOS or Linux.
 #
-#   install/install.sh [--device NAME]
+#   install/install.sh [--device NAME] [--only PATTERN ...] [--track-all]
 #   install/install.sh --uninstall
 #
 # Runs the collector every day at 08:00 Malaysia time (converted to this
@@ -16,9 +16,13 @@ RUN_AT="08:00"
 
 DEVICE=""
 UNINSTALL=0
+ONLY=()
+TRACK_ALL=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --device) DEVICE="$2"; shift 2 ;;
+    --only) ONLY+=("$2"); shift 2 ;;
+    --track-all) TRACK_ALL=1; shift ;;
     --uninstall) UNINSTALL=1; shift ;;
     *) echo "unknown option: $1" >&2; exit 2 ;;
   esac
@@ -101,14 +105,48 @@ else
 fi
 [ -n "$DEVICE" ] || { echo "device name is empty" >&2; exit 1; }
 if [ -n "${CLAUDE_USAGE_NAME_ONLY:-}" ]; then echo "NAME=$DEVICE"; exit 0; fi   # used by tests
-"$PY" - "$BASE/config.json" "$DEVICE" <<'EOF'
+
+# ---- what to track (asked before anything is imported or pushed) ---------------
+has_rules="$("$PY" -c 'import json,sys
+try: c=json.load(open(sys.argv[1]))
+except Exception: c={}
+print(1 if (c.get("only") or c.get("exclude")) else "")' "$BASE/config.json" 2>/dev/null || true)"
+if [ ${#ONLY[@]} -eq 0 ] && [ "$TRACK_ALL" = 0 ] && [ -z "$has_rules" ]; then
+  if [ -z "$TTY" ]; then
+    echo "No terminal to ask in: tracking ALL projects. Use --only PATTERN to limit it."
+  else
+    echo
+    echo "What should this device track?"
+    echo "------------------------------"
+    echo "  1) All Claude Code projects on this device"
+    echo "  2) Only some projects: everything else is never collected or pushed"
+    choice="$(ask "Choice [1]: ")"
+    if [ "$choice" = 2 ]; then
+      echo "Enter one per line: a folder (~/Desktop/client-work, covers everything inside)"
+      echo "or a repo name (my-org/website, my-org/*). Empty line when done."
+      while :; do
+        pat="$(ask "  keep: ")"
+        [ -z "$pat" ] && break
+        ONLY+=("$pat")
+      done
+      [ ${#ONLY[@]} -gt 0 ] || echo "  Nothing entered: tracking all projects."
+    fi
+  fi
+fi
+if [ ${#ONLY[@]} -gt 0 ]; then
+  echo "Tracking only: ${ONLY[*]}"
+fi
+
+"$PY" - "$BASE/config.json" "$DEVICE" "${ONLY[@]+"${ONLY[@]}"}" <<'EOF'
 import json, sys
-p, dev = sys.argv[1], sys.argv[2]
+p, dev, only = sys.argv[1], sys.argv[2], sys.argv[3:]
 try:
     c = json.load(open(p))
 except Exception:
     c = {}
 c["device"] = dev
+if only:
+    c["only"] = only
 json.dump(c, open(p, "w"), indent=2)
 EOF
 
@@ -130,7 +168,9 @@ EOF
 echo "Daily run: $RUN_AT $RUN_AT_TZ = $(printf '%02d:%02d' "$LOCAL_H" "$LOCAL_M") on this device"
 
 # ---- scheduler ----------------------------------------------------------------
-if [ "$OS" = Darwin ]; then
+if [ -n "${CLAUDE_USAGE_NO_SCHEDULE:-}" ]; then
+  echo "Skipping the scheduler (CLAUDE_USAGE_NO_SCHEDULE is set)."
+elif [ "$OS" = Darwin ]; then
   mkdir -p "$(dirname "$plist")"
   cat >"$plist" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>

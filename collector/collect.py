@@ -527,7 +527,19 @@ def new_lines(path, fstate):
     return lines, {"offset": offset + end + 1, "ino": ident}
 
 
-def collect(device, state, excluder=None, only=None):
+def existing_ids(device):
+    """Ids already in this device's files: a fresh install (no local state) must not
+    append events the repo already has, and must keep older ones its logs no longer hold."""
+    ids = set()
+    for f in (REPO / "devices" / device).glob("*.jsonl"):
+        for line in f.read_text(encoding="utf-8").splitlines():
+            m = re.search(r'"id":"([^"]+)"', line)
+            if m:
+                ids.add(m.group(1))
+    return ids
+
+
+def collect(device, state, excluder=None, only=None, skip=frozenset()):
     """Scan every transcript; return new events and the updated state.
 
     With `only` (the previous Filter) every file is re-read from the start and only
@@ -558,7 +570,7 @@ def collect(device, state, excluder=None, only=None):
             if not ev:
                 continue
             prev = seen.get(ev["id"])
-            if not is_news(ev, prev):
+            if not is_news(ev, prev) or ev["id"] in skip:
                 continue
             prev_tools = prev[1] if prev else []
             seen[ev["id"]] = [max(ev.get("out", 0), prev[0] if prev else 0),
@@ -975,7 +987,8 @@ def main():
             state = {}
         patterns = filter_patterns()
         flt = Filter(patterns["exclude"], patterns["only"])
-        events, state = collect(device, state, flt)
+        fresh = not rebuild and "files" not in state
+        events, state = collect(device, state, flt, skip=existing_ids(device) if fresh else frozenset())
         if a.dry_run:
             kinds = {}
             for ev in events:

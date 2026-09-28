@@ -403,6 +403,10 @@ def build(root=ROOT, now=None):
 
 
 def all_devices(replies, others, r_week, o_week, prev, devices, label, today, save):
+    ms = today.replace(day=1)
+    month_label = "this month so far (%s – today)" % ms.strftime("%d %b")
+    o_month = in_range(others, ms, today)
+    active_month = [d for d in devices if any(e["device"] == d for e in o_month)] or devices
     rows = []
     for d in devices + [None]:
         r = [e for e in r_week if d is None or e["device"] == d]
@@ -426,7 +430,7 @@ def all_devices(replies, others, r_week, o_week, prev, devices, label, today, sa
         save("all", "devices", chart_devices(replies, today)) + "\n\n",
         save("all", "model-share", chart_model_share(r_week, active, label)) + "\n\n",
         save("all", "project-grid", chart_project_grid(r_week, active, label)) + "\n\n",
-        save("all", "hours", chart_hours(o_week, active, label)) + "\n\n",
+        save("all", "hours", chart_hours(o_month, active_month, month_label)) + "\n\n",
         "### Heaviest 5-hour windows, this week\n",
         "Subscription limits count usage in 5-hour windows across all devices together.\n\n",
         md_table(["Window start", "API cost", "Output", "Devices"], block_rows, ["l", "r", "r", "l"]), "\n",
