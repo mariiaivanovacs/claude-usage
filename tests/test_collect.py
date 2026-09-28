@@ -329,3 +329,37 @@ class OnlyFlowTests(ExcludeTests):
         self.assertEqual(sorted(e["project"] for e in self.lines()), ["geco_website"] * 3 + ["public"])
         state = collect.read_json(collect.STATE, {})
         self.assertEqual(state["filter"], {"exclude": [], "only": []})
+
+
+class UsageCheckTests(ExcludeTests):
+    def setUp(self):
+        super().setUp()
+        self._git = (collect.git_pull, collect.git_push)
+        collect.git_pull, collect.git_push = (lambda: True), (lambda: True)   # no remote in tests
+
+    def tearDown(self):
+        collect.git_pull, collect.git_push = self._git
+
+    def test_record_and_validate(self):
+        collect.record_usage("dev1", "42%", session="7", resets="Thu 10:00", at="2026-09-20 14:30")
+        collect.record_usage("dev1", "55")
+        lines = [json.loads(l) for l in (TMP / "xrepo" / "limits" / "dev1.jsonl").read_text().splitlines()]
+        self.assertEqual([l["weekly_pct"] for l in lines], [42.0, 55.0])
+        self.assertEqual((lines[0]["session_pct"], lines[0]["resets"]), (7.0, "Thu 10:00"))
+        for bad in (("150",), ("abc",), ("-1",)):
+            with self.assertRaises(SystemExit):
+                collect.record_usage("dev1", *bad)
+        with self.assertRaises(SystemExit):
+            collect.record_usage("dev1", "10", at="2999-01-01 10:00")
+        with self.assertRaises(SystemExit):
+            collect.record_usage("dev1", "10", at="yesterday")
+        # rebuild and purge rewrite devices/, never the readings
+        write(PROJ / "a.jsonl", [reply("1", 5)])
+        self.run_main()
+        old = sys.argv
+        sys.argv = ["collect.py", "--no-git", "rebuild"]
+        try:
+            collect.main()
+        finally:
+            sys.argv = old
+        self.assertEqual(len((TMP / "xrepo" / "limits" / "dev1.jsonl").read_text().splitlines()), 2)

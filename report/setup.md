@@ -48,6 +48,17 @@ python3 collect.py only remove "my-org/*"
 - With `--shared` it goes into [`exclude.json`](exclude.json) and every device applies it on its next sync.
 - Adding a rule also removes that project's already-pushed data from the device's files; removing one re-imports it from the local logs. Commit messages don't say what was hidden, but older commits still contain the data until the repo history is rewritten.
 
+### Plan and /usage readings
+
+```bash
+python3 ~/.claude-usage/repo/collector/collect.py plan "Max 20x" 200    # once: plan name and USD per month
+python3 ~/.claude-usage/repo/collector/collect.py usage 42              # the weekly % that /usage shows now
+python3 ~/.claude-usage/repo/collector/collect.py usage 42 --session 15 --resets "Thu 10:00"
+python3 ~/.claude-usage/repo/collector/collect.py usage 38 --at "2026-09-27 21:00"   # a reading taken earlier
+```
+
+The **Plan** section shows, per calendar month, each Monday–Sunday week's API-equivalent cost as a % of the plan's weekly price (monthly × 12 ÷ 52), next to the latest `/usage` reading recorded that week. Past weeks stay fixed; the current week grows until Sunday. Readings are stored in `limits/<device>.jsonl` and kept in the monthly archive.
+
 ### Rename a device
 
 `python3 collect.py rename new-name` moves the device's data folder in the repo (history stays) and updates its local config. The name shows as "Device: new-name" in the report.

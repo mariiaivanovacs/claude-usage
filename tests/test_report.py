@@ -1,6 +1,7 @@
 """Report builder tests. Run: python3 -m unittest discover -s tests"""
 import json
 import sys
+from datetime import date
 import tempfile
 import unittest
 import xml.etree.ElementTree as ET
@@ -168,6 +169,40 @@ class ReportTests(unittest.TestCase):
         # 14 days after the month ended it is final regardless
         root, _ = self.build_at(self.events(), datetime.fromisoformat("2026-10-15T12:00:00+08:00"))
         self.assertTrue(json.loads((root / "archive" / "2026-09.json").read_text())["final"])
+
+    def test_plan_section(self):
+        ev = self.events()
+        root = repo_with(ev)
+        (root / "limits").mkdir()
+        (root / "limits" / "mac.jsonl").write_text(
+            '{"ts":"2026-09-22T06:00:00Z","tz":"+08:00","weekly_pct":30}\n'
+            '{"ts":"2026-09-29T06:00:00Z","tz":"+08:00","weekly_pct":12,"session_pct":40,"resets":"Thu 10:00"}\n')
+        build.CFG.update(plan_name="Max 20x", plan_monthly_usd=200)
+        try:
+            build.build(root, now=self.NOW)
+        finally:
+            build.CFG.update(plan_name=None, plan_monthly_usd=None)
+        md = (root / "README.md").read_text()
+        plan = md[md.index("## Plan"):md.index("## By month")]
+        self.assertIn("**Max 20x** · $200/month ≈ **$46.15 per week**", plan)
+        self.assertIn("### September 2026", plan)
+        sep = plan[plan.index("### September 2026"):plan.index("### August 2026")]
+        rows = [l for l in sep.splitlines() if l.startswith("| ") and " – " in l.split("|")[1]]
+        self.assertEqual([r.split("|")[1].strip() for r in rows],
+                         ["07 Sep – 13 Sep", "14 Sep – 20 Sep", "21 Sep – 27 Sep", "28 Sep – 04 Oct"])
+        aug = plan[plan.index("### August 2026"):]
+        self.assertIn("| 31 Aug – 06 Sep |", aug)            # crosses into September, listed under August
+        self.assertIn("in progress", rows[-1])
+        self.assertIn("12% (Tue 29 Sep 14:00)", rows[-1])
+        self.assertIn("30% (Tue 22 Sep 14:00)", rows[-2])
+        week = [e for e in build.load(root)[0] if date(2026, 9, 21) <= e["day"] <= date(2026, 9, 27)]
+        self.assertIn("%g%%" % round(100 * sum(e["cost"] for e in week) / (200 * 12 / 52), 1), rows[-2])
+        self.assertIn("| Tue 29 Sep 14:00 | mac | 12% | 40% | Thu 10:00 |", plan)
+        # without a plan: costs still shown, % blank, and how to set it
+        _, md = self.build_at(ev)
+        plan = md[md.index("## Plan"):md.index("## By month")]
+        self.assertIn('collect.py plan \\"Max 20x\\" 200', plan.replace('"', '\\"'))
+        self.assertIn("| – |", plan)
 
     def test_archive_follows_raw_data(self):
         ev = self.events()

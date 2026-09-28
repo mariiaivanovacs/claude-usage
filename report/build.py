@@ -78,6 +78,22 @@ def load(root=ROOT):
     return sorted(replies.values(), key=lambda e: e["dt"]), sorted(others.values(), key=lambda e: e["dt"])
 
 
+def load_checks(root=ROOT):
+    """Readings of /usage recorded by hand: limits/<device>.jsonl."""
+    out = []
+    for f in sorted((root / "limits").glob("*.jsonl")):
+        for line in f.read_text(encoding="utf-8").splitlines():
+            try:
+                c = json.loads(line)
+                c["device"] = f.stem
+                c["dt"] = datetime.fromisoformat(c["ts"].replace("Z", "+00:00")).astimezone(TZ)
+                c["day"] = c["dt"].date()
+                out.append(c)
+            except (ValueError, KeyError):
+                continue
+    return sorted(out, key=lambda c: c["dt"])
+
+
 def price_for(model):
     models = PRICING.get("models", {})
     if model in models:
@@ -339,7 +355,8 @@ def build(root=ROOT, now=None):
                                         + setup_text(root), encoding="utf-8")
         return
 
-    months = write_archive(replies, others, root, today)
+    checks = load_checks(root)
+    months = write_archive(replies, others, root, today, checks)
     charts, parts = {}, []
     ws = week_start(today)
     label = week_label(ws, today)
@@ -377,6 +394,7 @@ def build(root=ROOT, now=None):
 
     if len(devices) > 1:
         parts.append(all_devices(replies, others, r_week, o_week, prev, devices, label, today, save))
+    parts.append(plan_section(months, replies, checks, today))
     parts.append(month_table(months, today))
     md = readme(replies, others, today, root, parts, devices)
     (root / "README.md").write_text(md, encoding="utf-8")
@@ -415,6 +433,86 @@ def all_devices(replies, others, r_week, o_week, prev, devices, label, today, sa
     ])
 
 
+def plan_week_price():
+    usd_month = CFG.get("plan_monthly_usd")
+    return usd_month * 12 / 52 if usd_month else None
+
+
+def month_weeks(key):
+    """Mon-Sun weeks whose Monday falls in the month (a week crossing into the next
+    month stays whole and is listed under the month it started in)."""
+    first, last = month_bounds(key)
+    d = first + timedelta(days=(7 - first.weekday()) % 7)
+    out = []
+    while d <= last:
+        out.append((d, d + timedelta(days=6)))
+        d += timedelta(days=7)
+    return out
+
+
+def plan_weeks(key, replies, checks, today, tracking_start):
+    per_week = plan_week_price()
+    rows = []
+    for ws, we in month_weeks(key):
+        if ws > today:
+            break
+        cost = sum(e["cost"] for e in replies if ws <= e["day"] <= we)
+        seen = [c for c in checks if ws <= c["day"] <= we]
+        last = seen[-1] if seen else None
+        rows.append({
+            "week_start": ws.isoformat(), "week_end": we.isoformat(), "cost_usd": round(cost, 4),
+            "pct_of_plan_week": round(100 * cost / per_week, 1) if per_week else None,
+            "usage_checks": [{"at": c["ts"], "device": c["device"], "weekly_pct": c["weekly_pct"],
+                              **({"session_pct": c["session_pct"]} if "session_pct" in c else {}),
+                              **({"resets": c["resets"]} if "resets" in c else {})} for c in seen],
+            "last_weekly_pct": last["weekly_pct"] if last else None,
+            "status": "in progress" if ws <= today <= we else ("partial" if ws < tracking_start else "final"),
+        })
+    return rows
+
+
+def plan_section(months, replies, checks, today):
+    per_week = plan_week_price()
+    out = ["## Plan\n"]
+    if per_week:
+        out.append("**%s** · $%g/month ≈ **%s per week** (monthly × 12 ÷ 52). The %% column is the week's "
+                   "API-equivalent cost against that: above 100%% means the subscription paid for itself "
+                   "that week.\n\n" % (CFG.get("plan_name") or "Plan", CFG["plan_monthly_usd"], usd(per_week)))
+    else:
+        out.append("_Set your plan to see the %% of its price used each week: "
+                   "`python3 collector/collect.py plan \"Max 20x\" 200`._\n\n")
+    out.append("Only projects this tracker collects are counted. **/usage** is the weekly-limit %% you "
+               "recorded by hand that week (the latest reading; the limit resets on its own schedule, "
+               "not on Mondays).\n\n")
+    for m in sorted(months, key=lambda m: m["month"], reverse=True)[:2]:
+        first, _ = month_bounds(m["month"])
+        rows = []
+        for w in m.get("plan_weeks", []):
+            ws, we = date.fromisoformat(w["week_start"]), date.fromisoformat(w["week_end"])
+            reading = "–"
+            if w["last_weekly_pct"] is not None:
+                at = datetime.fromisoformat(w["usage_checks"][-1]["at"].replace("Z", "+00:00")).astimezone(TZ)
+                reading = "%g%% (%s)" % (w["last_weekly_pct"], at.strftime("%a %d %b %H:%M"))
+            rows.append(["%s – %s" % (ws.strftime("%d %b"), we.strftime("%d %b")), usd(w["cost_usd"]),
+                         ("%g%%" % w["pct_of_plan_week"]) if w["pct_of_plan_week"] is not None else "–",
+                         reading, w["status"]])
+        if rows:
+            out.append("### %s\n\n" % first.strftime("%B %Y"))
+            out.append(md_table(["Week (Mon–Sun)", "API cost", "% of plan's weekly price", "/usage", "Status"],
+                                rows, ["l", "r", "r", "r", "l"]) + "\n\n")
+    if checks:
+        recent = checks[-8:][::-1]
+        out.append("**Recorded /usage readings** (latest %d)\n\n" % len(recent))
+        out.append(md_table(["When", "Device", "Weekly limit", "5-hour limit", "Resets"],
+                            [[c["dt"].strftime("%a %d %b %H:%M"), c["device"], "%g%%" % c["weekly_pct"],
+                              ("%g%%" % c["session_pct"]) if "session_pct" in c else "–", c.get("resets", "–")]
+                             for c in recent], ["l", "l", "r", "r", "l"]) + "\n\n")
+    out.append('_Record a reading: open `/usage` in Claude Code, then run '
+               '`python3 ~/.claude-usage/repo/collector/collect.py usage 42` (add `--session 15`, '
+               '`--resets "Thu 10:00"`, or `--at "2026-09-28 14:30"` for an earlier reading)._\n')
+    return "".join(out)
+
+
 def month_table(months, today):
     if not months:
         return ""
@@ -446,7 +544,7 @@ def readme(replies, others, today, root, parts, devices):
     jump = ["[%s](#%s)" % (d, anchor("Device: %s" % d)) for d in devices]
     if len(devices) > 1:
         jump.append("[All devices](#all-devices)")
-    jump.append("[By month](#by-month)")
+    jump += ["[Plan](#plan)", "[By month](#by-month)"]
     out = [
         header(today),
         "Tracking since %s · %d device%s · %s replies · %s prompts\n\n" % (
@@ -523,7 +621,7 @@ def scope_stats(r, o):
     }
 
 
-def month_doc(key, replies, others, today, in_progress=False):
+def month_doc(key, replies, others, today, in_progress=False, checks=()):
     first, last = month_bounds(key)
     r, o = in_range(replies, first, last), in_range(others, first, last)
     devices = sorted({e["device"] for e in r + o})
@@ -544,22 +642,24 @@ def month_doc(key, replies, others, today, in_progress=False):
         "total": scope_stats(r, o),
         "devices": {d: scope_stats([e for e in r if e["device"] == d], [e for e in o if e["device"] == d])
                     for d in devices},
+        "plan": {"name": CFG.get("plan_name"), "monthly_usd": CFG.get("plan_monthly_usd")},
+        "plan_weeks": plan_weeks(key, replies, list(checks), today, replies[0]["day"] if replies else first),
     }
 
 
-def write_archive(replies, others, root, today):
+def write_archive(replies, others, root, today, checks=()):
     """archive/YYYY-MM.json for every finished month, rewritten from the raw events on
     every build (late data, hidden projects and renamed devices are always reflected).
     Returns all months, the current one included (not written: it is still running)."""
     folder = root / "archive"
     folder.mkdir(parents=True, exist_ok=True)
     current = month_of(today)
-    keys = sorted({month_of(e["day"]) for e in replies + others})
+    keys = sorted({month_of(e["day"]) for e in replies + others} | {month_of(c["day"]) for c in checks})
     docs = []
     for key in keys:
         if key > current:
             continue
-        doc = month_doc(key, replies, others, today, in_progress=(key == current))
+        doc = month_doc(key, replies, others, today, in_progress=(key == current), checks=checks)
         if key < current:
             (folder / ("%s.json" % key)).write_text(json.dumps(doc, indent=1, sort_keys=True) + "\n",
                                                     encoding="utf-8")

@@ -18,6 +18,9 @@ Standard library only; Python 3.8+; macOS, Linux and Windows.
     collect.py exclude add|remove PATTERN [--shared]
     collect.py only add|remove PATTERN [--shared]   keep ONLY matching projects
     collect.py rename NEW-NAME              rename this device (history moves with it)
+    collect.py usage 42 [--session 15] [--resets "Thu 10:00"] [--at "2026-09-28 14:30"]
+                                            record the weekly % that /usage shows right now
+    collect.py plan "Max 20x" 200           set the plan and its monthly price in USD
 
 Excluded projects are dropped on the device, before anything is written or pushed.
 A PATTERN is a project name glob ("owner/some-repo", "*secret*") or a folder
@@ -660,8 +663,9 @@ def git_pull():
 
 def git_commit(device, message):
     git("add", "-A", "--", "devices/%s" % device)
-    if (REPO / SHARED_EXCLUDE).exists():
-        git("add", "--", SHARED_EXCLUDE)
+    for extra in (SHARED_EXCLUDE, "limits/%s.jsonl" % device, "config.json"):
+        if (REPO / extra).exists():
+            git("add", "--", extra)
     code, _ = git("diff", "--cached", "--quiet")
     if code == 0:
         return False
@@ -822,6 +826,8 @@ def rename_device(new):
         code, out = git("mv", "devices/%s" % old, "devices/%s" % new)
         if code:
             sys.exit(out)
+        if (REPO / "limits" / ("%s.jsonl" % old)).exists():
+            git("mv", "limits/%s.jsonl" % old, "limits/%s.jsonl" % new)
         git("commit", "-q", "-m", "rename device %s -> %s" % (old, new))
     cfg["device"] = new
     write_json(CONFIG, cfg)
@@ -829,11 +835,79 @@ def rename_device(new):
     print("renamed %s -> %s%s" % (old, new, "" if git_push() else " (push failed; will retry on next sync)"))
 
 
+# ---------------------------------------------------------- manual checks
+
+def parse_at(text):
+    """'2026-09-28 14:30' (this device's local time) -> aware datetime; None -> now."""
+    if not text:
+        return datetime.now().astimezone()
+    for fmt in ("%Y-%m-%d %H:%M", "%Y-%m-%dT%H:%M", "%Y-%m-%d"):
+        try:
+            return datetime.strptime(text, fmt).astimezone()
+        except ValueError:
+            pass
+    sys.exit('can\'t read --at "%s"; use "YYYY-MM-DD HH:MM"' % text)
+
+
+def percent(text, what):
+    try:
+        v = float(str(text).rstrip("%"))
+    except ValueError:
+        sys.exit("%s must be a number like 42 or 42%%, got %r" % (what, text))
+    if not 0 <= v <= 100:
+        sys.exit("%s must be between 0 and 100, got %s" % (what, text))
+    return v
+
+
+def record_usage(device, weekly, session=None, resets=None, at=None):
+    """Append one reading of /usage to limits/<device>.jsonl and push it.
+
+    Kept out of devices/ on purpose: rebuild and purge rewrite that folder from the
+    local transcripts, and a /usage reading can't be recovered from them."""
+    when = parse_at(at)
+    if when > datetime.now().astimezone() + timedelta(minutes=5):
+        sys.exit("--at is in the future")
+    rec = {"ts": when.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "tz": utc_offset(when),
+           "weekly_pct": percent(weekly, "the weekly %")}
+    if session is not None:
+        rec["session_pct"] = percent(session, "--session")
+    if resets:
+        rec["resets"] = resets
+    git_pull()
+    path = REPO / "limits" / ("%s.jsonl" % device)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "a", encoding="utf-8", newline="\n") as f:
+        f.write(json.dumps(rec, separators=(",", ":")) + "\n")
+    git_commit(device, "usage(%s): %g%% of weekly limit" % (device, rec["weekly_pct"]))
+    pushed = git_push()
+    print("recorded %g%% of the weekly limit at %s%s" % (rec["weekly_pct"], when.strftime("%a %d %b %H:%M"),
+                                                         "" if pushed else " (not pushed yet; will retry)"))
+
+
+def set_plan(name, price):
+    try:
+        usd = float(price)
+    except ValueError:
+        sys.exit("price must be a number of USD per month, got %r" % price)
+    if usd <= 0:
+        sys.exit("price must be above 0")
+    git_pull()
+    cfg = read_json(REPO / "config.json", {})
+    cfg["plan_name"], cfg["plan_monthly_usd"] = name, usd
+    write_json(REPO / "config.json", cfg)
+    git("add", "--", "config.json")
+    git("commit", "-q", "-m", "plan: %s, $%g/month" % (name, usd))
+    print("plan set to %s at $%g/month%s" % (name, usd, "" if git_push() else " (not pushed yet)"))
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--detach", action="store_true")
     ap.add_argument("--no-git", action="store_true")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--session", help="usage: the 5-hour session %% shown by /usage")
+    ap.add_argument("--resets", help='usage: when the weekly limit resets, as /usage shows it')
+    ap.add_argument("--at", help='usage: when you read it, "YYYY-MM-DD HH:MM" (default now)')
     ap.add_argument("cmd", nargs="*")
     a = ap.parse_args()
 
@@ -845,6 +919,24 @@ def main():
             return 0
         print("\nSyncing now so the change takes effect...")
         a.cmd = []
+    if a.cmd[:1] in (["usage"], ["plan"]):
+        device = read_json(CONFIG, {}).get("device")
+        if not device:
+            sys.exit("no device name: run install first")
+        if a.cmd[0] == "usage" and len(a.cmd) != 2:
+            sys.exit('usage: collect.py usage 42 [--session 15] [--resets "Thu 10:00"] [--at "YYYY-MM-DD HH:MM"]')
+        if a.cmd[0] == "plan" and len(a.cmd) != 3:
+            sys.exit('usage: collect.py plan "Max 20x" 200')
+        if not acquire_lock():
+            sys.exit("a sync is running; try again in a minute")
+        try:
+            if a.cmd[0] == "usage":
+                record_usage(device, a.cmd[1], a.session, a.resets, a.at)
+            else:
+                set_plan(a.cmd[1], a.cmd[2])
+        finally:
+            release_lock()
+        return 0
     if a.cmd[:1] == ["rename"] and len(a.cmd) == 2:
         if not acquire_lock():
             sys.exit("a sync is running; try again in a minute")
