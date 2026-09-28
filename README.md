@@ -160,11 +160,20 @@ python3 collect.py exclude add "*client*"                      # a name pattern
 python3 collect.py exclude add "~/Desktop/private"             # a folder and everything inside it
 python3 collect.py exclude add "maria/tropin-trade-bot" --shared   # all devices (goes into exclude.json)
 python3 collect.py exclude remove "*client*"                   # un-exclude: its history is re-imported
+python3 collect.py only add "~/Desktop/Infinity8"              # allow-list: keep ONLY matching projects
+python3 collect.py only add "geco-ai-labs/*"                   # (folders or repo names; exclude still applies inside)
+python3 collect.py only remove "geco-ai-labs/*"
 ```
+
+- `only` is an allow-list: once it has any pattern, every other project on that device is dropped, including new ones. A folder pattern checks where Claude actually worked, so a session started in an allowed folder that moves into another repo stays out.
 
 - Without `--shared` the pattern stays in `~/.claude-usage/config.json` on that device and is never pushed, so the repo doesn't even show which projects are hidden.
 - With `--shared` it goes into [`exclude.json`](exclude.json) and every device applies it on its next sync.
-- Adding a pattern also removes that project's already-pushed data from the device's files. Older git commits still contain it until the repo history is rewritten.
+- Adding a rule also removes that project's already-pushed data from the device's files; removing one re-imports it from the local logs. Commit messages don't say what was hidden, but older commits still contain the data until the repo history is rewritten.
+
+### Rename a device
+
+`python3 collect.py rename new-name` moves the device's data folder in the repo (history stays) and updates its local config. The name shows as "Device: new-name" in the report.
 
 ### Settings
 
