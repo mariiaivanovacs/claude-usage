@@ -62,9 +62,9 @@ Subscription limits count usage in 5-hour windows across all devices together.
 
 ## Plan
 
-_Set your plan to see the %% of its price used each week: `python3 collector/collect.py plan "Max 20x" 200`._
+_Set your plan to see the % of its price used each week: `python3 collector/collect.py plan "Max 20x" 200`._
 
-Only projects this tracker collects are counted. **/usage** is the weekly-limit %% you recorded by hand that week (the latest reading; the limit resets on its own schedule, not on Mondays).
+Only projects this tracker collects are counted. **/usage** is the weekly-limit % you recorded by hand that week (the latest reading; the limit resets on its own schedule, not on Mondays).
 
 ### September 2026
 
