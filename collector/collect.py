@@ -13,6 +13,7 @@ Standard library only; Python 3.8+; macOS, Linux and Windows.
     collect.py --no-git        collect into the working tree only
     collect.py --dry-run       count what would be collected, change nothing
     collect.py settings install|uninstall   edit ~/.claude/settings.json
+    collect.py rebuild                      re-import this device's history from the local logs
     collect.py exclude list                 show patterns and the projects they hide
     collect.py exclude add PATTERN [--shared]
     collect.py exclude remove PATTERN [--shared]
@@ -129,14 +130,17 @@ def normalize_remote(url):
     return "/".join(parts[-2:]).lower() if parts else None
 
 
-def git_remote(cwd):
+def _git(cwd, *args):
     try:
-        r = subprocess.run(["git", "-C", cwd, "remote", "-v"], capture_output=True,
-                           text=True, timeout=5)
+        r = subprocess.run(["git", "-C", cwd] + list(args), capture_output=True, text=True, timeout=5)
     except (OSError, subprocess.SubprocessError):
         return None
+    return r.stdout if r.returncode == 0 else None
+
+
+def git_remote(cwd):
     remotes = {}
-    for line in r.stdout.splitlines():
+    for line in (_git(cwd, "remote", "-v") or "").splitlines():
         bits = line.split()
         if len(bits) >= 2:
             remotes.setdefault(bits[0], bits[1])
@@ -144,23 +148,70 @@ def git_remote(cwd):
     return normalize_remote(url) if url else None
 
 
-def project_name(cwd, cache):
-    """Same project -> same name on every device: git remote, else folder name."""
-    if not cwd:
-        return "(unknown)"
-    if cwd in cache:
-        return cache[cwd]
-    p = cwd.replace("\\", "/")
+TEMP_RE = re.compile(r"^(/private)?/tmp(/|$)|^/var/folders/|/scratchpad(/|$)|/appdata/local/temp/", re.I)
+WORKTREE_RE = re.compile(r"/\.claude/worktrees/.*$")
+
+
+def _slash(path):
+    return (path or "").replace("\\", "/").rstrip("/")
+
+
+def special_name(path):
+    """Folders that are not projects get one shared label."""
+    p = _slash(path)
+    home = _slash(str(Path.home()))
     if "/scratch-workspaces/" in p:
-        name = "(claude desktop scratch)"
-    else:
-        name = git_remote(cwd) if os.path.isdir(cwd) else None
-        if not name:
-            # a worktree lives under <repo>/.claude/worktrees/<name>
-            p = re.split(r"/\.claude/worktrees/", p)[0]
-            name = p.rstrip("/").rsplit("/", 1)[-1].lower() or "(unknown)"
-    cache[cwd] = name
+        return "(claude desktop scratch)"
+    if TEMP_RE.search(p):
+        return "(temporary)"
+    if p.lower() == home.lower():
+        return "(home folder)"
+    if p.lower().startswith(home.lower() + "/.claude"):
+        return "(claude config)"
+    return None
+
+
+def repo_name(path, cache):
+    """owner/repo of the git repo containing `path`, or its folder name when it has no
+    remote. Deleted folders are resolved through their nearest existing parent (never
+    the home folder itself), so a removed worktree still maps to its repo."""
+    key = "git\0" + path
+    if key in cache:
+        return cache[key]
+    home = _slash(str(Path.home())).lower()
+    p, name = WORKTREE_RE.sub("", _slash(path)), None
+    while p and not os.path.isdir(p):
+        parent = os.path.dirname(p)
+        p = None if parent == p else parent
+    if p and _slash(p).lower() != home:
+        top = (_git(p, "rev-parse", "--show-toplevel") or "").strip()
+        if top and _slash(top).lower() != home:
+            name = git_remote(p) or os.path.basename(_slash(top)).lower()
+    cache[key] = name
     return name
+
+
+def folder_name(path, cache):
+    return (special_name(path) or repo_name(path, cache)
+            or WORKTREE_RE.sub("", _slash(path)).rsplit("/", 1)[-1].lower() or "(unknown)")
+
+
+def project_name(cwd, cache, root=None):
+    """Same project -> same name on every device.
+
+    The git repo the reply ran in wins (owner/repo from its remote), even inside a
+    temp folder (a worktree in a scratchpad is still that repo). Otherwise the
+    folder the session was started in names it, so wandering into src/, a deleted
+    subfolder or /tmp doesn't create a new "project"."""
+    if not cwd and not root:
+        return "(unknown)"
+    key = "%s\0%s" % (cwd, root)
+    if key not in cache:
+        name = repo_name(cwd, cache) if cwd else None
+        if not name:
+            name = folder_name(root or cwd, cache)
+        cache[key] = name
+    return cache[key]
 
 
 # --------------------------------------------------------------- exclusion
@@ -202,15 +253,22 @@ class Excluder:
         c = norm_path(cwd)
         return any(c == p or c.startswith(p + "/") or fnmatch.fnmatchcase(c, p) for p in self.paths)
 
-    def hit(self, cwd, name):
-        key = (cwd, name)
+    def hit(self, cwd, name, root=None):
+        key = (cwd, name, root)
         if key not in self.cache:
-            self.cache[key] = self.name_hit(name) or self.path_hit(cwd)
+            self.cache[key] = self.name_hit(name) or self.path_hit(cwd) or self.path_hit(root)
         return self.cache[key]
 
     def hidden_names(self, projects):
         """Project names to purge from files already written (events store no path)."""
-        return {n for cwd, n in projects.items() if self.path_hit(cwd)}
+        out = set()
+        for key, n in projects.items():
+            if key.startswith("git\0"):
+                continue
+            cwd, _, root = key.partition("\0")
+            if self.path_hit(cwd) or self.path_hit(root if root != "None" else None):
+                out.add(n)
+        return out
 
 
 def patterns_hash(patterns):
@@ -294,22 +352,23 @@ def classify_user(d):
     return "prompt", len(stripped)
 
 
-def common(d, device, projects, excluder=None):
+def common(d, device, projects, excluder=None, root=None):
     ts = d.get("timestamp")
     dt = parse_ts(ts)
     if not dt:
         return None
-    if excluder and excluder.hit(d.get("cwd"), project_name(d.get("cwd"), projects)):
+    name = project_name(d.get("cwd"), projects, root)
+    if excluder and excluder.hit(d.get("cwd"), name, root):
         return None
     return {
         "ts": dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "tz": utc_offset(dt),
-        "project": project_name(d.get("cwd"), projects),
+        "project": name,
         "session": (d.get("sessionId") or "")[:8] or None,
     }
 
 
-def extract(d, device, projects, excluder=None):
+def extract(d, device, projects, excluder=None, root=None):
     """One transcript record -> an event dict, or None."""
     t = d.get("type")
     if t == "assistant":
@@ -318,7 +377,7 @@ def extract(d, device, projects, excluder=None):
         model = m.get("model")
         if not u or not model or model == "<synthetic>" or not m.get("id"):
             return None
-        base = common(d, device, projects, excluder)
+        base = common(d, device, projects, excluder, root)
         if not base:
             return None
         tools, skills = [], []
@@ -357,7 +416,7 @@ def extract(d, device, projects, excluder=None):
         c = classify_user(d)
         if not c or not d.get("uuid"):
             return None
-        base = common(d, device, projects, excluder)
+        base = common(d, device, projects, excluder, root)
         if not base:
             return None
         kind, val = c
@@ -428,10 +487,14 @@ def collect(device, state, excluder=None, only=None):
     files_state = state.setdefault("files", {})
     seen = state.setdefault("seen", {})
     projects = state.setdefault("projects", {})
+    roots = state.setdefault("roots", {})
     pending = {}                       # id -> event, insertion-ordered
     for path in scan_files():
         key = str(path)
-        lines, fs = new_lines(path, files_state.get(key, {}))
+        old = files_state.get(key, {})
+        lines, fs = new_lines(path, old)
+        if fs.get("offset", 0) >= old.get("offset", 0) and old.get("root"):
+            fs["root"] = old["root"]
         for raw in lines:
             if b'"assistant"' not in raw and b'"user"' not in raw:   # cheap pre-filter
                 continue
@@ -439,7 +502,8 @@ def collect(device, state, excluder=None, only=None):
                 d = json.loads(raw)
             except ValueError:
                 continue
-            ev = extract(d, device, projects, excluder)
+            root = session_root(path, d, fs, roots)
+            ev = extract(d, device, projects, excluder, root)
             if not ev:
                 continue
             prev = seen.get(ev["id"])
@@ -465,10 +529,26 @@ def collect(device, state, excluder=None, only=None):
     return [compact(e) for e in pending.values()], state
 
 
+def session_root(path, d, fs, roots):
+    """The folder a session was started in: the first cwd of its main transcript.
+    Subagent transcripts (<session>/subagents/*.jsonl) inherit their session's."""
+    sub = path.parent.name == "subagents"
+    sid = d.get("sessionId")
+    if sub and sid in roots:
+        return roots[sid]
+    if not fs.get("root") and d.get("cwd"):
+        fs["root"] = d["cwd"]
+        if not sub and sid:
+            roots[sid] = d["cwd"]
+    return fs.get("root")
+
+
 def backfill(device, state, excluder, only):
     projects = state.setdefault("projects", {})
+    roots = state.setdefault("roots", {})
     pending = {}
     for path in scan_files():
+        fs = {}
         with open(path, "rb") as f:
             for raw in f:
                 if b'"assistant"' not in raw and b'"user"' not in raw:
@@ -478,9 +558,10 @@ def backfill(device, state, excluder, only):
                 except ValueError:
                     continue
                 cwd = d.get("cwd")
-                if not only.hit(cwd, project_name(cwd, projects)):
+                root = session_root(path, d, fs, roots)
+                if not only.hit(cwd, project_name(cwd, projects, root), root):
                     continue
-                ev = extract(d, device, projects, excluder)
+                ev = extract(d, device, projects, excluder, root)
                 if not ev:
                     continue
                 if ev["id"] in pending:
@@ -658,14 +739,14 @@ def exclude_cmd(args):
     ex = Excluder(local + shared_p)
     print("\nLocal patterns (this device only, never pushed): %s" % (local or "none"))
     print("Shared patterns (exclude.json, all devices):      %s" % (shared_p or "none"))
-    names = sorted(set(read_json(STATE, {}).get("projects", {}).values()))
-    projects = read_json(STATE, {}).get("projects", {})
+    projects = {k: v for k, v in read_json(STATE, {}).get("projects", {}).items()
+                if not k.startswith("git\0") and v}
+    names = sorted(set(projects.values()))
     if names:
+        hidden = ex.hidden_names(projects) if ex else set()
         print("\nProjects seen on this device:")
         for n in names:
-            cwds = [c for c, v in projects.items() if v == n]
-            hidden = any(ex.hit(c, n) for c in cwds)
-            print("  %s %s" % ("[excluded]" if hidden else "          ", n))
+            print("  %s %s" % ("[excluded]" if (ex.name_hit(n) or n in hidden) else "          ", n))
     return action in ("add", "remove")
 
 
@@ -684,6 +765,9 @@ def main():
         if not exclude_cmd(a.cmd[1:]):
             return 0
         print("\nSyncing now so the change takes effect...")
+        a.cmd = []
+    rebuild = a.cmd == ["rebuild"]
+    if rebuild:
         a.cmd = []
     if a.cmd:
         ap.error("unknown command: %s" % " ".join(a.cmd))
@@ -704,6 +788,12 @@ def main():
         if use_git:
             git_pull()
         state = read_json(STATE, {})
+        if rebuild:
+            # start over from the transcripts on disk (e.g. after naming improvements);
+            # only as far back as this device still keeps its logs
+            for f in (REPO / "devices" / device).glob("*.jsonl"):
+                f.unlink()
+            state = {}
         local, shared = exclude_patterns()
         patterns = local + shared
         excluder = Excluder(patterns)
@@ -731,6 +821,8 @@ def main():
         days = write_events(events, device) if events else []
         if use_git and (events or notes):
             msg = data_message(device, len(events), days) if events else "purge(%s)" % device
+            if rebuild:
+                msg = "rebuild(%s): %d events re-imported from local logs" % (device, len(events))
             if notes:
                 msg += "; " + "; ".join(notes)
             git_commit(device, msg)

@@ -93,12 +93,31 @@ class ProjectTests(unittest.TestCase):
             "(claude desktop scratch)")
         self.assertEqual(collect.project_name("C:\\Users\\x\\Code\\Bot", c), "bot")
         self.assertEqual(collect.project_name(None, c), "(unknown)")
+        self.assertEqual(collect.project_name("/private/tmp/claude-501/x/scratchpad/dev", c), "(temporary)")
+        self.assertEqual(collect.project_name(os.path.expanduser("~"), c), "(home folder)")
+
+    def test_session_root_wins_outside_git(self):
+        c = {}
+        # wandered into a (deleted) subfolder of a non-git launch folder -> the launch folder
+        self.assertEqual(collect.project_name("/gone/Infinity8/website/src/app/api", c, "/gone/Infinity8"),
+                         "infinity8")
+        # cd into /tmp from a project -> still that project
+        self.assertEqual(collect.project_name("/private/tmp", c, "/gone/Bots_work"), "bots_work")
 
     def test_real_git_repo(self):
         repo = TMP / "gitrepo"
         repo.mkdir()
         os.system("git -C %s init -q && git -C %s remote add origin git@github.com:Me/Thing.git" % (repo, repo))
+        (repo / "src" / "app").mkdir(parents=True)
         self.assertEqual(collect.project_name(str(repo), {}), "me/thing")
+        # a subfolder, and a deleted subfolder, of the repo -> the repo, whatever the launch folder
+        self.assertEqual(collect.project_name(str(repo / "src" / "app"), {}, "/gone/elsewhere"), "me/thing")
+        self.assertEqual(collect.project_name(str(repo / "src" / "gone" / "deep"), {}), "me/thing")
+        # a git repo without a remote -> its folder name; launched in a parent folder -> still the repo
+        local = TMP / "localrepo"
+        (local / "lib").mkdir(parents=True)
+        os.system("git -C %s init -q" % local)
+        self.assertEqual(collect.project_name(str(local / "lib"), {}, str(TMP)), "localrepo")
 
 
 class CollectTests(unittest.TestCase):
@@ -224,8 +243,9 @@ class ExcludeTests(unittest.TestCase):
 
     def test_excluded_events_never_collected(self):
         other = user("u9", "hi")
-        other["cwd"] = "/nowhere/public"
-        write(PROJ / "a.jsonl", [user("u1", "secret prompt"), reply("1", 5), other])
+        other["cwd"], other["sessionId"] = "/nowhere/public", "s2"
+        write(PROJ / "a.jsonl", [user("u1", "secret prompt"), reply("1", 5)])
+        write(PROJ / "b.jsonl", [other])
         evs, _ = collect.collect("dev1", {}, collect.Excluder(["geco_*"]))
         self.assertEqual([e["project"] for e in evs], ["public"])
 
@@ -245,8 +265,9 @@ class ExcludeTests(unittest.TestCase):
 
     def test_add_purges_and_remove_reimports(self):
         other = reply("2", 7)
-        other["cwd"] = "/nowhere/public"
-        write(PROJ / "a.jsonl", [user("u1", "hello"), reply("1", 5), other])
+        other["cwd"], other["sessionId"] = "/nowhere/public", "s2"
+        write(PROJ / "a.jsonl", [user("u1", "hello"), reply("1", 5)])
+        write(PROJ / "b.jsonl", [other])
         self.run_main()
         self.assertEqual(sorted(e["project"] for e in self.lines()), ["geco_website", "geco_website", "public"])
         # exclude by folder -> already-written events of that project are removed
