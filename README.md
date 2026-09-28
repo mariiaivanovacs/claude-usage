@@ -2,7 +2,126 @@
 
 Claude Code usage across all my devices, rebuilt automatically every day (and after every sync). Times are Asia/Kuala_Lumpur. Updated 2026-09-28.
 
-_No data yet. Install the collector on a device (see below) and it will appear after the first sync._
+Tracking since 2026-07-25 · 1 device · 114,153 replies · 3,878 prompts
+
+## At a glance
+
+|  | Last 7 days | vs previous 7 | Last 30 days | All time |
+| --- | ---: | ---: | ---: | ---: |
+| API-equivalent cost | $2,010 | ▲ 17% | $10,140 | $20,679 |
+| Output tokens | 7.3M | ▼ 13% | 38.1M | 80M |
+| Prompts | 360 | ▼ 6% | 1,941 | 3,878 |
+| Sessions | 27 | ▼ 18% | 126 | 364 |
+| Active hours | 69 | ▲ 6% | 313 | 709 |
+| Active days | 7 / 7 |  | 29 / 30 | 63 |
+| Cache hit ratio | 98% |  | 98% | 98% |
+
+<img src="reports/charts/daily-cost.svg" alt="API-equivalent cost per day by model" width="760">
+
+<img src="reports/charts/model-mix.svg" alt="Share of output tokens per week by model" width="760">
+
+### Models, last 30 days
+
+| Model | Replies | Output | API cost | Share |
+| --- | ---: | ---: | ---: | ---: |
+| claude-opus-5 | 26,730 | 22.4M | $7,196 | 71% |
+| claude-sonnet-5 | 17,883 | 12.8M | $2,426 | 24% |
+| claude-opus-5-5 | 2,472 | 2.8M | $433 | 4% |
+| claude-opus-4-8 | 201 | 207.2K | $85.32 | 1% |
+
+## Where and when
+
+<img src="reports/charts/devices.svg" alt="Weekly cost by device" width="760">
+
+| Device | Last active | Cost, 30 days | Sync |
+| --- | ---: | ---: | ---: |
+| macbook-pro | 2026-09-28 | $10,140 | ok |
+
+<img src="reports/charts/projects.svg" alt="Top projects by cost" width="760">
+
+<img src="reports/charts/heatmap.svg" alt="Prompts by weekday and hour" width="760">
+
+### Heaviest 5-hour windows, last 30 days
+
+Subscription limits count usage in 5-hour windows, so these are the stretches closest to a limit.
+
+| Window start | API cost | Output | Main models | Devices |
+| --- | ---: | ---: | --- | --- |
+| Tue 01 Sep 10:00 | $390 | 987.2K | opus-5, sonnet-5 | macbook-pro |
+| Wed 16 Sep 09:00 | $385 | 2.5M | opus-5, sonnet-5 | macbook-pro |
+| Thu 24 Sep 10:00 | $381 | 1.3M | opus-5, opus-5-5 | macbook-pro |
+| Wed 09 Sep 14:00 | $378 | 1.3M | opus-5, sonnet-5 | macbook-pro |
+| Wed 02 Sep 20:00 | $303 | 1.1M | opus-5, sonnet-5 | macbook-pro |
+
+## How you work
+
+<img src="reports/charts/cache.svg" alt="Cache hit ratio per day" width="760">
+
+| Habit (last 30 days) | Value |
+| --- | ---: |
+| Work done by subagents (share of cost) | 2% |
+| Prompts per session (average) | 16.0 |
+| Prompt length (median characters) | 144 |
+| Replies you interrupted | 103 |
+| 5-hour windows used | 81 (2.8 per active day) |
+| Effort setting mix | high 95%, medium 5% |
+| Where you use it | vscode 84%, desktop 16% |
+
+<table><tr><td valign="top">
+
+**Top tools**
+
+| Tool | Calls |
+| --- | ---: |
+| Bash | 35,151 |
+| Read | 2,961 |
+| Edit | 2,527 |
+| Write | 918 |
+| mcp__Claude_Browser__computer | 655 |
+| mcp__Claude_Browser__javascript_tool | 457 |
+| WebFetch | 410 |
+| Artifact | 329 |
+| mcp__Claude_Browser__browser_batch | 320 |
+| WebSearch | 288 |
+
+</td><td valign="top">
+
+**Skills**
+
+| Skill | Uses |
+| --- | ---: |
+| browse | 23 |
+| artifact-design | 21 |
+| handoff | 19 |
+| design-shotgun | 8 |
+| design | 7 |
+| artifact-capabilities | 7 |
+| design-consultation | 7 |
+| connect-chrome | 6 |
+| lane | 6 |
+| dataviz | 5 |
+
+</td><td valign="top">
+
+**Slash commands**
+
+| Command | Uses |
+| --- | ---: |
+| /model | 375 |
+| /lane | 47 |
+| /usage-report | 3 |
+| /update-config | 1 |
+| /server-connectivity | 1 |
+| /ultrareview | 1 |
+
+</td></tr></table>
+
+## Data
+
+- [`reports/dashboard.html`](reports/dashboard.html): the same report with hover values (download and open)
+- [`reports/daily.csv`](reports/daily.csv): one row per day × device × project × model
+- [`reports/weekly/`](reports/weekly/): one summary per week
+- Costs are API list prices from [`report/pricing.json`](report/pricing.json), for comparison only: a subscription is not billed per token.
 
 ## Set up a device
 
