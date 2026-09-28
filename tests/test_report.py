@@ -203,6 +203,7 @@ class ReportTests(unittest.TestCase):
         plan = md[md.index("## Plan"):md.index("## By month")]
         self.assertIn('collect.py plan \\"Max 20x\\" 200', plan.replace('"', '\\"'))
         self.assertIn("| – |", plan)
+        self.assertNotIn("%%", md)
 
     def test_archive_follows_raw_data(self):
         ev = self.events()

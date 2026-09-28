@@ -479,9 +479,9 @@ def plan_section(months, replies, checks, today):
                    "API-equivalent cost against that: above 100%% means the subscription paid for itself "
                    "that week.\n\n" % (CFG.get("plan_name") or "Plan", CFG["plan_monthly_usd"], usd(per_week)))
     else:
-        out.append("_Set your plan to see the %% of its price used each week: "
+        out.append("_Set your plan to see the % of its price used each week: "
                    "`python3 collector/collect.py plan \"Max 20x\" 200`._\n\n")
-    out.append("Only projects this tracker collects are counted. **/usage** is the weekly-limit %% you "
+    out.append("Only projects this tracker collects are counted. **/usage** is the weekly-limit % you "
                "recorded by hand that week (the latest reading; the limit resets on its own schedule, "
                "not on Mondays).\n\n")
     for m in sorted(months, key=lambda m: m["month"], reverse=True)[:2]:
