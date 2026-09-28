@@ -116,6 +116,9 @@ class ReportTests(unittest.TestCase):
         self.assertIn("this month so far (01 Sep – today)", heat)
         cells = [int(n) for n in __import__("re").findall(r"· (\d+) prompts?</title>", heat)]
         self.assertEqual(sum(cells), 30)                          # every September prompt, not just this week
+        self.assertEqual(len(cells), 30 * 24)                     # one row per date: 1-30 Sep x 24 hours
+        self.assertIn(">Tue 01 Sep<", heat)
+        self.assertIn(">Wed 30 Sep<", heat)
         self.assertEqual(mac.count("<img"), 3)                    # projects, heatmap, models
         # a device with nothing this week gets one line, no charts
         old = md[md.index("## Device: old-pc"):md.index("## Device: work-pc")]

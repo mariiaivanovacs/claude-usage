@@ -142,10 +142,11 @@ def hbars(title, subtitle, rows, fmt, cls="s0", classes=None, tips=None):
     return card(h, title, subtitle, "".join(body))
 
 
-def heatmap(title, subtitle, rows, row_labels, fmt):
-    """rows: 7 x 24 counts. Sequential single hue, 2px gaps."""
-    left, top, cw, ch = 64, 80, 27, 24
-    h = top + 7 * ch + 56
+def heatmap(title, subtitle, rows, row_labels, fmt, ch=24, row_classes=None):
+    """rows: N x 24 counts (one row per weekday, or per date). Sequential single hue,
+    2px gaps. row_classes: per-row label class, e.g. to mute weekend dates."""
+    left, top, cw = 84, 80, 27
+    h = top + len(rows) * ch + 56
     vmax = max(max(r) for r in rows) or 1
     body = []
     for hr in range(0, 24, 3):
@@ -153,8 +154,9 @@ def heatmap(title, subtitle, rows, row_labels, fmt):
                     % (left + hr * cw + cw / 2, top - 8, hr))
     for d, row in enumerate(rows):
         y = top + d * ch
-        body.append('<text class="ts" x="%d" y="%.1f" font-size="12" text-anchor="end">%s</text>'
-                    % (left - 10, y + 16, row_labels[d]))
+        body.append('<text class="%s" x="%d" y="%.1f" font-size="%d" text-anchor="end">%s</text>'
+                    % (row_classes[d] if row_classes else "ts", left - 10, y + ch / 2 + 4,
+                       12 if ch >= 20 else 11, row_labels[d]))
         for hr, v in enumerate(row):
             if v:
                 q = min(int(len(SEQ) * v / vmax), len(SEQ) - 1)
@@ -165,7 +167,7 @@ def heatmap(title, subtitle, rows, row_labels, fmt):
                         '<title>%s %02d:00 · %s</title></rect>'
                         % (cls, left + hr * cw, y, cw - 2, ch - 2, row_labels[d], hr, fmt(v)))
     # scale key
-    kx, ky = left, top + 7 * ch + 22
+    kx, ky = left, top + len(rows) * ch + 22
     body.append('<text class="tm" x="%d" y="%d" font-size="11">less</text>' % (kx, ky + 10))
     for i in range(len(SEQ)):
         body.append('<rect class="q%d" x="%d" y="%d" width="18" height="12" rx="2"/>' % (i, kx + 34 + i * 20, ky))

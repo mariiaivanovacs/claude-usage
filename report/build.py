@@ -225,13 +225,18 @@ def chart_projects(replies, label, top=10):
     return svg.hbars("Top projects", "%s · API-equivalent cost" % label, c.most_common(top), usd)
 
 
-def chart_heatmap(others, label):
-    grid = [[0] * 24 for _ in range(7)]
+def chart_heatmap(others, label, first, last):
+    """One row per date of the month so far, one column per hour."""
+    days = [first + timedelta(days=i) for i in range((last - first).days + 1)]
+    pos = {d: i for i, d in enumerate(days)}
+    grid = [[0] * 24 for _ in days]
     for e in others:
-        if e["k"] == "prompt":
-            grid[e["dt"].weekday()][e["dt"].hour] += 1
-    return svg.heatmap("When you prompt", "Prompts by weekday and hour · %s · %s time" % (label, CFG.get("timezone")),
-                       grid, WEEKDAYS, lambda v: "%d prompts" % v if v != 1 else "1 prompt")
+        if e["k"] == "prompt" and e["day"] in pos:
+            grid[pos[e["day"]]][e["dt"].hour] += 1
+    return svg.heatmap("When you prompt", "Prompts per day and hour · %s · %s time · weekends in grey"
+                       % (label, CFG.get("timezone")), grid, [d.strftime("%a %d %b") for d in days],
+                       lambda v: "%d prompts" % v if v != 1 else "1 prompt", ch=18,
+                       row_classes=["tm" if d.weekday() >= 5 else "ts" for d in days])
 
 
 def chart_models(replies, label):
@@ -382,14 +387,14 @@ def build(root=ROOT, now=None):
             last = max(e["day"] for e in replies if e["device"] == d)
             parts.append("_No activity this week · last active %s._\n" % last.strftime("%a %d %b"))
             if any(e["k"] == "prompt" for e in om):
-                parts.append(save(d, "heatmap", chart_heatmap(om, month_label)) + "\n")
+                parts.append(save(d, "heatmap", chart_heatmap(om, month_label, ms, today)) + "\n")
             continue
         pr = [e for e in in_range(replies, *prev) if e["device"] == d]
         po = [e for e in in_range(others, *prev) if e["device"] == d]
         line, vs = stats_line(token_stats(r, o), token_stats(pr, po))
         parts.append("**%s%s:**  \n%s  \n%s\n" % (label[0].upper(), label[1:], line, vs))
         parts.append(save(d, "projects", chart_projects(r, label)) + "\n")
-        parts.append(save(d, "heatmap", chart_heatmap(om, month_label)) + "\n")
+        parts.append(save(d, "heatmap", chart_heatmap(om, month_label, ms, today)) + "\n")
         parts.append(save(d, "models", chart_models(r, label)) + "\n")
 
     if len(devices) > 1:
