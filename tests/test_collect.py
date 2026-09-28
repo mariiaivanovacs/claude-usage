@@ -231,7 +231,7 @@ class ExcludeTests(unittest.TestCase):
         collect.write_json(collect.CONFIG, {"device": "dev1"})
 
     def test_patterns(self):
-        ex = collect.Excluder(["Maria/Tropin*", "~/Desktop/private", "C:\\Work\\Secret"])
+        ex = collect.Filter(["Maria/Tropin*", "~/Desktop/private", "C:\\Work\\Secret"])
         self.assertTrue(ex.hit("/x/bot", "maria/tropin-trade-bot"))           # name glob, any case
         self.assertFalse(ex.hit("/x/bot", "maria/avito_bitrix_bot"))
         home = os.path.expanduser("~")
@@ -239,14 +239,31 @@ class ExcludeTests(unittest.TestCase):
         self.assertTrue(ex.hit(home + "/Desktop/private/app/.claude/worktrees/w1", "app"))  # inside it
         self.assertFalse(ex.hit(home + "/Desktop/private-notes", "notes"))     # sibling with same prefix
         self.assertTrue(ex.hit("c:\\work\\secret\\api", "api"))                # Windows path
-        self.assertFalse(collect.Excluder([]))
+        self.assertFalse(collect.Filter([]))
+
+    def test_only_list(self):
+        home = os.path.expanduser("~")
+        f = collect.Filter(exclude=["*secret*"], only=["~/Desktop/Infinity8", "geco-ai-labs/*"])
+        self.assertFalse(f.hit(home + "/Desktop/Infinity8/website/src", "infinity8", home + "/Desktop/Infinity8"))
+        self.assertFalse(f.hit("/anywhere/else", "geco-ai-labs/sg_geco-ai_websitepoc"))    # by repo name
+        self.assertTrue(f.hit(home + "/Desktop/Bots_work/bot", "maria/tropin-trade-bot", home + "/Desktop/Bots_work"))
+        # started in an allowed folder, then worked inside another repo -> stays out
+        self.assertTrue(f.hit(home + "/Desktop/Bots_work/bot", "maria/tropin-trade-bot", home + "/Desktop/Infinity8"))
+        # exclude still wins inside the allowed set
+        self.assertTrue(f.hit(home + "/Desktop/Infinity8/x", "geco-ai-labs/secret-thing"))
+        # already-written events carry only a name: decided through the name cache
+        paths = {"website": [(home + "/Desktop/Infinity8/website", home + "/Desktop/Infinity8")],
+                 "app": [(home + "/Desktop/other_work", home + "/Desktop/other_work")]}
+        self.assertFalse(f.hides_name("website", paths))
+        self.assertTrue(f.hides_name("app", paths))
+        self.assertTrue(f.hides_name("never-seen", paths))
 
     def test_excluded_events_never_collected(self):
         other = user("u9", "hi")
         other["cwd"], other["sessionId"] = "/nowhere/public", "s2"
         write(PROJ / "a.jsonl", [user("u1", "secret prompt"), reply("1", 5)])
         write(PROJ / "b.jsonl", [other])
-        evs, _ = collect.collect("dev1", {}, collect.Excluder(["geco_*"]))
+        evs, _ = collect.collect("dev1", {}, collect.Filter(["geco_*"]))
         self.assertEqual([e["project"] for e in evs], ["public"])
 
     def run_main(self):
@@ -289,3 +306,26 @@ class ExcludeTests(unittest.TestCase):
         self.assertEqual(projects, ["geco_website"] * 3)                  # prompt + 2 replies back, public gone
         self.assertEqual(sorted(e["id"] for e in self.lines() if e["k"] == "reply"),
                          sorted(collect.short_id("msg_%s:req_%s" % (i, i)) for i in ("1", "3")))
+
+
+class OnlyFlowTests(ExcludeTests):
+    def test_add_purges_and_remove_reimports(self):
+        other = reply("2", 7)
+        other["cwd"], other["sessionId"] = "/nowhere/public", "s2"
+        write(PROJ / "a.jsonl", [user("u1", "hello"), reply("1", 5)])
+        write(PROJ / "b.jsonl", [other])
+        self.run_main()
+        cfg = collect.read_json(collect.CONFIG, {})
+        cfg["only"] = ["/nowhere/public"]                  # keep only this folder
+        collect.write_json(collect.CONFIG, cfg)
+        self.run_main()
+        self.assertEqual([e["project"] for e in self.lines()], ["public"])
+        write(PROJ / "a.jsonl", [reply("3", 9)])          # new activity outside the allow-list
+        self.run_main()
+        self.assertEqual([e["project"] for e in self.lines()], ["public"])
+        cfg["only"] = []                                   # drop the rule -> everything comes back
+        collect.write_json(collect.CONFIG, cfg)
+        self.run_main()
+        self.assertEqual(sorted(e["project"] for e in self.lines()), ["geco_website"] * 3 + ["public"])
+        state = collect.read_json(collect.STATE, {})
+        self.assertEqual(state["filter"], {"exclude": [], "only": []})

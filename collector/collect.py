@@ -14,9 +14,10 @@ Standard library only; Python 3.8+; macOS, Linux and Windows.
     collect.py --dry-run       count what would be collected, change nothing
     collect.py settings install|uninstall   edit ~/.claude/settings.json
     collect.py rebuild                      re-import this device's history from the local logs
-    collect.py exclude list                 show patterns and the projects they hide
-    collect.py exclude add PATTERN [--shared]
-    collect.py exclude remove PATTERN [--shared]
+    collect.py exclude list                 show the rules and which projects they hide
+    collect.py exclude add|remove PATTERN [--shared]
+    collect.py only add|remove PATTERN [--shared]   keep ONLY matching projects
+    collect.py rename NEW-NAME              rename this device (history moves with it)
 
 Excluded projects are dropped on the device, before anything is written or pushed.
 A PATTERN is a project name glob ("maria/tropin-trade-bot", "*secret*") or a folder
@@ -219,11 +220,17 @@ def project_name(cwd, cache, root=None):
 SHARED_EXCLUDE = "exclude.json"
 
 
-def exclude_patterns():
-    """(local, shared) pattern lists."""
-    local = read_json(CONFIG, {}).get("exclude", [])
-    shared = read_json(REPO / SHARED_EXCLUDE, {}).get("projects", [])
-    return [p for p in local if p], [p for p in shared if p]
+LISTS = {"exclude": ("exclude", "projects"), "only": ("only", "only")}   # kind: (config key, exclude.json key)
+
+
+def filter_patterns():
+    """{"exclude": [...], "only": [...]}, local and shared lists merged."""
+    cfg, shared = read_json(CONFIG, {}), read_json(REPO / SHARED_EXCLUDE, {})
+    out = {}
+    for kind, (ckey, skey) in LISTS.items():
+        pats = list(cfg.get(ckey, [])) + [p for p in shared.get(skey, []) if p not in cfg.get(ckey, [])]
+        out[kind] = [p for p in pats if p]
+    return out
 
 
 def is_path_pattern(p):
@@ -234,7 +241,7 @@ def norm_path(p):
     return os.path.expanduser(p).replace("\\", "/").rstrip("/").lower()
 
 
-class Excluder:
+class Matcher:
     def __init__(self, patterns):
         self.names = [p.lower() for p in patterns if not is_path_pattern(p)]
         self.paths = [norm_path(p) for p in patterns if is_path_pattern(p)]
@@ -259,27 +266,65 @@ class Excluder:
             self.cache[key] = self.name_hit(name) or self.path_hit(cwd) or self.path_hit(root)
         return self.cache[key]
 
-    def hidden_names(self, projects):
-        """Project names to purge from files already written (events store no path)."""
-        out = set()
-        for key, n in projects.items():
-            if key.startswith("git\0"):
-                continue
-            cwd, _, root = key.partition("\0")
-            if self.path_hit(cwd) or self.path_hit(root if root != "None" else None):
-                out.add(n)
-        return out
+
+
+def project_paths(projects):
+    """{name: [(cwd, root)]} from the collector's name cache."""
+    out = {}
+    for key, n in projects.items():
+        if key.startswith("git\0") or not n:
+            continue
+        cwd, _, root = key.partition("\0")
+        out.setdefault(n, []).append((cwd if cwd != "None" else None, root if root != "None" else None))
+    return out
+
+
+class Filter:
+    """Which projects are kept out.
+
+    exclude: hidden if the name, the folder the reply ran in, or the folder the
+             session started in matches.
+    only:    when set, everything is hidden except projects whose name or the folder
+             the reply actually ran in matches. (Not the start folder: a session
+             started in an allowed repo that wanders into another repo stays out.)
+    Both lean towards hiding when in doubt."""
+
+    def __init__(self, exclude=(), only=()):
+        self.exclude, self.only = Matcher(exclude), Matcher(only)
+        self.cache = {}
+
+    def __bool__(self):
+        return bool(self.exclude or self.only)
+
+    def hit(self, cwd, name, root=None):
+        key = (cwd, name, root)
+        if key not in self.cache:
+            hidden = bool(self.only) and not (self.only.name_hit(name) or self.only.path_hit(cwd))
+            self.cache[key] = hidden or self.exclude.hit(cwd, name, root)
+        return self.cache[key]
+
+    def hides_name(self, name, paths):
+        """For events already written, which store the name but no folder."""
+        pairs = paths.get(name, [])
+        if self.exclude.name_hit(name) or any(self.exclude.path_hit(c) or self.exclude.path_hit(r)
+                                               for c, r in pairs):
+            return True
+        if self.only:
+            return not (self.only.name_hit(name) or any(self.only.path_hit(c) for c, _ in pairs))
+        return False
 
 
 def patterns_hash(patterns):
-    return hashlib.sha1("\n".join(sorted(patterns)).encode()).hexdigest()[:12]
+    flat = ["%s:%s" % (k, p) for k in sorted(patterns) for p in sorted(patterns[k])]
+    return hashlib.sha1("\n".join(flat).encode()).hexdigest()[:12]
 
 
-def purge(device, excluder, projects):
-    """Drop already-written events of excluded projects from this device's files."""
-    if not excluder:
+def purge(device, flt, projects):
+    """Drop already-written events of hidden projects from this device's files."""
+    if not flt:
         return 0
-    extra = excluder.hidden_names(projects)
+    paths = project_paths(projects)
+    verdict = {}
     removed = 0
     for f in sorted((REPO / "devices" / device).glob("*.jsonl")):
         keep, drop = [], 0
@@ -290,7 +335,9 @@ def purge(device, excluder, projects):
                 except ValueError:
                     keep.append(line)
                     continue
-                if excluder.name_hit(name) or name in extra:
+                if name not in verdict:
+                    verdict[name] = flt.hides_name(name, paths)
+                if verdict[name]:
                     drop += 1
                 else:
                     keep.append(line)
@@ -480,8 +527,9 @@ def new_lines(path, fstate):
 def collect(device, state, excluder=None, only=None):
     """Scan every transcript; return new events and the updated state.
 
-    With `only` (an Excluder of un-excluded patterns) every file is re-read from the
-    start and only events of those projects are returned; offsets are untouched."""
+    With `only` (the previous Filter) every file is re-read from the start and only
+    events that filter hid (and the current one shows) are returned; offsets are
+    untouched."""
     if only is not None:
         return backfill(device, state, excluder, only)
     files_state = state.setdefault("files", {})
@@ -560,7 +608,7 @@ def backfill(device, state, excluder, only):
                 cwd = d.get("cwd")
                 root = session_root(path, d, fs, roots)
                 if not only.hit(cwd, project_name(cwd, projects, root), root):
-                    continue
+                    continue                   # it was already collected before
                 ev = extract(d, device, projects, excluder, root)
                 if not ev:
                     continue
@@ -711,43 +759,74 @@ def detach():
     subprocess.Popen(args, **kw)
 
 
-def exclude_cmd(args):
-    """exclude list | add PATTERN [--shared] | remove PATTERN [--shared]"""
+def filter_cmd(kind, args):
+    """exclude|only  list | add PATTERN [--shared] | remove PATTERN [--shared]"""
     shared = "--shared" in args
     args = [a for a in args if a != "--shared"]
     action = args[0] if args else "list"
+    ckey, skey = LISTS[kind]
     cfg = read_json(CONFIG, {})
-    shared_doc = read_json(REPO / SHARED_EXCLUDE, {"projects": []})
+    shared_doc = read_json(REPO / SHARED_EXCLUDE, {})
     if action in ("add", "remove"):
         if len(args) != 2:
-            sys.exit("usage: collect.py exclude %s PATTERN [--shared]" % action)
+            sys.exit("usage: collect.py %s %s PATTERN [--shared]" % (kind, action))
         pat = args[1]
-        lst = shared_doc.setdefault("projects", []) if shared else cfg.setdefault("exclude", [])
+        lst = shared_doc.setdefault(skey, []) if shared else cfg.setdefault(ckey, [])
         if action == "add" and pat not in lst:
             lst.append(pat)
         elif action == "remove":
             if pat not in lst:
-                sys.exit("not in the %s list: %s" % ("shared" if shared else "local", pat))
+                sys.exit("not in the %s %s list: %s" % ("shared" if shared else "local", kind, pat))
             lst.remove(pat)
         if shared:
             write_json(REPO / SHARED_EXCLUDE, shared_doc)
         else:
             write_json(CONFIG, cfg)
-        print("%s %s pattern: %s" % ("added" if action == "add" else "removed",
-                                     "shared" if shared else "local", pat))
-    local, shared_p = exclude_patterns()
-    ex = Excluder(local + shared_p)
-    print("\nLocal patterns (this device only, never pushed): %s" % (local or "none"))
-    print("Shared patterns (exclude.json, all devices):      %s" % (shared_p or "none"))
-    projects = {k: v for k, v in read_json(STATE, {}).get("projects", {}).items()
-                if not k.startswith("git\0") and v}
-    names = sorted(set(projects.values()))
-    if names:
-        hidden = ex.hidden_names(projects) if ex else set()
-        print("\nProjects seen on this device:")
-        for n in names:
-            print("  %s %s" % ("[excluded]" if (ex.name_hit(n) or n in hidden) else "          ", n))
+        print("%s %s %s pattern: %s" % ("added" if action == "add" else "removed",
+                                        "shared" if shared else "local", kind, pat))
+    elif action != "list":
+        sys.exit("usage: collect.py %s list|add|remove PATTERN [--shared]" % kind)
+    show_filter()
     return action in ("add", "remove")
+
+
+def show_filter():
+    cfg, shared = read_json(CONFIG, {}), read_json(REPO / SHARED_EXCLUDE, {})
+    print("\n          local (this device, never pushed)   shared (exclude.json, all devices)")
+    for kind, (ckey, skey) in LISTS.items():
+        print("%-9s %-35s %s" % (kind, cfg.get(ckey) or "-", shared.get(skey) or "-"))
+    pats = filter_patterns()
+    flt = Filter(pats["exclude"], pats["only"])
+    paths = project_paths(read_json(STATE, {}).get("projects", {}))
+    if paths:
+        print("\nProjects seen on this device (hidden = never collected or pushed):")
+        for n in sorted(paths):
+            print("  %s %s" % ("[hidden]" if flt.hides_name(n, paths) else "[kept]  ", n))
+
+
+def rename_device(new):
+    """Move this device's data folder to a new name, keeping all history."""
+    new = re.sub(r"-+", "-", re.sub(r"[^a-z0-9-]", "-", new.lower())).strip("-")
+    if not new:
+        sys.exit("empty device name")
+    cfg = read_json(CONFIG, {})
+    old = cfg.get("device")
+    if old == new:
+        print("already called %s" % new)
+        return
+    git_pull()
+    if (REPO / "devices" / new).exists():
+        sys.exit("devices/%s already exists in the repo" % new)
+    git("sparse-checkout", "add", "/devices/%s/" % new)
+    if (REPO / "devices" / old).exists():
+        code, out = git("mv", "devices/%s" % old, "devices/%s" % new)
+        if code:
+            sys.exit(out)
+        git("commit", "-q", "-m", "rename device %s -> %s" % (old, new))
+    cfg["device"] = new
+    write_json(CONFIG, cfg)
+    git("sparse-checkout", "set", "--no-cone", "/*", "!/devices/*", "/devices/%s/" % new)
+    print("renamed %s -> %s%s" % (old, new, "" if git_push() else " (push failed; will retry on next sync)"))
 
 
 def main():
@@ -761,11 +840,19 @@ def main():
     if a.cmd[:1] == ["settings"] and a.cmd[1:2] in (["install"], ["uninstall"]):
         edit_settings(a.cmd[1])
         return 0
-    if a.cmd[:1] == ["exclude"]:
-        if not exclude_cmd(a.cmd[1:]):
+    if a.cmd[:1] in (["exclude"], ["only"]):
+        if not filter_cmd(a.cmd[0], a.cmd[1:]):
             return 0
         print("\nSyncing now so the change takes effect...")
         a.cmd = []
+    if a.cmd[:1] == ["rename"] and len(a.cmd) == 2:
+        if not acquire_lock():
+            sys.exit("a sync is running; try again in a minute")
+        try:
+            rename_device(a.cmd[1])
+        finally:
+            release_lock()
+        return 0
     rebuild = a.cmd == ["rebuild"]
     if rebuild:
         a.cmd = []
@@ -794,10 +881,9 @@ def main():
             for f in (REPO / "devices" / device).glob("*.jsonl"):
                 f.unlink()
             state = {}
-        local, shared = exclude_patterns()
-        patterns = local + shared
-        excluder = Excluder(patterns)
-        events, state = collect(device, state, excluder)
+        patterns = filter_patterns()
+        flt = Filter(patterns["exclude"], patterns["only"])
+        events, state = collect(device, state, flt)
         if a.dry_run:
             kinds = {}
             for ev in events:
@@ -805,26 +891,28 @@ def main():
             print(json.dumps({"events": len(events), "by_kind": kinds}, indent=2))
             return 0
         notes = []
-        if state.get("exclude_hash") != patterns_hash(patterns):
-            # patterns changed: hide newly excluded projects, re-import un-excluded ones
-            removed = purge(device, excluder, state.get("projects", {}))
+        if state.get("filter_hash") != patterns_hash(patterns):
+            # rules changed: drop newly hidden projects, re-import newly allowed ones
+            removed = purge(device, flt, state.get("projects", {}))
             if removed:
-                notes.append("removed %d events of excluded projects" % removed)
-            dropped = [p for p in state.get("exclude_patterns", []) if p not in patterns]
-            if dropped:
-                back, state = collect(device, state, excluder, only=Excluder(dropped))
+                notes.append("removed %d events of hidden projects" % removed)
+            old = state.get("filter") or {"exclude": state.get("exclude_patterns", []), "only": []}
+            old_flt = Filter(old.get("exclude", []), old.get("only", []))
+            if old_flt and not rebuild:
+                back, state = collect(device, state, flt, only=old_flt)
                 events += back
                 if back:
-                    notes.append("re-imported %d events of un-excluded projects" % len(back))
-            state["exclude_hash"] = patterns_hash(patterns)
-            state["exclude_patterns"] = patterns
+                    notes.append("re-imported %d events of projects no longer hidden" % len(back))
+            state["filter_hash"] = patterns_hash(patterns)
+            state["filter"] = patterns
+            state.pop("exclude_hash", None)
+            state.pop("exclude_patterns", None)
         days = write_events(events, device) if events else []
         if use_git and (events or notes):
-            msg = data_message(device, len(events), days) if events else "purge(%s)" % device
+            # neutral message: the history should not say what was hidden
+            msg = data_message(device, len(events), days) if events else "sync(%s)" % device
             if rebuild:
-                msg = "rebuild(%s): %d events re-imported from local logs" % (device, len(events))
-            if notes:
-                msg += "; " + "; ".join(notes)
+                msg = "rebuild(%s)" % device
             git_commit(device, msg)
         write_json(STATE, state)                 # data is on disk (and committed) first
         for n in notes:
