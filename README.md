@@ -4,7 +4,13 @@ Claude Code usage across all my devices, rebuilt automatically every day (and af
 
 Tracking since 2026-07-25 · 1 device · 114,241 replies · 3,881 prompts
 
-## At a glance
+**Jump to:** [macbook-pro](#device-macbook-pro)
+
+| Device | Cost, 7 days | Cost, 30 days | Output, 30 days | Last active | Sync |
+| --- | ---: | ---: | ---: | ---: | --- |
+| [macbook-pro](#device-macbook-pro) | $2,040 | $10,169 | 38.2M | 2026-09-28 | ok |
+
+## Device: macbook-pro
 
 |  | Last 7 days | vs previous 7 | Last 30 days | All time |
 | --- | ---: | ---: | ---: | ---: |
@@ -16,9 +22,9 @@ Tracking since 2026-07-25 · 1 device · 114,241 replies · 3,881 prompts
 | Active days | 7 / 7 |  | 29 / 30 | 63 |
 | Cache hit ratio | 98% |  | 98% | 98% |
 
-<img src="reports/charts/daily-cost.svg" alt="API-equivalent cost per day by model" width="760">
+<img src="reports/charts/macbook-pro/daily-cost.svg" alt="API-equivalent cost per day by model" width="760">
 
-<img src="reports/charts/model-mix.svg" alt="Share of output tokens per week by model" width="760">
+<img src="reports/charts/macbook-pro/model-mix.svg" alt="Share of output tokens per week by model" width="760">
 
 ### Models, last 30 days
 
@@ -29,21 +35,13 @@ Tracking since 2026-07-25 · 1 device · 114,241 replies · 3,881 prompts
 | claude-opus-5-5 | 2,560 | 2.9M | $462 | 5% |
 | claude-opus-4-8 | 201 | 207.2K | $85.32 | 1% |
 
-## Where and when
+<img src="reports/charts/macbook-pro/projects.svg" alt="Top projects by cost" width="760">
 
-<img src="reports/charts/devices.svg" alt="Weekly cost by device" width="760">
-
-| Device | Last active | Cost, 30 days | Sync |
-| --- | ---: | ---: | ---: |
-| macbook-pro | 2026-09-28 | $10,169 | ok |
-
-<img src="reports/charts/projects.svg" alt="Top projects by cost" width="760">
-
-<img src="reports/charts/heatmap.svg" alt="Prompts by weekday and hour" width="760">
+<img src="reports/charts/macbook-pro/heatmap.svg" alt="Prompts by weekday and hour" width="760">
 
 ### Heaviest 5-hour windows, last 30 days
 
-Subscription limits count usage in 5-hour windows, so these are the stretches closest to a limit.
+Subscription limits count usage in 5-hour windows across all devices, so these are the stretches closest to a limit.
 
 | Window start | API cost | Output | Main models | Devices |
 | --- | ---: | ---: | --- | --- |
@@ -53,9 +51,9 @@ Subscription limits count usage in 5-hour windows, so these are the stretches cl
 | Wed 09 Sep 14:00 | $378 | 1.3M | opus-5, sonnet-5 | macbook-pro |
 | Wed 02 Sep 20:00 | $303 | 1.1M | opus-5, sonnet-5 | macbook-pro |
 
-## How you work
+### How you work
 
-<img src="reports/charts/cache.svg" alt="Cache hit ratio per day" width="760">
+<img src="reports/charts/macbook-pro/cache.svg" alt="Cache hit ratio per day" width="760">
 
 | Habit (last 30 days) | Value |
 | --- | ---: |
@@ -151,9 +149,26 @@ Remove it: run the same installer with `--uninstall` (Windows: `-Uninstall`).
 
 Metadata only, per model reply: time, model, token counts, project (git remote, e.g. `owner/repo`, or the folder name), branch, short session id, tools called, skills used, effort setting, whether a subagent did it. Per prompt: time and length. **Never the text of prompts, replies, files or commands.**
 
+### Keep a project out of the tracker
+
+Excluded projects are dropped on the device itself, so nothing about them is written or pushed. Run these on the device (`~/.claude-usage/repo/collector/collect.py`; on Windows `python` instead of `python3`):
+
+```bash
+python3 collect.py exclude list                                # patterns + every project seen on this device
+python3 collect.py exclude add "maria/tropin-trade-bot"        # a project name (from the list)
+python3 collect.py exclude add "*client*"                      # a name pattern
+python3 collect.py exclude add "~/Desktop/private"             # a folder and everything inside it
+python3 collect.py exclude add "maria/tropin-trade-bot" --shared   # all devices (goes into exclude.json)
+python3 collect.py exclude remove "*client*"                   # un-exclude: its history is re-imported
+```
+
+- Without `--shared` the pattern stays in `~/.claude-usage/config.json` on that device and is never pushed, so the repo doesn't even show which projects are hidden.
+- With `--shared` it goes into [`exclude.json`](exclude.json) and every device applies it on its next sync.
+- Adding a pattern also removes that project's already-pushed data from the device's files. Older git commits still contain it until the repo history is rewritten.
+
 ### Settings
 
-- `config.json`: time zone for the report, and `plan_monthly_usd` / `plan_name` to compare API-equivalent cost with your subscription.
+- `config.json`: time zone for the report, `device_order` (e.g. `["macbook-pro", "work-pc", "home-pc"]`) for the order of the device sections, and `plan_monthly_usd` / `plan_name` to compare API-equivalent cost with your subscription.
 - `aliases.json`: rename or merge projects, e.g. `{"website": "geco-ai-labs/sg_geco-ai_websitepoc"}`.
 - `report/pricing.json`: API list prices used for the cost figures.
 - Run the report by hand: `python3 report/build.py`. Run a device sync by hand: `python3 collector/collect.py`. Log: `~/.claude-usage/collect.log`.
