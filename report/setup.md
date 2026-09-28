@@ -2,13 +2,13 @@
 
 Each device syncs its own Claude Code usage here every day at **08:00 Malaysia time**, and after every Claude Code session ends. Nothing needs to be done after installing.
 
-**macOS / Linux** (needs `git`, `python3`, and push access to this repo, e.g. via `gh auth login`):
+**macOS / Linux:** copy [`setup-device.sh`](setup-device.sh) to the device and run it:
 
 ```bash
-git clone --filter=blob:none --no-checkout https://github.com/mariiaivanovacs/claude-usage.git ~/.claude-usage/repo
-cd ~/.claude-usage/repo && git sparse-checkout set --no-cone '/*' '!/devices/*' && git checkout main
-./install/install.sh
+bash setup-device.sh
 ```
+
+It checks git, python3 and GitHub access (and signs you in with `gh` if needed), downloads the tracker, then asks what to call the device. **That name is what the dashboard and its charts show ("Device: work-laptop")**, so pick one you'll recognise.
 
 **Windows** (PowerShell; needs Git and Python 3):
 

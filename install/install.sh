@@ -49,20 +49,58 @@ if [ "$UNINSTALL" = 1 ]; then
 fi
 
 # ---- device name ------------------------------------------------------------
+# The name is what the dashboard shows for this device ("Device: <name>", legends,
+# the device table) and the folder its data goes into (devices/<name>/).
 mkdir -p "$BASE"
-if [ -z "$DEVICE" ] && [ -f "$BASE/config.json" ]; then
-  DEVICE="$("$PY" -c 'import json,sys;print(json.load(open(sys.argv[1])).get("device",""))' "$BASE/config.json")"
-fi
-if [ -z "$DEVICE" ]; then
-  guess="$(hostname -s 2>/dev/null || hostname)"
-  guess="$(printf '%s' "$guess" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9-' '-' | sed 's/--*/-/g;s/^-//;s/-$//')"
-  if [ -t 0 ]; then
-    read -r -p "Device name [$guess]: " DEVICE
+slug() { printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9-' '-' | sed 's/--*/-/g;s/^-//;s/-$//' | cut -c1-40; }
+taken="$(git -C "$REPO_DIR" ls-tree --name-only HEAD devices/ 2>/dev/null | sed 's#^devices/##' | grep -v '^\.gitkeep$' | tr '\n' ' ' || true)"
+is_taken() { case " $taken " in *" $1 "*) return 0 ;; *) return 1 ;; esac; }
+TTY=""
+if [ -t 0 ]; then TTY=/dev/stdin; elif [ -r /dev/tty ] && (exec </dev/tty) 2>/dev/null; then TTY=/dev/tty; fi
+ask() { local ans=""; read -r -p "$1" ans <"$TTY" || true; printf '%s' "$ans"; }
+
+current=""
+[ -f "$BASE/config.json" ] && current="$("$PY" -c 'import json,sys;print(json.load(open(sys.argv[1])).get("device",""))' "$BASE/config.json" 2>/dev/null || true)"
+
+if [ -n "$DEVICE" ]; then
+  DEVICE="$(slug "$DEVICE")"
+elif [ -n "$current" ]; then
+  DEVICE="$current"
+  echo "This device is already set up as \"$DEVICE\" (shown on the dashboard as \"Device: $DEVICE\")."
+  echo "To change it later: python3 $COLLECT rename NEW-NAME"
+else
+  guess="$(slug "$(hostname -s 2>/dev/null || hostname)")"
+  [ -n "$guess" ] || guess="device-$(date +%s | tail -c 5)"
+  if [ -z "$TTY" ]; then
+    DEVICE="$guess"
+    echo "No terminal to ask in; naming this device \"$DEVICE\". Rename later with: python3 $COLLECT rename NEW-NAME"
+  else
+    echo
+    echo "Name this device"
+    echo "----------------"
+    echo "The name is shown on the usage dashboard and its charts, e.g. \"Device: work-laptop\","
+    echo "so pick something you will recognise: work-laptop, home-pc, macbook-pro."
+    echo "Use latin letters, digits and dashes (other characters become dashes)."
+    [ -n "$taken" ] && echo "Already used by other devices: $taken"
+    while :; do
+      ans="$(ask "Device name [$guess]: ")"
+      DEVICE="$(slug "${ans:-$guess}")"
+      if [ -z "$DEVICE" ]; then
+        echo "  That name has no latin letters or digits left after cleaning it up; try another."
+        continue
+      fi
+      if is_taken "$DEVICE"; then
+        echo "  \"$DEVICE\" is already used by a device. Using it again merges both devices' data."
+        yn="$(ask "  Is this the same device being set up again? [y/N]: ")"
+        case "$yn" in [yY]*) ;; *) continue ;; esac
+      fi
+      yn="$(ask "  The dashboard will show \"Device: $DEVICE\". OK? [Y/n]: ")"
+      case "$yn" in [nN]*) continue ;; *) break ;; esac
+    done
   fi
-  DEVICE="${DEVICE:-$guess}"
 fi
-DEVICE="$(printf '%s' "$DEVICE" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9-' '-' | sed 's/--*/-/g;s/^-//;s/-$//')"
 [ -n "$DEVICE" ] || { echo "device name is empty" >&2; exit 1; }
+if [ -n "${CLAUDE_USAGE_NAME_ONLY:-}" ]; then echo "NAME=$DEVICE"; exit 0; fi   # used by tests
 "$PY" - "$BASE/config.json" "$DEVICE" <<'EOF'
 import json, sys
 p, dev = sys.argv[1], sys.argv[2]

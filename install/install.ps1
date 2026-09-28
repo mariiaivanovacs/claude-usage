@@ -48,13 +48,35 @@ $Config = @{}
 if (Test-Path $ConfigPath) {
   (Get-Content $ConfigPath -Raw | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $Config[$_.Name] = $_.Value }
 }
-if (-not $Device) { $Device = $Config["device"] }
-if (-not $Device) {
-  $guess = $env:COMPUTERNAME.ToLower()
-  $answer = Read-Host "Device name [$guess]"
-  $Device = if ($answer) { $answer } else { $guess }
+function Slug([string]$n) { (($n.ToLower() -replace "[^a-z0-9-]", "-") -replace "-+", "-").Trim("-") }
+$taken = @(git -C $RepoDir ls-tree --name-only HEAD devices/ 2>$null | ForEach-Object { $_ -replace "^devices/", "" } | Where-Object { $_ -ne ".gitkeep" })
+if ($Device) {
+  $Device = Slug $Device
+} elseif ($Config["device"]) {
+  $Device = $Config["device"]
+  Write-Host "This device is already set up as `"$Device`" (shown on the dashboard as `"Device: $Device`")."
+  Write-Host "To change it later: python `"$Collect`" rename NEW-NAME"
+} else {
+  $guess = Slug $env:COMPUTERNAME
+  Write-Host ""
+  Write-Host "Name this device"
+  Write-Host "----------------"
+  Write-Host "The name is shown on the usage dashboard and its charts, e.g. `"Device: work-laptop`","
+  Write-Host "so pick something you will recognise: work-laptop, home-pc, office-pc."
+  Write-Host "Use latin letters, digits and dashes (other characters become dashes)."
+  if ($taken.Count) { Write-Host ("Already used by other devices: " + ($taken -join " ")) }
+  while ($true) {
+    $answer = Read-Host "Device name [$guess]"
+    $Device = Slug $(if ($answer) { $answer } else { $guess })
+    if (-not $Device) { Write-Host "  That name has no latin letters or digits left after cleaning it up; try another."; continue }
+    if ($taken -contains $Device) {
+      Write-Host "  `"$Device`" is already used by a device. Using it again merges both devices' data."
+      if ((Read-Host "  Is this the same device being set up again? [y/N]") -notmatch "^[yY]") { continue }
+    }
+    if ((Read-Host "  The dashboard will show `"Device: $Device`". OK? [Y/n]") -match "^[nN]") { continue }
+    break
+  }
 }
-$Device = ($Device.ToLower() -replace "[^a-z0-9-]", "-" -replace "-+", "-").Trim("-")
 if (-not $Device) { throw "device name is empty" }
 $Config["device"] = $Device
 $Config | ConvertTo-Json | Set-Content -Encoding UTF8 $ConfigPath
