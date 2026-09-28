@@ -2,24 +2,24 @@
 
 Claude Code usage across all my devices, rebuilt automatically every day (and after every sync). Times are Asia/Kuala_Lumpur. Updated 2026-09-28.
 
-Tracking since 2026-07-25 · 1 device · 114,272 replies · 3,884 prompts
+Tracking since 2026-07-28 · 1 device · 33,900 replies · 1,316 prompts
 
 **Jump to:** [macbook-pro](#device-macbook-pro)
 
 | Device | Cost, 7 days | Cost, 30 days | Output, 30 days | Last active | Sync |
 | --- | ---: | ---: | ---: | ---: | --- |
-| [macbook-pro](#device-macbook-pro) | $2,044 | $10,174 | 38.2M | 2026-09-28 | ok |
+| [macbook-pro](#device-macbook-pro) | $1,215 | $3,972 | 15.2M | 2026-09-28 | ok |
 
 ## Device: macbook-pro
 
 |  | Last 7 days | vs previous 7 | Last 30 days | All time |
 | --- | ---: | ---: | ---: | ---: |
-| API-equivalent cost | $2,044 | ▲ 19% | $10,174 | $20,713 |
-| Output tokens | 7.4M | ▼ 11% | 38.2M | 80.2M |
-| Prompts | 366 | ▼ 5% | 1,947 | 3,884 |
-| Sessions | 28 | ▼ 15% | 126 | 364 |
-| Active hours | 70 | ▲ 8% | 314 | 710 |
-| Active days | 7 / 7 |  | 29 / 30 | 63 |
+| API-equivalent cost | $1,215 | ▲ 338% | $3,972 | $6,476 |
+| Output tokens | 5M | ▲ 113% | 15.2M | 24M |
+| Prompts | 246 | ▲ 382% | 680 | 1,316 |
+| Sessions | 10 | ▲ 43% | 35 | 80 |
+| Active hours | 55 | ▲ 244% | 190 | 391 |
+| Active days | 6 / 7 |  | 23 / 30 | 52 |
 | Cache hit ratio | 98% |  | 98% | 98% |
 
 <img src="reports/charts/macbook-pro/daily-cost.svg" alt="API-equivalent cost per day by model" width="760">
@@ -30,10 +30,10 @@ Tracking since 2026-07-25 · 1 device · 114,272 replies · 3,884 prompts
 
 | Model | Replies | Output | API cost | Share |
 | --- | ---: | ---: | ---: | ---: |
-| claude-opus-5 | 26,730 | 22.4M | $7,196 | 71% |
-| claude-sonnet-5 | 17,891 | 12.8M | $2,427 | 24% |
-| claude-opus-5-5 | 2,583 | 2.9M | $465 | 5% |
-| claude-opus-4-8 | 201 | 207.2K | $85.32 | 1% |
+| claude-opus-5 | 9,375 | 7.4M | $2,533 | 64% |
+| claude-sonnet-5 | 6,918 | 4.8M | $939 | 24% |
+| claude-opus-5-5 | 2,629 | 3M | $472 | 12% |
+| claude-opus-4-8 | 98 | 81.8K | $28.07 | 1% |
 
 <img src="reports/charts/macbook-pro/projects.svg" alt="Top projects by cost" width="760">
 
@@ -45,11 +45,11 @@ Subscription limits count usage in 5-hour windows across all devices, so these a
 
 | Window start | API cost | Output | Main models | Devices |
 | --- | ---: | ---: | --- | --- |
-| Tue 01 Sep 10:00 | $390 | 987.2K | opus-5, sonnet-5 | macbook-pro |
-| Wed 16 Sep 09:00 | $385 | 2.5M | opus-5, sonnet-5 | macbook-pro |
-| Thu 24 Sep 10:00 | $381 | 1.3M | opus-5, opus-5-5 | macbook-pro |
-| Wed 09 Sep 14:00 | $378 | 1.3M | opus-5, sonnet-5 | macbook-pro |
-| Wed 02 Sep 20:00 | $303 | 1.1M | opus-5, sonnet-5 | macbook-pro |
+| Thu 24 Sep 10:00 | $242 | 1M | opus-5, opus-5-5 | macbook-pro |
+| Wed 09 Sep 14:00 | $218 | 509.7K | opus-5, sonnet-5 | macbook-pro |
+| Thu 10 Sep 15:00 | $186 | 423.6K | opus-5, opus-4-8 | macbook-pro |
+| Mon 07 Sep 14:00 | $181 | 468.4K | opus-5, sonnet-5 | macbook-pro |
+| Tue 08 Sep 13:00 | $147 | 534.1K | opus-5, sonnet-5 | macbook-pro |
 
 ### How you work
 
@@ -57,13 +57,13 @@ Subscription limits count usage in 5-hour windows across all devices, so these a
 
 | Habit (last 30 days) | Value |
 | --- | ---: |
-| Work done by subagents (share of cost) | 2% |
-| Prompts per session (average) | 16.1 |
-| Prompt length (median characters) | 144 |
-| Replies you interrupted | 103 |
-| 5-hour windows used | 81 (2.8 per active day) |
-| Effort setting mix | high 95%, medium 5% |
-| Where you use it | vscode 84%, desktop 16% |
+| Work done by subagents (share of cost) | 3% |
+| Prompts per session (average) | 19.4 |
+| Prompt length (median characters) | 200 |
+| Replies you interrupted | 13 |
+| 5-hour windows used | 51 (2.2 per active day) |
+| Effort setting mix | high 86%, medium 14% |
+| Where you use it | vscode 98%, desktop 2% |
 
 <table><tr><td valign="top">
 
@@ -71,16 +71,16 @@ Subscription limits count usage in 5-hour windows across all devices, so these a
 
 | Tool | Calls |
 | --- | ---: |
-| Bash | 35,236 |
-| Read | 2,977 |
-| Edit | 2,528 |
-| Write | 921 |
-| Claude_Browser: computer | 655 |
-| Claude_Browser: javascript_tool | 457 |
-| WebFetch | 410 |
-| Artifact | 334 |
-| Claude_Browser: browser_batch | 320 |
-| WebSearch | 288 |
+| Bash | 14,663 |
+| Read | 1,384 |
+| Edit | 781 |
+| WebFetch | 324 |
+| Write | 310 |
+| WebSearch | 216 |
+| Artifact | 214 |
+| Claude_Browser: javascript_tool | 132 |
+| Claude_Browser: computer | 117 |
+| AskUserQuestion | 111 |
 
 </td><td valign="top">
 
@@ -88,16 +88,16 @@ Subscription limits count usage in 5-hour windows across all devices, so these a
 
 | Skill | Uses |
 | --- | ---: |
-| browse | 23 |
-| artifact-design | 21 |
-| handoff | 19 |
-| design-shotgun | 8 |
-| design | 7 |
-| artifact-capabilities | 7 |
+| browse | 16 |
+| artifact-design | 7 |
 | design-consultation | 7 |
-| connect-chrome | 6 |
-| lane | 6 |
-| dataviz | 5 |
+| design-shotgun | 7 |
+| plan-ceo-review | 5 |
+| threejs-animation | 4 |
+| threejs-materials | 2 |
+| update-config | 1 |
+| artifact-diagramming | 1 |
+| connect-chrome | 1 |
 
 </td><td valign="top">
 
@@ -105,11 +105,8 @@ Subscription limits count usage in 5-hour windows across all devices, so these a
 
 | Command | Uses |
 | --- | ---: |
-| /model | 375 |
-| /lane | 47 |
-| /usage-report | 3 |
-| /update-config | 1 |
-| /server-connectivity | 1 |
+| /model | 158 |
+| /usage-report | 2 |
 | /ultrareview | 1 |
 
 </td></tr></table>
