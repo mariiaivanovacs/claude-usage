@@ -2,21 +2,9 @@
 
 Claude Code usage across all my devices, rebuilt automatically every day (and after every sync). Weeks start Monday; times are Asia/Kuala_Lumpur. Updated 2026-09-28.
 
-Tracking since 2026-07-28 · 2 devices · 48,989 replies · 1,898 prompts
+Tracking since 2026-07-28 · 1 device · 33,949 replies · 1,318 prompts
 
-**Jump to:** [demo-laptop](#device-demo-laptop) · [macbook-pro](#device-macbook-pro) · [All devices](#all-devices) · [Plan](#plan) · [By month](#by-month)
-
-## Device: demo-laptop
-
-**This week so far (Mon 28 Sep – today):**  
-6.5M input · 6K output · 100% from cache · 0 prompts · $1.46 API-equivalent  
-vs the same days last week: output ▼ 62% · prompts ▼ 100% · cost ▼ 26%
-
-<img src="reports/charts/demo-laptop/projects.svg" alt="projects" width="760">
-
-<img src="reports/charts/demo-laptop/heatmap.svg" alt="heatmap" width="760">
-
-<img src="reports/charts/demo-laptop/models.svg" alt="models" width="760">
+**Jump to:** [macbook-pro](#device-macbook-pro) · [Plan](#plan) · [By month](#by-month)
 
 ## Device: macbook-pro
 
@@ -30,36 +18,6 @@ vs the same days last week: output ▼ 15% · prompts ▲ 12% · cost ▼ 28%
 
 <img src="reports/charts/macbook-pro/models.svg" alt="models" width="760">
 
-## All devices
-
-Side by side, this week so far (Mon 28 Sep – today).
-
-| Device | Input | Output | Cache | Prompts | Sessions | API cost |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| [demo-laptop](#device-demo-laptop) | 6.5M | 6K | 100% | 0 | 1 | $1.46 |
-| [macbook-pro](#device-macbook-pro) | 294.5M | 624.9K | 98% | 37 | 5 | $121 |
-| **Total** | 300.9M | 630.8K | 98% | 37 | 6 | $122 |
-
-vs the same days last week: output ▼ 16% · prompts ▲ 9% · cost ▼ 28%
-
-<img src="reports/charts/all/devices.svg" alt="devices" width="760">
-
-<img src="reports/charts/all/model-share.svg" alt="model-share" width="760">
-
-<img src="reports/charts/all/project-grid.svg" alt="project-grid" width="760">
-
-<img src="reports/charts/all/hours.svg" alt="hours" width="760">
-
-### Heaviest 5-hour windows, this week
-
-Subscription limits count usage in 5-hour windows across all devices together.
-
-| Window start | API cost | Output | Devices |
-| --- | ---: | ---: | --- |
-| Mon 28 Sep 10:00 | $73.24 | 397.6K | demo-laptop, macbook-pro |
-| Mon 28 Sep 05:00 | $47.79 | 228.7K | demo-laptop, macbook-pro |
-| Mon 28 Sep 00:00 | $0.98 | 4.5K | demo-laptop, macbook-pro |
-
 ## Plan
 
 _Set your plan to see the % of its price used each week: `python3 collector/collect.py plan "Max 20x" 200`._
@@ -70,20 +28,20 @@ Only projects this tracker collects are counted. **/usage** is the weekly-limit 
 
 | Week (Mon–Sun) | API cost | % of plan's weekly price | /usage | Status |
 | --- | ---: | ---: | ---: | --- |
-| 07 Sep – 13 Sep | $1,964 | – | – | final |
-| 14 Sep – 20 Sep | $269 | – | – | final |
-| 21 Sep – 27 Sep | $1,609 | – | – | final |
-| 28 Sep – 04 Oct | $122 | – | – | in progress |
+| 07 Sep – 13 Sep | $1,585 | – | – | final |
+| 14 Sep – 20 Sep | $197 | – | – | final |
+| 21 Sep – 27 Sep | $1,267 | – | – | final |
+| 28 Sep – 04 Oct | $121 | – | – | in progress |
 
 ### August 2026
 
 | Week (Mon–Sun) | API cost | % of plan's weekly price | /usage | Status |
 | --- | ---: | ---: | ---: | --- |
-| 03 Aug – 09 Aug | $39.21 | – | – | final |
-| 10 Aug – 16 Aug | $962 | – | – | final |
-| 17 Aug – 23 Aug | $857 | – | – | final |
-| 24 Aug – 30 Aug | $431 | – | – | final |
-| 31 Aug – 06 Sep | $1,038 | – | – | final |
+| 03 Aug – 09 Aug | $35.96 | – | – | final |
+| 10 Aug – 16 Aug | $801 | – | – | final |
+| 17 Aug – 23 Aug | $697 | – | – | final |
+| 24 Aug – 30 Aug | $284 | – | – | final |
+| 31 Aug – 06 Sep | $802 | – | – | final |
 
 _Record a reading: open `/usage` in Claude Code, then run `python3 ~/.claude-usage/repo/collector/collect.py usage 42` (add `--session 15`, `--resets "Thu 10:00"`, or `--at "2026-09-28 14:30"` for an earlier reading)._
 
@@ -91,9 +49,9 @@ _Record a reading: open `/usage` in Claude Code, then run `python3 ~/.claude-usa
 
 | Month | API cost | Output | Prompts | Most-used device | Status |
 | --- | ---: | ---: | ---: | --- | --- |
-| 2026-09 | $4,812 | 21.2M | 926 | macbook-pro | in progress |
-| [2026-08](archive/2026-08.json) | $2,655 | 9.1M | 779 | macbook-pro | final |
-| [2026-07](archive/2026-07.json) | $805 | 4.2M | 193 | macbook-pro | final |
+| 2026-09 | $3,811 | 14.8M | 640 | macbook-pro | in progress |
+| [2026-08](archive/2026-08.json) | $2,109 | 6.3M | 540 | macbook-pro | final |
+| [2026-07](archive/2026-07.json) | $561 | 3M | 138 | macbook-pro | final |
 
 ## Data
 
