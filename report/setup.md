@@ -26,9 +26,26 @@ Remove it: run the same installer with `--uninstall` (Windows: `-Uninstall`).
 
 Metadata only, per model reply: time, model, token counts, project (git remote, e.g. `owner/repo`, or the folder name), branch, short session id, tools called, skills used, effort setting, whether a subagent did it. Per prompt: time and length. **Never the text of prompts, replies, files or commands.**
 
+### Keep a project out of the tracker
+
+Excluded projects are dropped on the device itself, so nothing about them is written or pushed. Run these on the device (`~/.claude-usage/repo/collector/collect.py`; on Windows `python` instead of `python3`):
+
+```bash
+python3 collect.py exclude list                                # patterns + every project seen on this device
+python3 collect.py exclude add "maria/tropin-trade-bot"        # a project name (from the list)
+python3 collect.py exclude add "*client*"                      # a name pattern
+python3 collect.py exclude add "~/Desktop/private"             # a folder and everything inside it
+python3 collect.py exclude add "maria/tropin-trade-bot" --shared   # all devices (goes into exclude.json)
+python3 collect.py exclude remove "*client*"                   # un-exclude: its history is re-imported
+```
+
+- Without `--shared` the pattern stays in `~/.claude-usage/config.json` on that device and is never pushed, so the repo doesn't even show which projects are hidden.
+- With `--shared` it goes into [`exclude.json`](exclude.json) and every device applies it on its next sync.
+- Adding a pattern also removes that project's already-pushed data from the device's files. Older git commits still contain it until the repo history is rewritten.
+
 ### Settings
 
-- `config.json`: time zone for the report, and `plan_monthly_usd` / `plan_name` to compare API-equivalent cost with your subscription.
+- `config.json`: time zone for the report, `device_order` (e.g. `["macbook-pro", "work-pc", "home-pc"]`) for the order of the device sections, and `plan_monthly_usd` / `plan_name` to compare API-equivalent cost with your subscription.
 - `aliases.json`: rename or merge projects, e.g. `{"website": "geco-ai-labs/sg_geco-ai_websitepoc"}`.
 - `report/pricing.json`: API list prices used for the cost figures.
 - Run the report by hand: `python3 report/build.py`. Run a device sync by hand: `python3 collector/collect.py`. Log: `~/.claude-usage/collect.log`.

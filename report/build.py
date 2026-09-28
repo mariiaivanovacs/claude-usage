@@ -9,6 +9,8 @@ lands on the right day. Standard library only (Python 3.9+ for zoneinfo).
 import csv
 import io
 import json
+import re
+import shutil
 import sys
 from collections import Counter, defaultdict
 from datetime import date, datetime, timedelta, timezone
@@ -340,10 +342,43 @@ def counter_rows(counter, n=10):
 
 # ------------------------------------------------------------------ report
 
+def device_order(replies):
+    """Devices in config order ("device_order"), then alphabetical."""
+    seen = sorted({e["device"] for e in replies})
+    fixed = [d for d in CFG.get("device_order") or [] if d in seen]
+    return fixed + [d for d in seen if d not in fixed]
+
+
+def scopes(replies, others):
+    """[(slug, title, replies, others, is_total)]: each device, then all devices."""
+    devices = device_order(replies)
+    out = [(d, "Device: %s" % d, [e for e in replies if e["device"] == d],
+            [e for e in others if e["device"] == d], False) for d in devices]
+    if len(devices) != 1:
+        out.append(("all", "All devices", replies, others, True))
+    else:
+        out[0] = (devices[0], "Device: %s" % devices[0], replies, others, True)
+    return out
+
+
+def scope_charts(replies, others, today, total):
+    charts = {
+        "daily-cost": chart_daily_cost(replies, today),
+        "model-mix": chart_model_mix(replies, today),
+        "projects": chart_projects(replies, today),
+        "heatmap": chart_heatmap(replies, others, today),
+        "cache": chart_cache(replies, today),
+    }
+    if total:
+        charts["devices"] = chart_devices(replies, today)
+    return charts
+
+
 def build(root=ROOT, now=None):
     replies, others = load(root)
     today = (now or datetime.now(TZ)).astimezone(TZ).date()
     out = root / "reports"
+    shutil.rmtree(out / "charts", ignore_errors=True)       # no stale charts of renamed devices
     (out / "charts").mkdir(parents=True, exist_ok=True)
     (out / "weekly").mkdir(parents=True, exist_ok=True)
 
@@ -353,20 +388,18 @@ def build(root=ROOT, now=None):
                                         + setup_text(root), encoding="utf-8")
         return
 
-    charts = {
-        "daily-cost": chart_daily_cost(replies, today),
-        "devices": chart_devices(replies, today),
-        "projects": chart_projects(replies, today),
-        "heatmap": chart_heatmap(replies, others, today),
-        "model-mix": chart_model_mix(replies, today),
-        "cache": chart_cache(replies, today),
-    }
-    for name, body in charts.items():
-        (out / "charts" / ("%s.svg" % name)).write_text(body, encoding="utf-8")
+    charts = {}
+    sections = []
+    for slug, title, r, o, total in scopes(replies, others):
+        (out / "charts" / slug).mkdir(parents=True, exist_ok=True)
+        for name, body in scope_charts(r, o, today, slug == "all").items():
+            (out / "charts" / slug / ("%s.svg" % name)).write_text(body, encoding="utf-8")
+            charts["%s/%s" % (slug, name)] = body
+        sections.append(section(slug, title, r, o, today, total, replies))
 
     write_daily_csv(replies, out / "daily.csv")
     write_weekly(replies, others, out / "weekly", today)
-    md = readme(replies, others, today, root)
+    md = readme(replies, others, today, root, sections)
     (root / "README.md").write_text(md, encoding="utf-8")
     (out / "dashboard.html").write_text(dashboard(md, charts), encoding="utf-8")
 
@@ -376,14 +409,59 @@ def header(today):
             "(and after every sync). Times are %s. Updated %s.\n\n" % (CFG.get("timezone"), today.isoformat()))
 
 
-def readme(replies, others, today, root):
+def anchor(title):
+    return re.sub(r"[^a-z0-9 _-]", "", title.lower()).replace(" ", "-")
+
+
+def device_status(replies, today):
+    """One row per device: the side-by-side comparison at the top."""
+    rows = []
+    for d in device_order(replies):
+        r = [e for e in replies if e["device"] == d]
+        last = max(e["day"] for e in r)
+        idle = (today - last).days
+        wk = sum(e["cost"] for e in r if e["day"] > today - timedelta(days=7))
+        m30 = sum(e["cost"] for e in r if e["day"] > today - timedelta(days=30))
+        rows.append(["[%s](#%s)" % (d, anchor("Device: %s" % d)), usd(wk), usd(m30),
+                     compact(sum(e.get("out", 0) for e in r if e["day"] > today - timedelta(days=30))),
+                     last.isoformat(), "⚠️ nothing for %d days" % idle if idle > 3 else "ok"])
+    return rows
+
+
+def readme(replies, others, today, root, sections):
+    alltime = summarize(replies, others, date.min, date.max)
+    devices = device_order(replies)
+    est = any(e["estimated"] for e in replies)
+    titles = [re.match(r"## (.+)", s).group(1) for s in sections]
+    parts = [
+        header(today),
+        "Tracking since %s · %d device%s · %s replies · %s prompts\n" % (
+            replies[0]["day"].isoformat(), len(devices), "s" if len(devices) != 1 else "",
+            format(alltime["replies"], ","), format(alltime["prompts"], ",")),
+        "\n**Jump to:** " + " · ".join("[%s](#%s)" % (t.replace("Device: ", ""), anchor(t)) for t in titles) + "\n",
+        "\n" + md_table(["Device", "Cost, 7 days", "Cost, 30 days", "Output, 30 days", "Last active", "Sync"],
+                        device_status(replies, today), ["l", "r", "r", "r", "r", "l"]) + "\n",
+    ]
+    parts += ["\n" + s for s in sections]
+    parts += [
+        "\n## Data\n",
+        "- [`reports/dashboard.html`](reports/dashboard.html): the same report with hover values (download and open)\n"
+        "- [`reports/daily.csv`](reports/daily.csv): one row per day × device × project × model\n"
+        "- [`reports/weekly/`](reports/weekly/): one summary per week\n"
+        "- Costs are API list prices from [`report/pricing.json`](report/pricing.json), for comparison only: "
+        "a subscription is not billed per token." + (" Models marked * are priced by their family." if est else "")
+        + "\n",
+        "\n" + setup_text(root),
+    ]
+    return tidy_md("".join(parts))
+
+
+def section(slug, title, replies, others, today, total, all_replies):
+    """One full dashboard for a device, or for all devices together."""
     wk = summarize(replies, others, today - timedelta(days=6), today)
     pw = summarize(replies, others, today - timedelta(days=13), today - timedelta(days=7))
     m30 = summarize(replies, others, today - timedelta(days=29), today)
     alltime = summarize(replies, others, date.min, date.max)
-    first_day = replies[0]["day"]
-    devices = sorted({e["device"] for e in replies})
-    last_seen = {d: max(e["day"] for e in replies if e["device"] == d) for d in devices}
 
     tiles = md_table(
         ["", "Last 7 days", "vs previous 7", "Last 30 days", "All time"],
@@ -397,7 +475,7 @@ def readme(replies, others, today, root):
          ["Cache hit ratio", pct(wk["cache"]), "", pct(m30["cache"]), pct(alltime["cache"])]])
 
     plan = ""
-    if CFG.get("plan_monthly_usd"):
+    if total and CFG.get("plan_monthly_usd"):
         ratio = m30["cost"] / CFG["plan_monthly_usd"]
         plan = ("\n**Value vs plan:** the last 30 days would have cost **%s** on the API, **%.1f×** your %s "
                 "(%s/month).\n" % (usd(m30["cost"]), ratio, CFG.get("plan_name") or "plan",
@@ -407,9 +485,10 @@ def readme(replies, others, today, root):
     o30 = [e for e in others if e["day"] > today - timedelta(days=30)]
     blocks = [b for b in five_hour_windows(replies) if b["start"].date() > today - timedelta(days=30)]
     top_blocks = sorted(blocks, key=lambda b: -b["cost"])[:5]
+    block_cols = ["Window start", "API cost", "Output", "Main models"] + (["Devices"] if total else [])
     block_rows = [[b["start"].strftime("%a %d %b %H:%M"), usd(b["cost"]), compact(b["out"]),
-                   ", ".join(short_model(m) for m, _ in b["models"].most_common(2)),
-                   ", ".join(sorted(b["devices"]))] for b in top_blocks]
+                   ", ".join(short_model(m) for m, _ in b["models"].most_common(2))]
+                  + ([", ".join(sorted(b["devices"]))] if total else []) for b in top_blocks]
 
     tools, skills, commands, effort, entry = Counter(), Counter(), Counter(), Counter(), Counter()
     sub_cost = 0.0
@@ -436,53 +515,41 @@ def readme(replies, others, today, root):
         ["Replies you interrupted", m30["interrupts"]],
         ["5-hour windows used", "%d (%.1f per active day)" % (len(blocks), len(blocks) / max(m30["days"], 1))],
         ["Effort setting mix", ", ".join("%s %s" % (k, pct(v / max(sum(effort.values()), 1)))
-                                         for k, v in effort.most_common(4))],
+                                         for k, v in effort.most_common(4)) or "–"],
         ["Where you use it", ", ".join("%s %s" % (k.replace("claude-", ""), pct(v / max(sum(entry.values()), 1)))
-                                       for k, v in entry.most_common(4))]])
+                                       for k, v in entry.most_common(4)) or "–"]])
 
-    device_rows = [[d, last_seen[d].isoformat(), usd(sum(e["cost"] for e in r30 if e["device"] == d)),
-                    "⚠️ no data for %d days" % (today - last_seen[d]).days if (today - last_seen[d]).days > 3 else "ok"]
-                   for d in devices]
-
-    img = lambda n, alt: '<img src="reports/charts/%s.svg" alt="%s" width="760">' % (n, alt)  # noqa: E731
-    est = any(e["estimated"] for e in replies)
+    img = lambda n, alt: '<img src="reports/charts/%s/%s.svg" alt="%s" width="760">' % (slug, n, alt)  # noqa: E731
+    window_note = ("Subscription limits count usage in 5-hour windows across all devices, so these are the "
+                   "stretches closest to a limit." if total else
+                   "5-hour windows counted on this device alone; the limit itself is shared by all devices.")
     parts = [
-        header(today),
-        "Tracking since %s · %d device%s · %s replies · %s prompts\n" % (
-            first_day.isoformat(), len(devices), "s" if len(devices) != 1 else "", format(alltime["replies"], ","),
-            format(alltime["prompts"], ",")),
-        "## At a glance\n", tiles, plan,
+        "## %s\n" % title,
+        ("Everything below adds up all devices.\n" if total and title == "All devices" else ""),
+        tiles, plan,
         "\n" + img("daily-cost", "API-equivalent cost per day by model") + "\n",
+    ]
+    if total and title == "All devices":
+        parts.append("\n" + img("devices", "Weekly cost by device") + "\n")
+    parts += [
         "\n" + img("model-mix", "Share of output tokens per week by model") + "\n",
         "\n### Models, last 30 days\n", md_table(["Model", "Replies", "Output", "API cost", "Share"],
                                                  model_rows(replies, today - timedelta(days=29), today)),
-        "\n\n## Where and when\n",
-        img("devices", "Weekly cost by device") + "\n",
-        "\n" + md_table(["Device", "Last active", "Cost, 30 days", "Sync"], device_rows) + "\n",
-        "\n" + img("projects", "Top projects by cost") + "\n",
+        "\n\n" + img("projects", "Top projects by cost") + "\n",
         "\n" + img("heatmap", "Prompts by weekday and hour") + "\n",
-        "\n### Heaviest 5-hour windows, last 30 days\n",
-        "Subscription limits count usage in 5-hour windows, so these are the stretches closest to a limit.\n\n",
-        md_table(["Window start", "API cost", "Output", "Main models", "Devices"], block_rows,
-                 ["l", "r", "r", "l", "l"]),
-        "\n\n## How you work\n",
+        "\n### Heaviest 5-hour windows, last 30 days\n", window_note + "\n\n",
+        md_table(block_cols, block_rows or [["–"] * len(block_cols)], ["l", "r", "r", "l", "l"][:len(block_cols)]),
+        "\n\n### How you work\n",
         img("cache", "Cache hit ratio per day") + "\n\n",
         habits,
-        "\n\n<table><tr><td valign=\"top\">\n\n**Top tools**\n\n" + md_table(["Tool", "Calls"], counter_rows(tools)),
+        "\n\n<table><tr><td valign=\"top\">\n\n**Top tools**\n\n" + md_table(["Tool", "Calls"],
+                                                                             counter_rows(tools) or [["–", 0]]),
         "\n\n</td><td valign=\"top\">\n\n**Skills**\n\n" + md_table(["Skill", "Uses"], counter_rows(skills) or [["–", 0]]),
         "\n\n</td><td valign=\"top\">\n\n**Slash commands**\n\n" + md_table(["Command", "Uses"],
                                                                             counter_rows(commands) or [["–", 0]]),
         "\n\n</td></tr></table>\n",
-        "\n## Data\n",
-        "- [`reports/dashboard.html`](reports/dashboard.html): the same report with hover values (download and open)\n"
-        "- [`reports/daily.csv`](reports/daily.csv): one row per day × device × project × model\n"
-        "- [`reports/weekly/`](reports/weekly/): one summary per week\n"
-        "- Costs are API list prices from [`report/pricing.json`](report/pricing.json), for comparison only: "
-        "a subscription is not billed per token." + (" Models marked * are priced by their family." if est else "")
-        + "\n",
-        "\n" + setup_text(root),
     ]
-    return tidy_md("".join(parts))
+    return "".join(parts)
 
 
 def tidy_md(md):
@@ -574,7 +641,6 @@ code{font-size:13px}a{color:inherit}
 
 def md_to_html(md, charts):
     """Just enough Markdown for our own README: headings, tables, images, paragraphs."""
-    import re
     out, table, rows = [], False, []
 
     def inline(s):
@@ -614,7 +680,7 @@ def md_to_html(md, charts):
         elif line.startswith("### "):
             out.append("<h3>%s</h3>" % inline(line[4:]))
         elif line.startswith("## "):
-            out.append("<h2>%s</h2>" % inline(line[3:]))
+            out.append('<h2 id="%s">%s</h2>' % (anchor(line[3:]), inline(line[3:])))
         elif line.startswith("# "):
             out.append("<h1>%s</h1>" % inline(line[2:]))
         elif line.startswith("- "):

@@ -199,3 +199,72 @@ class SettingsTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ExcludeTests(unittest.TestCase):
+    def setUp(self):
+        import shutil
+        shutil.rmtree(TMP / "claude", ignore_errors=True)
+        shutil.rmtree(TMP / "home", ignore_errors=True)
+        shutil.rmtree(TMP / "xrepo", ignore_errors=True)
+        collect.REPO = TMP / "xrepo"
+        (TMP / "home").mkdir(parents=True)
+        collect.write_json(collect.CONFIG, {"device": "dev1"})
+
+    def test_patterns(self):
+        ex = collect.Excluder(["Maria/Tropin*", "~/Desktop/private", "C:\\Work\\Secret"])
+        self.assertTrue(ex.hit("/x/bot", "maria/tropin-trade-bot"))           # name glob, any case
+        self.assertFalse(ex.hit("/x/bot", "maria/avito_bitrix_bot"))
+        home = os.path.expanduser("~")
+        self.assertTrue(ex.hit(home + "/Desktop/private", "whatever"))          # the folder itself
+        self.assertTrue(ex.hit(home + "/Desktop/private/app/.claude/worktrees/w1", "app"))  # inside it
+        self.assertFalse(ex.hit(home + "/Desktop/private-notes", "notes"))     # sibling with same prefix
+        self.assertTrue(ex.hit("c:\\work\\secret\\api", "api"))                # Windows path
+        self.assertFalse(collect.Excluder([]))
+
+    def test_excluded_events_never_collected(self):
+        other = user("u9", "hi")
+        other["cwd"] = "/nowhere/public"
+        write(PROJ / "a.jsonl", [user("u1", "secret prompt"), reply("1", 5), other])
+        evs, _ = collect.collect("dev1", {}, collect.Excluder(["geco_*"]))
+        self.assertEqual([e["project"] for e in evs], ["public"])
+
+    def run_main(self):
+        old = sys.argv
+        sys.argv = ["collect.py", "--no-git"]
+        try:
+            collect.main()
+        finally:
+            sys.argv = old
+
+    def lines(self):
+        out = []
+        for f in sorted((TMP / "xrepo" / "devices" / "dev1").glob("*.jsonl")):
+            out += [json.loads(l) for l in f.read_text().splitlines()]
+        return out
+
+    def test_add_purges_and_remove_reimports(self):
+        other = reply("2", 7)
+        other["cwd"] = "/nowhere/public"
+        write(PROJ / "a.jsonl", [user("u1", "hello"), reply("1", 5), other])
+        self.run_main()
+        self.assertEqual(sorted(e["project"] for e in self.lines()), ["geco_website", "geco_website", "public"])
+        # exclude by folder -> already-written events of that project are removed
+        cfg = collect.read_json(collect.CONFIG, {})
+        cfg["exclude"] = ["/nowhere/geco_website"]
+        collect.write_json(collect.CONFIG, cfg)
+        self.run_main()
+        self.assertEqual([e["project"] for e in self.lines()], ["public"])
+        # new activity in the excluded project is not collected
+        write(PROJ / "a.jsonl", [reply("3", 9)])
+        self.run_main()
+        self.assertEqual([e["project"] for e in self.lines()], ["public"])
+        # shared list works too, and un-excluding re-imports everything from the logs
+        cfg["exclude"] = []
+        collect.write_json(collect.CONFIG, cfg)
+        collect.write_json(TMP / "xrepo" / "exclude.json", {"projects": ["pub*"]})
+        self.run_main()
+        projects = sorted(e["project"] for e in self.lines())
+        self.assertEqual(projects, ["geco_website"] * 3)                  # prompt + 2 replies back, public gone
+        self.assertEqual(sorted(e["id"] for e in self.lines() if e["k"] == "reply"),
+                         sorted(collect.short_id("msg_%s:req_%s" % (i, i)) for i in ("1", "3")))

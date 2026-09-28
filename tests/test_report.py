@@ -92,16 +92,31 @@ class ReportTests(unittest.TestCase):
                                       "project": "me/app", "len": 40})
         events["mac"].append({"k": "command", "id": "c1", "ts": "2026-09-28T02:00:00Z", "name": "/model"})
         root = repo_with(events)
-        build.build(root, now=datetime.fromisoformat("2026-09-28T12:00:00+08:00"))
+        build.CFG["device_order"] = ["work-pc"]           # explicit order first, then alphabetical
+        try:
+            build.build(root, now=datetime.fromisoformat("2026-09-28T12:00:00+08:00"))
+        finally:
+            build.CFG.pop("device_order")
         readme = (root / "README.md").read_text()
-        for needle in ("## At a glance", "opus-5-5", "work-pc", "/model", "qa", "reports/charts/heatmap.svg"):
+        order = [readme.index(h) for h in ("## Device: work-pc", "## Device: mac", "## All devices", "## Data")]
+        self.assertEqual(order, sorted(order))
+        self.assertIn("[work-pc](#device-work-pc)", readme)
+        # each device section only counts its own device: 56 replies each, 112 in total
+        mac = readme[readme.index("## Device: mac"):readme.index("## All devices")]
+        self.assertIn("reports/charts/mac/daily-cost.svg", mac)
+        self.assertNotIn("sonnet-5", mac)                    # work-pc's model does not leak in
+        self.assertIn("sonnet-5", readme[readme.index("## All devices"):])
+        for needle in ("**Jump to:**", "opus-5-5", "work-pc", "/model", "qa", "reports/charts/all/heatmap.svg"):
             self.assertIn(needle, readme)
-        self.assertNotIn("\n|", readme.split("## At a glance")[0])
-        for f in (root / "reports" / "charts").glob("*.svg"):
+        self.assertNotIn("\n|", readme.split("**Jump to:**")[0])
+        svgs = list((root / "reports" / "charts").glob("*/*.svg"))
+        for f in svgs:
             ET.fromstring(f.read_text())                       # well-formed XML
-        self.assertEqual(len(list((root / "reports" / "charts").glob("*.svg"))), 6)
+        self.assertEqual(sorted({f.parent.name for f in svgs}), ["all", "mac", "work-pc"])
+        self.assertEqual(len(svgs), 5 + 5 + 6)                 # device-split chart only in the total
         html = (root / "reports" / "dashboard.html").read_text()
-        self.assertEqual(html.count("<svg"), 6)
+        self.assertEqual(html.count("<svg"), 16)
+        self.assertIn('id="device-mac"', html)
         self.assertIn("<table>", html)
         csv_lines = (root / "reports" / "daily.csv").read_text().splitlines()
         self.assertEqual(csv_lines[0].split(",")[0], "date")

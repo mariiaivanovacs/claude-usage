@@ -13,8 +13,18 @@ Standard library only; Python 3.8+; macOS, Linux and Windows.
     collect.py --no-git        collect into the working tree only
     collect.py --dry-run       count what would be collected, change nothing
     collect.py settings install|uninstall   edit ~/.claude/settings.json
+    collect.py exclude list                 show patterns and the projects they hide
+    collect.py exclude add PATTERN [--shared]
+    collect.py exclude remove PATTERN [--shared]
+
+Excluded projects are dropped on the device, before anything is written or pushed.
+A PATTERN is a project name glob ("maria/tropin-trade-bot", "*secret*") or a folder
+("~/Desktop/private", which covers everything inside it). Local patterns live in
+~/.claude-usage/config.json and never leave the device; --shared patterns go to
+exclude.json in the repo and apply to every device.
 """
 import argparse
+import fnmatch
 import hashlib
 import json
 import os
@@ -153,6 +163,89 @@ def project_name(cwd, cache):
     return name
 
 
+# --------------------------------------------------------------- exclusion
+
+SHARED_EXCLUDE = "exclude.json"
+
+
+def exclude_patterns():
+    """(local, shared) pattern lists."""
+    local = read_json(CONFIG, {}).get("exclude", [])
+    shared = read_json(REPO / SHARED_EXCLUDE, {}).get("projects", [])
+    return [p for p in local if p], [p for p in shared if p]
+
+
+def is_path_pattern(p):
+    return p.startswith(("/", "~", "\\")) or re.match(r"^[A-Za-z]:[\\/]", p) is not None
+
+
+def norm_path(p):
+    return os.path.expanduser(p).replace("\\", "/").rstrip("/").lower()
+
+
+class Excluder:
+    def __init__(self, patterns):
+        self.names = [p.lower() for p in patterns if not is_path_pattern(p)]
+        self.paths = [norm_path(p) for p in patterns if is_path_pattern(p)]
+        self.cache = {}
+
+    def __bool__(self):
+        return bool(self.names or self.paths)
+
+    def name_hit(self, name):
+        name = (name or "").lower()
+        return any(fnmatch.fnmatchcase(name, p) for p in self.names)
+
+    def path_hit(self, cwd):
+        if not cwd or not self.paths:
+            return False
+        c = norm_path(cwd)
+        return any(c == p or c.startswith(p + "/") or fnmatch.fnmatchcase(c, p) for p in self.paths)
+
+    def hit(self, cwd, name):
+        key = (cwd, name)
+        if key not in self.cache:
+            self.cache[key] = self.name_hit(name) or self.path_hit(cwd)
+        return self.cache[key]
+
+    def hidden_names(self, projects):
+        """Project names to purge from files already written (events store no path)."""
+        return {n for cwd, n in projects.items() if self.path_hit(cwd)}
+
+
+def patterns_hash(patterns):
+    return hashlib.sha1("\n".join(sorted(patterns)).encode()).hexdigest()[:12]
+
+
+def purge(device, excluder, projects):
+    """Drop already-written events of excluded projects from this device's files."""
+    if not excluder:
+        return 0
+    extra = excluder.hidden_names(projects)
+    removed = 0
+    for f in sorted((REPO / "devices" / device).glob("*.jsonl")):
+        keep, drop = [], 0
+        with open(f, encoding="utf-8") as fh:
+            for line in fh:
+                try:
+                    name = json.loads(line).get("project")
+                except ValueError:
+                    keep.append(line)
+                    continue
+                if excluder.name_hit(name) or name in extra:
+                    drop += 1
+                else:
+                    keep.append(line)
+        if drop:
+            removed += drop
+            if keep:
+                with open(f, "w", encoding="utf-8", newline="\n") as fh:
+                    fh.writelines(keep)
+            else:
+                f.unlink()
+    return removed
+
+
 # --------------------------------------------------------- event extraction
 
 TAG_PREFIX_RE = re.compile(r"^\s*<(ide_[a-z_]+|system-reminder)>.*?</\1>\s*", re.S)
@@ -201,10 +294,12 @@ def classify_user(d):
     return "prompt", len(stripped)
 
 
-def common(d, device, projects):
+def common(d, device, projects, excluder=None):
     ts = d.get("timestamp")
     dt = parse_ts(ts)
     if not dt:
+        return None
+    if excluder and excluder.hit(d.get("cwd"), project_name(d.get("cwd"), projects)):
         return None
     return {
         "ts": dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -214,7 +309,7 @@ def common(d, device, projects):
     }
 
 
-def extract(d, device, projects):
+def extract(d, device, projects, excluder=None):
     """One transcript record -> an event dict, or None."""
     t = d.get("type")
     if t == "assistant":
@@ -223,7 +318,7 @@ def extract(d, device, projects):
         model = m.get("model")
         if not u or not model or model == "<synthetic>" or not m.get("id"):
             return None
-        base = common(d, device, projects)
+        base = common(d, device, projects, excluder)
         if not base:
             return None
         tools, skills = [], []
@@ -262,7 +357,7 @@ def extract(d, device, projects):
         c = classify_user(d)
         if not c or not d.get("uuid"):
             return None
-        base = common(d, device, projects)
+        base = common(d, device, projects, excluder)
         if not base:
             return None
         kind, val = c
@@ -323,8 +418,13 @@ def new_lines(path, fstate):
     return lines, {"offset": offset + end + 1, "ino": ident}
 
 
-def collect(device, state):
-    """Scan every transcript; return new events and the updated state."""
+def collect(device, state, excluder=None, only=None):
+    """Scan every transcript; return new events and the updated state.
+
+    With `only` (an Excluder of un-excluded patterns) every file is re-read from the
+    start and only events of those projects are returned; offsets are untouched."""
+    if only is not None:
+        return backfill(device, state, excluder, only)
     files_state = state.setdefault("files", {})
     seen = state.setdefault("seen", {})
     projects = state.setdefault("projects", {})
@@ -339,7 +439,7 @@ def collect(device, state):
                 d = json.loads(raw)
             except ValueError:
                 continue
-            ev = extract(d, device, projects)
+            ev = extract(d, device, projects, excluder)
             if not ev:
                 continue
             prev = seen.get(ev["id"])
@@ -362,6 +462,31 @@ def collect(device, state):
     cutoff = (datetime.now(timezone.utc) - timedelta(days=SEEN_KEEP_DAYS)).strftime("%Y-%m-%dT")
     for k in [k for k, v in seen.items() if v[2] < cutoff]:
         del seen[k]
+    return [compact(e) for e in pending.values()], state
+
+
+def backfill(device, state, excluder, only):
+    projects = state.setdefault("projects", {})
+    pending = {}
+    for path in scan_files():
+        with open(path, "rb") as f:
+            for raw in f:
+                if b'"assistant"' not in raw and b'"user"' not in raw:
+                    continue
+                try:
+                    d = json.loads(raw)
+                except ValueError:
+                    continue
+                cwd = d.get("cwd")
+                if not only.hit(cwd, project_name(cwd, projects)):
+                    continue
+                ev = extract(d, device, projects, excluder)
+                if not ev:
+                    continue
+                if ev["id"] in pending:
+                    merge(pending[ev["id"]], ev)
+                else:
+                    pending[ev["id"]] = ev
     return [compact(e) for e in pending.values()], state
 
 
@@ -404,14 +529,20 @@ def git_pull():
     return code == 0
 
 
-def git_commit(device, n_events, days):
-    git("add", "--", "devices/%s" % device)
+def git_commit(device, message):
+    git("add", "-A", "--", "devices/%s" % device)
+    if (REPO / SHARED_EXCLUDE).exists():
+        git("add", "--", SHARED_EXCLUDE)
     code, _ = git("diff", "--cached", "--quiet")
     if code == 0:
         return False
-    span = days[0] if len(days) == 1 else "%s..%s" % (days[0], days[-1])
-    git("commit", "-q", "-m", "data(%s): %d events, %s" % (device, n_events, span))
+    git("commit", "-q", "-m", message)
     return True
+
+
+def data_message(device, n_events, days):
+    span = days[0] if len(days) == 1 else "%s..%s" % (days[0], days[-1])
+    return "data(%s): %d events, %s" % (device, n_events, span)
 
 
 def git_push():
@@ -499,6 +630,45 @@ def detach():
     subprocess.Popen(args, **kw)
 
 
+def exclude_cmd(args):
+    """exclude list | add PATTERN [--shared] | remove PATTERN [--shared]"""
+    shared = "--shared" in args
+    args = [a for a in args if a != "--shared"]
+    action = args[0] if args else "list"
+    cfg = read_json(CONFIG, {})
+    shared_doc = read_json(REPO / SHARED_EXCLUDE, {"projects": []})
+    if action in ("add", "remove"):
+        if len(args) != 2:
+            sys.exit("usage: collect.py exclude %s PATTERN [--shared]" % action)
+        pat = args[1]
+        lst = shared_doc.setdefault("projects", []) if shared else cfg.setdefault("exclude", [])
+        if action == "add" and pat not in lst:
+            lst.append(pat)
+        elif action == "remove":
+            if pat not in lst:
+                sys.exit("not in the %s list: %s" % ("shared" if shared else "local", pat))
+            lst.remove(pat)
+        if shared:
+            write_json(REPO / SHARED_EXCLUDE, shared_doc)
+        else:
+            write_json(CONFIG, cfg)
+        print("%s %s pattern: %s" % ("added" if action == "add" else "removed",
+                                     "shared" if shared else "local", pat))
+    local, shared_p = exclude_patterns()
+    ex = Excluder(local + shared_p)
+    print("\nLocal patterns (this device only, never pushed): %s" % (local or "none"))
+    print("Shared patterns (exclude.json, all devices):      %s" % (shared_p or "none"))
+    names = sorted(set(read_json(STATE, {}).get("projects", {}).values()))
+    projects = read_json(STATE, {}).get("projects", {})
+    if names:
+        print("\nProjects seen on this device:")
+        for n in names:
+            cwds = [c for c, v in projects.items() if v == n]
+            hidden = any(ex.hit(c, n) for c in cwds)
+            print("  %s %s" % ("[excluded]" if hidden else "          ", n))
+    return action in ("add", "remove")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--detach", action="store_true")
@@ -510,6 +680,11 @@ def main():
     if a.cmd[:1] == ["settings"] and a.cmd[1:2] in (["install"], ["uninstall"]):
         edit_settings(a.cmd[1])
         return 0
+    if a.cmd[:1] == ["exclude"]:
+        if not exclude_cmd(a.cmd[1:]):
+            return 0
+        print("\nSyncing now so the change takes effect...")
+        a.cmd = []
     if a.cmd:
         ap.error("unknown command: %s" % " ".join(a.cmd))
     if a.detach:
@@ -529,17 +704,39 @@ def main():
         if use_git:
             git_pull()
         state = read_json(STATE, {})
-        events, state = collect(device, state)
+        local, shared = exclude_patterns()
+        patterns = local + shared
+        excluder = Excluder(patterns)
+        events, state = collect(device, state, excluder)
         if a.dry_run:
             kinds = {}
             for ev in events:
                 kinds[ev["k"]] = kinds.get(ev["k"], 0) + 1
             print(json.dumps({"events": len(events), "by_kind": kinds}, indent=2))
             return 0
+        notes = []
+        if state.get("exclude_hash") != patterns_hash(patterns):
+            # patterns changed: hide newly excluded projects, re-import un-excluded ones
+            removed = purge(device, excluder, state.get("projects", {}))
+            if removed:
+                notes.append("removed %d events of excluded projects" % removed)
+            dropped = [p for p in state.get("exclude_patterns", []) if p not in patterns]
+            if dropped:
+                back, state = collect(device, state, excluder, only=Excluder(dropped))
+                events += back
+                if back:
+                    notes.append("re-imported %d events of un-excluded projects" % len(back))
+            state["exclude_hash"] = patterns_hash(patterns)
+            state["exclude_patterns"] = patterns
         days = write_events(events, device) if events else []
-        if use_git and events:
-            git_commit(device, len(events), days)
+        if use_git and (events or notes):
+            msg = data_message(device, len(events), days) if events else "purge(%s)" % device
+            if notes:
+                msg += "; " + "; ".join(notes)
+            git_commit(device, msg)
         write_json(STATE, state)                 # data is on disk (and committed) first
+        for n in notes:
+            log(n)
         pushed = git_push() if use_git else None
         log("%d new events on %s%s in %.1fs" % (
             len(events), device, "" if pushed is None else (", pushed" if pushed else ", NOT pushed"),
