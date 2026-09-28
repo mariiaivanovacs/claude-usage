@@ -2,13 +2,111 @@
 
 Claude Code usage across all my devices, rebuilt automatically every day (and after every sync). Times are Asia/Kuala_Lumpur. Updated 2026-09-28.
 
-Tracking since 2026-07-28 · 1 device · 33,949 replies · 1,318 prompts
+Tracking since 2026-07-28 · 2 devices · 48,989 replies · 1,898 prompts
 
-**Jump to:** [macbook-pro](#device-macbook-pro)
+**Jump to:** [demo-laptop](#device-demo-laptop) · [macbook-pro](#device-macbook-pro) · [All devices](#all-devices)
 
 | Device | Cost, 7 days | Cost, 30 days | Output, 30 days | Last active | Sync |
 | --- | ---: | ---: | ---: | ---: | --- |
+| [demo-laptop](#device-demo-laptop) | $341 | $1,030 | 6.5M | 2026-09-28 | ok |
 | [macbook-pro](#device-macbook-pro) | $1,221 | $3,977 | 15.3M | 2026-09-28 | ok |
+
+## Device: demo-laptop
+
+|  | Last 7 days | vs previous 7 | Last 30 days | All time |
+| --- | ---: | ---: | ---: | ---: |
+| API-equivalent cost | $341 | ▲ 1048% | $1,030 | $1,791 |
+| Output tokens | 2.2M | ▲ 213% | 6.5M | 10.5M |
+| Prompts | 118 | ▲ 1211% | 295 | 580 |
+| Sessions | 9 | ▲ 50% | 34 | 79 |
+| Active hours | 60 | ▲ 445% | 203 | 439 |
+| Active days | 7 / 7 |  | 23 / 30 | 55 |
+| Cache hit ratio | 98% |  | 98% | 98% |
+
+<img src="reports/charts/demo-laptop/daily-cost.svg" alt="API-equivalent cost per day by model" width="760">
+
+<img src="reports/charts/demo-laptop/model-mix.svg" alt="Share of output tokens per week by model" width="760">
+
+### Models, last 30 days
+
+| Model | Replies | Output | API cost | Share |
+| --- | ---: | ---: | ---: | ---: |
+| claude-sonnet-5 | 7,292 | 5.3M | $872 | 85% |
+| claude-opus-5-5 | 913 | 1.1M | $147 | 14% |
+| claude-opus-4-8 | 44 | 36.2K | $11.05 | 1% |
+
+<img src="reports/charts/demo-laptop/projects.svg" alt="Top projects by cost" width="760">
+
+<img src="reports/charts/demo-laptop/heatmap.svg" alt="Prompts by weekday and hour" width="760">
+
+### Heaviest 5-hour windows, last 30 days
+
+5-hour windows counted on this device alone; the limit itself is shared by all devices.
+
+| Window start | API cost | Output | Main models |
+| --- | ---: | ---: | --- |
+| Fri 04 Sep 20:00 | $56.61 | 322K | sonnet-5 |
+| Thu 10 Sep 01:00 | $53.54 | 192.5K | sonnet-5 |
+| Thu 24 Sep 20:00 | $52.13 | 466.1K | sonnet-5, opus-5-5 |
+| Fri 25 Sep 09:00 | $48.93 | 231.7K | opus-5-5, sonnet-5 |
+| Sat 26 Sep 00:00 | $43.76 | 387.2K | opus-5-5, sonnet-5 |
+
+### How you work
+
+<img src="reports/charts/demo-laptop/cache.svg" alt="Cache hit ratio per day" width="760">
+
+| Habit (last 30 days) | Value |
+| --- | ---: |
+| Work done by subagents (share of cost) | 3% |
+| Prompts per session (average) | 9.2 |
+| Prompt length (median characters) | 206 |
+| Replies you interrupted | 7 |
+| 5-hour windows used | 51 (2.2 per active day) |
+| Effort setting mix | high 89%, medium 11% |
+| Where you use it | cli 100% |
+
+<table><tr><td valign="top">
+
+**Top tools**
+
+| Tool | Calls |
+| --- | ---: |
+| Bash | 6,380 |
+| Read | 589 |
+| Edit | 321 |
+| WebFetch | 147 |
+| Write | 137 |
+| WebSearch | 104 |
+| Artifact | 73 |
+| Claude_Browser: javascript_tool | 66 |
+| Claude_Browser: computer | 59 |
+| AskUserQuestion | 50 |
+
+</td><td valign="top">
+
+**Skills**
+
+| Skill | Uses |
+| --- | ---: |
+| browse | 8 |
+| artifact-design | 3 |
+| design-consultation | 3 |
+| update-config | 1 |
+| threejs-animation | 1 |
+| plan-ceo-review | 1 |
+| threejs-materials | 1 |
+| design-shotgun | 1 |
+
+</td><td valign="top">
+
+**Slash commands**
+
+| Command | Uses |
+| --- | ---: |
+| /model | 63 |
+| /usage-report | 2 |
+
+</td></tr></table>
 
 ## Device: macbook-pro
 
@@ -41,15 +139,15 @@ Tracking since 2026-07-28 · 1 device · 33,949 replies · 1,318 prompts
 
 ### Heaviest 5-hour windows, last 30 days
 
-Subscription limits count usage in 5-hour windows across all devices, so these are the stretches closest to a limit.
+5-hour windows counted on this device alone; the limit itself is shared by all devices.
 
-| Window start | API cost | Output | Main models | Devices |
-| --- | ---: | ---: | --- | --- |
-| Thu 24 Sep 10:00 | $242 | 1M | opus-5, opus-5-5 | macbook-pro |
-| Wed 09 Sep 14:00 | $218 | 509.7K | opus-5, sonnet-5 | macbook-pro |
-| Thu 10 Sep 15:00 | $186 | 423.6K | opus-5, opus-4-8 | macbook-pro |
-| Mon 07 Sep 14:00 | $181 | 468.4K | opus-5, sonnet-5 | macbook-pro |
-| Tue 08 Sep 13:00 | $147 | 534.1K | opus-5, sonnet-5 | macbook-pro |
+| Window start | API cost | Output | Main models |
+| --- | ---: | ---: | --- |
+| Thu 24 Sep 10:00 | $242 | 1M | opus-5, opus-5-5 |
+| Wed 09 Sep 14:00 | $218 | 509.7K | opus-5, sonnet-5 |
+| Thu 10 Sep 15:00 | $186 | 423.6K | opus-5, opus-4-8 |
+| Mon 07 Sep 14:00 | $181 | 468.4K | opus-5, sonnet-5 |
+| Tue 08 Sep 13:00 | $147 | 534.1K | opus-5, sonnet-5 |
 
 ### How you work
 
@@ -107,6 +205,111 @@ Subscription limits count usage in 5-hour windows across all devices, so these a
 | --- | ---: |
 | /model | 158 |
 | /usage-report | 2 |
+| /ultrareview | 1 |
+
+</td></tr></table>
+
+## All devices
+
+Everything below adds up all devices.
+
+|  | Last 7 days | vs previous 7 | Last 30 days | All time |
+| --- | ---: | ---: | ---: | ---: |
+| API-equivalent cost | $1,562 | ▲ 409% | $5,007 | $8,273 |
+| Output tokens | 7.2M | ▲ 138% | 21.8M | 34.5M |
+| Prompts | 366 | ▲ 510% | 977 | 1,898 |
+| Sessions | 19 | ▲ 46% | 69 | 159 |
+| Active hours | 93 | ▲ 258% | 327 | 724 |
+| Active days | 7 / 7 |  | 25 / 30 | 58 |
+| Cache hit ratio | 98% |  | 98% | 98% |
+
+<img src="reports/charts/all/daily-cost.svg" alt="API-equivalent cost per day by model" width="760">
+
+<img src="reports/charts/all/devices.svg" alt="Weekly cost by device" width="760">
+
+<img src="reports/charts/all/model-mix.svg" alt="Share of output tokens per week by model" width="760">
+
+### Models, last 30 days
+
+| Model | Replies | Output | API cost | Share |
+| --- | ---: | ---: | ---: | ---: |
+| claude-opus-5 | 9,375 | 7.4M | $2,533 | 51% |
+| claude-sonnet-5 | 14,210 | 10.2M | $1,810 | 36% |
+| claude-opus-5-5 | 3,591 | 4.1M | $625 | 12% |
+| claude-opus-4-8 | 142 | 118.1K | $39.12 | 1% |
+
+<img src="reports/charts/all/projects.svg" alt="Top projects by cost" width="760">
+
+<img src="reports/charts/all/heatmap.svg" alt="Prompts by weekday and hour" width="760">
+
+### Heaviest 5-hour windows, last 30 days
+
+Subscription limits count usage in 5-hour windows across all devices, so these are the stretches closest to a limit.
+
+| Window start | API cost | Output | Main models | Devices |
+| --- | ---: | ---: | --- | --- |
+| Thu 24 Sep 10:00 | $246 | 1M | opus-5, opus-5-5 | demo-laptop, macbook-pro |
+| Wed 09 Sep 14:00 | $219 | 512K | opus-5, sonnet-5 | demo-laptop, macbook-pro |
+| Thu 10 Sep 15:00 | $186 | 423.6K | opus-5, opus-4-8 | macbook-pro |
+| Mon 07 Sep 14:00 | $181 | 468.4K | opus-5, sonnet-5 | macbook-pro |
+| Tue 08 Sep 13:00 | $147 | 534.1K | opus-5, sonnet-5 | macbook-pro |
+
+### How you work
+
+<img src="reports/charts/all/cache.svg" alt="Cache hit ratio per day" width="760">
+
+| Habit (last 30 days) | Value |
+| --- | ---: |
+| Work done by subagents (share of cost) | 3% |
+| Prompts per session (average) | 14.6 |
+| Prompt length (median characters) | 201 |
+| Replies you interrupted | 20 |
+| 5-hour windows used | 77 (3.1 per active day) |
+| Effort setting mix | high 87%, medium 13% |
+| Where you use it | vscode 68%, cli 30%, desktop 2% |
+
+<table><tr><td valign="top">
+
+**Top tools**
+
+| Tool | Calls |
+| --- | ---: |
+| Bash | 21,074 |
+| Read | 1,978 |
+| Edit | 1,104 |
+| WebFetch | 471 |
+| Write | 449 |
+| WebSearch | 320 |
+| Artifact | 288 |
+| Claude_Browser: javascript_tool | 198 |
+| Claude_Browser: computer | 176 |
+| AskUserQuestion | 163 |
+
+</td><td valign="top">
+
+**Skills**
+
+| Skill | Uses |
+| --- | ---: |
+| browse | 24 |
+| artifact-design | 10 |
+| design-consultation | 10 |
+| design-shotgun | 8 |
+| plan-ceo-review | 6 |
+| threejs-animation | 5 |
+| threejs-materials | 3 |
+| update-config | 2 |
+| artifact-diagramming | 1 |
+| connect-chrome | 1 |
+
+</td><td valign="top">
+
+**Slash commands**
+
+| Command | Uses |
+| --- | ---: |
+| /model | 221 |
+| /usage-report | 4 |
 | /ultrareview | 1 |
 
 </td></tr></table>
