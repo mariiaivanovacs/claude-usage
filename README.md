@@ -2,15 +2,15 @@
 
 Claude Code usage across all my devices, rebuilt automatically every day (and after every sync). Weeks start Monday; times are Asia/Kuala_Lumpur. Updated 2026-09-28.
 
-Tracking since 2026-07-28 · 1 device · 33,949 replies · 1,318 prompts
+Tracking since 2026-07-28 · 1 device · 34,061 replies · 1,328 prompts
 
 **Jump to:** [macbook-pro](#device-macbook-pro) · [Plan](#plan) · [By month](#by-month)
 
 ## Device: macbook-pro
 
 **This week so far (Mon 28 Sep – today):**  
-294.5M input · 624.9K output · 98% from cache · 37 prompts · $121 API-equivalent  
-vs the same days last week: output ▼ 15% · prompts ▲ 12% · cost ▼ 28%
+346.6M input · 763.8K output · 98% from cache · 47 prompts · $136 API-equivalent  
+vs the same days last week: output ▲ 3% · prompts ▲ 42% · cost ▼ 18%
 
 <img src="reports/charts/macbook-pro/projects.svg" alt="projects" width="760">
 
@@ -31,7 +31,7 @@ Only projects this tracker collects are counted. **/usage** is the weekly-limit 
 | 07 Sep – 13 Sep | $1,585 | – | – | final |
 | 14 Sep – 20 Sep | $197 | – | – | final |
 | 21 Sep – 27 Sep | $1,267 | – | – | final |
-| 28 Sep – 04 Oct | $121 | – | – | in progress |
+| 28 Sep – 04 Oct | $136 | – | – | in progress |
 
 ### August 2026
 
@@ -49,7 +49,7 @@ _Record a reading: open `/usage` in Claude Code, then run `python3 ~/.claude-usa
 
 | Month | API cost | Output | Prompts | Most-used device | Status |
 | --- | ---: | ---: | ---: | --- | --- |
-| 2026-09 | $3,811 | 14.8M | 640 | macbook-pro | in progress |
+| 2026-09 | $3,827 | 14.9M | 650 | macbook-pro | in progress |
 | [2026-08](archive/2026-08.json) | $2,109 | 6.3M | 540 | macbook-pro | final |
 | [2026-07](archive/2026-07.json) | $561 | 3M | 138 | macbook-pro | final |
 
@@ -58,7 +58,7 @@ _Record a reading: open `/usage` in Claude Code, then run `python3 ~/.claude-usa
 - [`archive/`](archive/): one JSON file per finished month, per device and in total
 - [`reports/daily.csv`](reports/daily.csv): one row per day × device × project × model
 - [`reports/dashboard.html`](reports/dashboard.html): this report with hover values (download and open)
-- Costs are API list prices from [`report/pricing.json`](report/pricing.json), for comparison only: a subscription is not billed per token.
+- Costs are API list prices from [`report/pricing.json`](report/pricing.json), for comparison only: a subscription is not billed per token. Models marked * are priced by their family.
 
 ## Set up a device
 
