@@ -326,6 +326,14 @@ def model_rows(replies, first, last):
     return rows
 
 
+def tool_name(t):
+    """mcp__Claude_Browser__computer -> Claude_Browser: computer"""
+    if t and t.startswith("mcp__"):
+        parts = t[5:].split("__", 1)
+        return ": ".join(parts)
+    return t
+
+
 def counter_rows(counter, n=10):
     return [[escape(str(k)), format(v, ",")] for k, v in counter.most_common(n)]
 
@@ -406,7 +414,7 @@ def readme(replies, others, today, root):
     tools, skills, commands, effort, entry = Counter(), Counter(), Counter(), Counter(), Counter()
     sub_cost = 0.0
     for e in r30:
-        tools.update(e.get("tools", []))
+        tools.update(tool_name(t) for t in e.get("tools", []))
         skills.update(e.get("skills", []))
         effort[e.get("effort") or "(default)"] += 1
         entry[e.get("entry") or "(unknown)"] += 1
@@ -558,7 +566,8 @@ h1{font-size:28px;margin:0 0 4px}h2{margin:40px 0 12px;font-size:20px}h3{font-si
 p{color:var(--ink2)}svg{max-width:100%;height:auto;display:block;margin:16px 0}
 table{border-collapse:collapse;width:100%;margin:8px 0;font-variant-numeric:tabular-nums;font-size:14px}
 th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left}td.r,th.r{text-align:right}
-.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px}
+.grid3>div{min-width:0}td{overflow-wrap:anywhere}td.r,th.r{white-space:nowrap;overflow-wrap:normal}
 code{font-size:13px}a{color:inherit}
 </style></head><body><main>""" + html_md + "</main></body></html>\n"
 
