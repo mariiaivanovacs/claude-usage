@@ -353,20 +353,26 @@ def build(root=ROOT, now=None):
         charts["%s/%s" % (slug, name)] = body
         return '<img src="reports/charts/%s/%s.svg" alt="%s" width="760">' % (slug, name, name)
 
+    ms = today.replace(day=1)
+    month_label = "this month so far (%s – today)" % ms.strftime("%d %b")
+    o_month = in_range(others, ms, today)
     for d in devices:
         r = [e for e in r_week if e["device"] == d]
         o = [e for e in o_week if e["device"] == d]
+        om = [e for e in o_month if e["device"] == d]
         parts.append("## Device: %s\n" % d)
         if not r and not o:
             last = max(e["day"] for e in replies if e["device"] == d)
             parts.append("_No activity this week · last active %s._\n" % last.strftime("%a %d %b"))
+            if any(e["k"] == "prompt" for e in om):
+                parts.append(save(d, "heatmap", chart_heatmap(om, month_label)) + "\n")
             continue
         pr = [e for e in in_range(replies, *prev) if e["device"] == d]
         po = [e for e in in_range(others, *prev) if e["device"] == d]
         line, vs = stats_line(token_stats(r, o), token_stats(pr, po))
-        parts.append("**%s%s:** %s  \n%s\n" % (label[0].upper(), label[1:], line, vs))
+        parts.append("**%s%s:**  \n%s  \n%s\n" % (label[0].upper(), label[1:], line, vs))
         parts.append(save(d, "projects", chart_projects(r, label)) + "\n")
-        parts.append(save(d, "heatmap", chart_heatmap(o, label)) + "\n")
+        parts.append(save(d, "heatmap", chart_heatmap(om, month_label)) + "\n")
         parts.append(save(d, "models", chart_models(r, label)) + "\n")
 
     if len(devices) > 1:

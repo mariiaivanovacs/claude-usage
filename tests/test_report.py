@@ -109,13 +109,17 @@ class ReportTests(unittest.TestCase):
                                        "## All devices", "## By month", "## Data")]
         self.assertEqual(order, sorted(order))
         mac = md[md.index("## Device: mac"):md.index("## Device: old-pc")]
-        self.assertIn("This week so far (Mon 28 Sep – today)", mac)
+        self.assertIn("**This week so far (Mon 28 Sep – today):**  \n", mac)   # numbers on their own line
         self.assertIn("3 prompts", mac)                           # Mon, Tue, Wed only
+        heat = (root / "reports/charts/mac/heatmap.svg").read_text()
+        self.assertIn("this month so far (01 Sep – today)", heat)
+        cells = [int(n) for n in __import__("re").findall(r"· (\d+) prompts?</title>", heat)]
+        self.assertEqual(sum(cells), 30)                          # every September prompt, not just this week
         self.assertEqual(mac.count("<img"), 3)                    # projects, heatmap, models
         # a device with nothing this week gets one line, no charts
         old = md[md.index("## Device: old-pc"):md.index("## Device: work-pc")]
         self.assertIn("No activity this week · last active Wed 02 Sep", old)
-        self.assertNotIn("<img", old)
+        self.assertNotIn("<img", old)                             # old-pc has no prompts this month either
         allsec = md[md.index("## All devices"):md.index("## By month")]
         self.assertIn("| **Total** |", allsec)
         for chart in ("devices", "model-share", "project-grid", "hours"):
