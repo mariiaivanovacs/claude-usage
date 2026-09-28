@@ -77,11 +77,11 @@ Subscription limits count usage in 5-hour windows, so these are the stretches cl
 | Read | 2,961 |
 | Edit | 2,527 |
 | Write | 918 |
-| mcp__Claude_Browser__computer | 655 |
-| mcp__Claude_Browser__javascript_tool | 457 |
+| Claude_Browser: computer | 655 |
+| Claude_Browser: javascript_tool | 457 |
 | WebFetch | 410 |
 | Artifact | 329 |
-| mcp__Claude_Browser__browser_batch | 320 |
+| Claude_Browser: browser_batch | 320 |
 | WebSearch | 288 |
 
 </td><td valign="top">
