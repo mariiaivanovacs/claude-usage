@@ -2,21 +2,21 @@
 
 Claude Code usage across all my devices, rebuilt automatically every day (and after every sync). Weeks start Monday; times are Asia/Kuala_Lumpur. Updated 2026-09-29.
 
-Tracking since 2026-07-28 · 1 device · 35,706 replies · 1,372 prompts
+Tracking since 2026-07-28 · 1 device · 36,295 replies · 1,393 prompts
 
-**Jump to:** [macbook-pro](#device-macbook-pro) · [Plan](#plan) · [By month](#by-month)
+**Jump to:** [mariia-macbook](#device-mariia-macbook) · [Plan](#plan) · [By month](#by-month)
 
-## Device: macbook-pro
+## Device: mariia-macbook
 
 **This week so far (Mon 28 Sep – today):**  
-858.4M input · 2.7M output · 97% from cache · 91 prompts · $379 API-equivalent  
-vs the same days last week: output ▲ 70% · prompts ▲ 25% · cost ▼ 21%
+1.2B input · 3.1M output · 97% from cache · 112 prompts · $495 API-equivalent  
+vs the same days last week: output ▲ 96% · prompts ▲ 53% · cost ▲ 3%
 
-<img src="reports/charts/macbook-pro/projects.svg" alt="projects" width="760">
+<img src="reports/charts/mariia-macbook/projects.svg" alt="projects" width="760">
 
-<img src="reports/charts/macbook-pro/heatmap.svg" alt="heatmap" width="760">
+<img src="reports/charts/mariia-macbook/heatmap.svg" alt="heatmap" width="760">
 
-<img src="reports/charts/macbook-pro/models.svg" alt="models" width="760">
+<img src="reports/charts/mariia-macbook/models.svg" alt="models" width="760">
 
 ## Plan
 
@@ -31,7 +31,7 @@ Only projects this tracker collects are counted. **/usage** is the weekly-limit 
 | 07 Sep – 13 Sep | $1,585 | – | – | final |
 | 14 Sep – 20 Sep | $197 | – | – | final |
 | 21 Sep – 27 Sep | $1,267 | – | – | final |
-| 28 Sep – 04 Oct | $379 | – | – | in progress |
+| 28 Sep – 04 Oct | $495 | – | – | in progress |
 
 ### August 2026
 
@@ -49,9 +49,9 @@ _Record a reading: open `/usage` in Claude Code, then run `python3 ~/.claude-usa
 
 | Month | API cost | Output | Prompts | Most-used device | Status |
 | --- | ---: | ---: | ---: | --- | --- |
-| 2026-09 | $4,070 | 16.8M | 694 | macbook-pro | in progress |
-| [2026-08](archive/2026-08.json) | $2,109 | 6.3M | 540 | macbook-pro | final |
-| [2026-07](archive/2026-07.json) | $561 | 3M | 138 | macbook-pro | final |
+| 2026-09 | $4,186 | 17.3M | 715 | mariia-macbook | in progress |
+| [2026-08](archive/2026-08.json) | $2,109 | 6.3M | 540 | mariia-macbook | final |
+| [2026-07](archive/2026-07.json) | $561 | 3M | 138 | mariia-macbook | final |
 
 ## Data
 
