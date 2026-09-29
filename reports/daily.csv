@@ -121,4 +121,4 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-09-27,macbook-pro,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,55,112,72292,25974674,996802,14.6156
 2026-09-28,macbook-pro,geco-ai-labs/sg_geco-ai_websitepoc,claude-haiku-4-5-20251001,10,82,3598,303519,53711,0.1156
 2026-09-28,macbook-pro,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,746,1500,790627,342218483,6731044,137.7302
-2026-09-29,macbook-pro,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,2,4,641,325118,280460,2.3215
+2026-09-29,macbook-pro,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,62,126,34834,7564285,554273,6.2211
