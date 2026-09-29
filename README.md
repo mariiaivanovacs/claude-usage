@@ -1,16 +1,16 @@
 # Claude usage
 
-Claude Code usage across all my devices, rebuilt automatically every day (and after every sync). Weeks start Monday; times are Asia/Kuala_Lumpur. Updated 2026-09-28.
+Claude Code usage across all my devices, rebuilt automatically every day (and after every sync). Weeks start Monday; times are Asia/Kuala_Lumpur. Updated 2026-09-29.
 
-Tracking since 2026-07-28 · 1 device · 34,079 replies · 1,330 prompts
+Tracking since 2026-07-28 · 1 device · 34,093 replies · 1,332 prompts
 
 **Jump to:** [macbook-pro](#device-macbook-pro) · [Plan](#plan) · [By month](#by-month)
 
 ## Device: macbook-pro
 
 **This week so far (Mon 28 Sep – today):**  
-347.9M input · 787.1K output · 98% from cache · 49 prompts · $137 API-equivalent  
-vs the same days last week: output ▲ 7% · prompts ▲ 48% · cost ▼ 18%
+349.3M input · 794.2K output · 98% from cache · 51 prompts · $138 API-equivalent  
+vs the same days last week: output ▼ 50% · prompts ▼ 30% · cost ▼ 71%
 
 <img src="reports/charts/macbook-pro/projects.svg" alt="projects" width="760">
 
@@ -31,7 +31,7 @@ Only projects this tracker collects are counted. **/usage** is the weekly-limit 
 | 07 Sep – 13 Sep | $1,585 | – | – | final |
 | 14 Sep – 20 Sep | $197 | – | – | final |
 | 21 Sep – 27 Sep | $1,267 | – | – | final |
-| 28 Sep – 04 Oct | $137 | – | – | in progress |
+| 28 Sep – 04 Oct | $138 | – | – | in progress |
 
 ### August 2026
 
@@ -49,7 +49,7 @@ _Record a reading: open `/usage` in Claude Code, then run `python3 ~/.claude-usa
 
 | Month | API cost | Output | Prompts | Most-used device | Status |
 | --- | ---: | ---: | ---: | --- | --- |
-| 2026-09 | $3,828 | 14.9M | 652 | macbook-pro | in progress |
+| 2026-09 | $3,829 | 14.9M | 654 | macbook-pro | in progress |
 | [2026-08](archive/2026-08.json) | $2,109 | 6.3M | 540 | macbook-pro | final |
 | [2026-07](archive/2026-07.json) | $561 | 3M | 138 | macbook-pro | final |
 
