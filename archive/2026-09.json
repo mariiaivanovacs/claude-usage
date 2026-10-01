@@ -295,7 +295,7 @@
    }
   }
  },
- "final": false,
+ "final": true,
  "first_day": "2026-09-01",
  "in_progress": false,
  "last_day": "2026-09-30",
@@ -333,7 +333,7 @@
    "week_start": "2026-09-21"
   },
   {
-   "cost_usd": 1324.3401,
+   "cost_usd": 1336.8181,
    "last_weekly_pct": null,
    "pct_of_plan_week": null,
    "status": "in progress",
@@ -638,7 +638,5 @@
    "Write": 593
   }
  },
- "waiting_for": [
-  "mariia-macbook"
- ]
+ "waiting_for": []
 }
