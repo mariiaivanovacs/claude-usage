@@ -2,14 +2,14 @@
 
 Claude Code usage across all my devices, rebuilt automatically every day (and after every sync). Weeks start Monday; times are Asia/Kuala_Lumpur. Updated 2026-10-01.
 
-Tracking since 2026-07-28 · 1 device · 42,189 replies · 1,534 prompts
+Tracking since 2026-07-28 · 1 device · 42,193 replies · 1,534 prompts
 
 **Jump to:** [mariia-macbook](#device-mariia-macbook) · [Plan](#plan) · [By month](#by-month)
 
 ## Device: mariia-macbook
 
 **This week so far (Mon 28 Sep – today):**  
-3.3B input · 9.5M output · 98% from cache · 253 prompts · $1,407 API-equivalent  
+3.3B input · 9.6M output · 98% from cache · 253 prompts · $1,407 API-equivalent  
 vs the same days last week: output ▲ 170% · prompts ▲ 70% · cost ▲ 41%
 
 <img src="reports/charts/mariia-macbook/projects.svg" alt="projects" width="760">
@@ -39,7 +39,7 @@ _Record a reading: open `/usage` in Claude Code, then run `python3 ~/.claude-usa
 
 | Month | API cost | Output | Prompts | Most-used device | Status |
 | --- | ---: | ---: | ---: | --- | --- |
-| 2026-10 | $82.90 | 521.2K | 18 | mariia-macbook | in progress |
+| 2026-10 | $83.16 | 523.4K | 18 | mariia-macbook | in progress |
 | [2026-09](archive/2026-09.json) | $5,015 | 23.2M | 838 | mariia-macbook | final |
 | [2026-08](archive/2026-08.json) | $2,109 | 6.3M | 540 | mariia-macbook | final |
 | [2026-07](archive/2026-07.json) | $561 | 3M | 138 | mariia-macbook | final |
