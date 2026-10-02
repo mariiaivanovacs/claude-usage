@@ -130,4 +130,4 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-10-01,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5-5,10,20,10018,578905,52185,0.7337
 2026-10-01,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,2861,5814,2219764,878590774,11069178,290.3004
 2026-10-01,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-sonnet-5-5,31,62,32819,15568650,516113,5.5065
-2026-10-02,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,201,402,198342,128511119,2158379,46.9377
+2026-10-02,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,235,470,257146,149971944,2828603,57.7680
