@@ -2,15 +2,15 @@
 
 Claude Code usage across all my devices, rebuilt automatically every day (and after every sync). Weeks start Monday; times are Asia/Kuala_Lumpur. Updated 2026-10-02.
 
-Tracking since 2026-07-28 · 1 device · 44,443 replies · 1,574 prompts
+Tracking since 2026-07-28 · 1 device · 44,575 replies · 1,580 prompts
 
 **Jump to:** [mariia-macbook](#device-mariia-macbook) · [Plan](#plan) · [By month](#by-month)
 
 ## Device: mariia-macbook
 
 **This week so far (Mon 28 Sep – today):**  
-4B input · 11.3M output · 98% from cache · 293 prompts · $1,630 API-equivalent  
-vs the same days last week: output ▲ 125% · prompts ▲ 22% · cost ▲ 30%
+4.1B input · 11.5M output · 98% from cache · 299 prompts · $1,668 API-equivalent  
+vs the same days last week: output ▲ 128% · prompts ▲ 24% · cost ▲ 33%
 
 <img src="reports/charts/mariia-macbook/projects.svg" alt="projects" width="760">
 
@@ -31,7 +31,7 @@ Only projects this tracker collects are counted. **/usage** is the weekly-limit 
 | 07 Sep – 13 Sep | $1,585 | – | – | final |
 | 14 Sep – 20 Sep | $197 | – | – | final |
 | 21 Sep – 27 Sep | $1,267 | – | – | final |
-| 28 Sep – 04 Oct | $1,630 | – | – | in progress |
+| 28 Sep – 04 Oct | $1,668 | – | – | in progress |
 
 _Record a reading: open `/usage` in Claude Code, then run `python3 ~/.claude-usage/repo/collector/collect.py usage 42` (add `--session 15`, `--resets "Thu 10:00"`, or `--at "2026-09-28 14:30"` for an earlier reading)._
 
@@ -39,7 +39,7 @@ _Record a reading: open `/usage` in Claude Code, then run `python3 ~/.claude-usa
 
 | Month | API cost | Output | Prompts | Most-used device | Status |
 | --- | ---: | ---: | ---: | --- | --- |
-| 2026-10 | $306 | 2.3M | 58 | mariia-macbook | in progress |
+| 2026-10 | $343 | 2.5M | 64 | mariia-macbook | in progress |
 | [2026-09](archive/2026-09.json) | $5,015 | 23.2M | 838 | mariia-macbook | final |
 | [2026-08](archive/2026-08.json) | $2,109 | 6.3M | 540 | mariia-macbook | final |
 | [2026-07](archive/2026-07.json) | $561 | 3M | 138 | mariia-macbook | final |
