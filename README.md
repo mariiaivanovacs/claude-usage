@@ -1,22 +1,80 @@
 # Claude usage
 
-Claude Code usage across all my devices, rebuilt automatically every day (and after every sync). Weeks start Monday; times are Asia/Kuala_Lumpur. Updated 2026-10-02.
+Claude Code usage across all my devices, rebuilt automatically every day (and after every sync). Weeks start Monday; times are Asia/Kuala_Lumpur. Updated 2026-10-04.
 
-Tracking since 2026-07-28 · 1 device · 44,620 replies · 1,587 prompts
+Tracking since 2026-07-28 · 4 devices · 56,626 replies · 4,632 prompts
 
-**Jump to:** [mariia-macbook](#device-mariia-macbook) · [Plan](#plan) · [By month](#by-month)
+**Jump to:** [mariia-macbook](#device-mariia-macbook) · [home-pc-sample](#device-home-pc-sample) · [office-laptop-sample](#device-office-laptop-sample) · [work-pc-sample](#device-work-pc-sample) · [All devices](#all-devices) · [Plan](#plan) · [By month](#by-month)
 
 ## Device: mariia-macbook
 
 **This week so far (Mon 28 Sep – today):**  
-4.1B input · 11.6M output · 98% from cache · 306 prompts · $1,680 API-equivalent  
-vs the same days last week: output ▲ 129% · prompts ▲ 27% · cost ▲ 34%
+4.2B input · 11.8M output · 98% from cache · 319 prompts · $1,716 API-equivalent  
+vs the same days last week: output ▲ 130% · prompts ▲ 31% · cost ▲ 35%
 
 <img src="reports/charts/mariia-macbook/projects.svg" alt="projects" width="760">
 
 <img src="reports/charts/mariia-macbook/heatmap.svg" alt="heatmap" width="760">
 
 <img src="reports/charts/mariia-macbook/models.svg" alt="models" width="760">
+
+## Device: home-pc-sample
+
+**This week so far (Mon 28 Sep – today):**  
+53.9M input · 249.3K output · 96% from cache · 45 prompts · $20.62 API-equivalent  
+vs the same days last week: output ▲ 321% · prompts ▲ 275% · cost ▲ 318%
+
+<img src="reports/charts/home-pc-sample/projects.svg" alt="projects" width="760">
+
+<img src="reports/charts/home-pc-sample/heatmap.svg" alt="heatmap" width="760">
+
+<img src="reports/charts/home-pc-sample/models.svg" alt="models" width="760">
+
+## Device: office-laptop-sample
+
+**This week so far (Mon 28 Sep – today):**  
+168.7M input · 777.9K output · 97% from cache · 139 prompts · $94.82 API-equivalent  
+vs the same days last week: output ▲ 42% · prompts ▲ 38% · cost ▲ 37%
+
+<img src="reports/charts/office-laptop-sample/projects.svg" alt="projects" width="760">
+
+<img src="reports/charts/office-laptop-sample/heatmap.svg" alt="heatmap" width="760">
+
+<img src="reports/charts/office-laptop-sample/models.svg" alt="models" width="760">
+
+## Device: work-pc-sample
+
+**This week so far (Mon 28 Sep – today):**  
+554.2M input · 2.5M output · 96% from cache · 454 prompts · $302 API-equivalent  
+vs the same days last week: output ▲ 2% · prompts ▲ 3% · cost ▲ 2%
+
+<img src="reports/charts/work-pc-sample/projects.svg" alt="projects" width="760">
+
+<img src="reports/charts/work-pc-sample/heatmap.svg" alt="heatmap" width="760">
+
+<img src="reports/charts/work-pc-sample/models.svg" alt="models" width="760">
+
+## All devices
+
+Side by side, this week so far (Mon 28 Sep – today).
+
+| Device | Input | Output | Cache | Prompts | Sessions |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| [mariia-macbook](#device-mariia-macbook) | 4.2B | 11.8M | 98% | 319 | 15 |
+| [home-pc-sample](#device-home-pc-sample) | 53.9M | 249.3K | 96% | 45 | 3 |
+| [office-laptop-sample](#device-office-laptop-sample) | 168.7M | 777.9K | 97% | 139 | 8 |
+| [work-pc-sample](#device-work-pc-sample) | 554.2M | 2.5M | 96% | 454 | 25 |
+| **Total** | 4.9B | 15.3M | 98% | 957 | 51 |
+
+vs the same days last week: output ▲ 87% · prompts ▲ 20% · cost ▲ 30%
+
+<img src="reports/charts/all/usage-grid.svg" alt="usage-grid" width="760">
+
+<img src="reports/charts/all/limit-grid.svg" alt="limit-grid" width="760">
+
+<img src="reports/charts/all/week-hours.svg" alt="week-hours" width="760">
+
+<img src="reports/charts/all/typical-day.svg" alt="typical-day" width="760">
 
 ## Plan
 
@@ -28,10 +86,10 @@ Only projects this tracker collects are counted. **/usage** is the weekly-limit 
 
 | Week (Mon–Sun) | API cost | % of plan's weekly price | /usage | Status |
 | --- | ---: | ---: | ---: | --- |
-| 07 Sep – 13 Sep | $1,585 | – | – | final |
-| 14 Sep – 20 Sep | $197 | – | – | final |
-| 21 Sep – 27 Sep | $1,267 | – | – | final |
-| 28 Sep – 04 Oct | $1,680 | – | – | in progress |
+| 07 Sep – 13 Sep | $1,978 | – | – | final |
+| 14 Sep – 20 Sep | $585 | – | – | final |
+| 21 Sep – 27 Sep | $1,636 | – | – | final |
+| 28 Sep – 04 Oct | $2,133 | – | – | in progress |
 
 _Record a reading: open `/usage` in Claude Code, then run `python3 ~/.claude-usage/repo/collector/collect.py usage 42` (add `--session 15`, `--resets "Thu 10:00"`, or `--at "2026-09-28 14:30"` for an earlier reading)._
 
@@ -39,9 +97,9 @@ _Record a reading: open `/usage` in Claude Code, then run `python3 ~/.claude-usa
 
 | Month | API cost | Output | Prompts | Most-used device | Status |
 | --- | ---: | ---: | ---: | --- | --- |
-| 2026-10 | $356 | 2.5M | 71 | mariia-macbook | in progress |
-| [2026-09](archive/2026-09.json) | $5,015 | 23.2M | 838 | mariia-macbook | final |
-| [2026-08](archive/2026-08.json) | $2,109 | 6.3M | 540 | mariia-macbook | final |
+| 2026-10 | $549 | 4.1M | 333 | mariia-macbook | in progress |
+| [2026-09](archive/2026-09.json) | $6,753 | 37.7M | 3,480 | mariia-macbook | final |
+| [2026-08](archive/2026-08.json) | $2,197 | 7M | 681 | mariia-macbook | final |
 | [2026-07](archive/2026-07.json) | $561 | 3M | 138 | mariia-macbook | final |
 
 ## Data
