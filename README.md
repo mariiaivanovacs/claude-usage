@@ -1,13 +1,13 @@
 # Claude usage
 
-Tracking since 2026-07-28 · 1 device · 44,820 replies · 1,608 prompts
+Tracking since 2026-07-28 · 1 device · 44,828 replies · 1,609 prompts
 
 **Jump to:** [mariia-macbook](#device-mariia-macbook) · [Weekly limit](#weekly-limit) · [By month](#by-month)
 
 ## Device: mariia-macbook
 
 **This week so far (Mon 28 Sep – today):**  
-4.2B input · 11.8M output · 98% from cache · 327 prompts · $1,735 API-equivalent  
+4.2B input · 11.8M output · 98% from cache · 328 prompts · $1,736 API-equivalent  
 vs the same days last week: output ▲ 131% · prompts ▲ 34% · cost ▲ 37%
 
 <img src="reports/charts/mariia-macbook/projects.svg" alt="projects" width="760">
@@ -35,7 +35,7 @@ Tokens are input (including what is read from cache) / output. Weekly limit used
 
 | Month | Tokens in / out | Sessions | Prompts | Devices | Windows run out | Locked out | Weekly limit used | Status |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| 2026-10 | 1.2B / 2.8M | 6 | 92 | 1 | 2 | 37 min | – | in progress |
+| 2026-10 | 1.2B / 2.8M | 6 | 93 | 1 | 2 | 37 min | – | in progress |
 | [2026-09](archive/2026-09.json) | 10.3B / 23.2M | 44 | 838 | 1 | 8 | 8h 57m | – | final |
 | [2026-08](archive/2026-08.json) | 3.9B / 6.3M | 41 | 540 | 1 | 0 | – | – | final |
 | [2026-07](archive/2026-07.json) | 2.3B / 3M | 10 | 138 | 1 | 0 | – | – | final |
