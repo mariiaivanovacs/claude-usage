@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Install the Claude usage collector on macOS or Linux.
 #
-#   install/install.sh [--device NAME] [--only PATTERN ...] [--track-all]
+#   install/install.sh [--device NAME] [--only PATTERN ...] [--track-all] [--reporter]
 #   install/install.sh --uninstall
 #
 # Runs the collector every day at 08:00 Malaysia time (converted to this
@@ -18,11 +18,13 @@ DEVICE=""
 UNINSTALL=0
 ONLY=()
 TRACK_ALL=0
+REPORTER=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --device) DEVICE="$2"; shift 2 ;;
     --only) ONLY+=("$2"); shift 2 ;;
     --track-all) TRACK_ALL=1; shift ;;
+    --reporter) REPORTER=1; shift ;;
     --uninstall) UNINSTALL=1; shift ;;
     *) echo "unknown option: $1" >&2; exit 2 ;;
   esac
@@ -150,8 +152,14 @@ if only:
 json.dump(c, open(p, "w"), indent=2)
 EOF
 
+# ---- report builder: this device also rebuilds the README after each sync ----
+if [ "$REPORTER" = 1 ]; then
+  "$PY" "$COLLECT" reporter on
+fi
+
 # ---- repo: only this device's folder is checked out -------------------------
-if git -C "$REPO_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+if git -C "$REPO_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1 && [ "$REPORTER" = 0 ] \
+   && ! "$PY" -c 'import json,sys;sys.exit(0 if json.load(open(sys.argv[1])).get("reporter") else 1)' "$BASE/config.json" 2>/dev/null; then
   git -C "$REPO_DIR" sparse-checkout set --no-cone '/*' '!/devices/*' "/devices/$DEVICE/" >/dev/null 2>&1 || true
 fi
 

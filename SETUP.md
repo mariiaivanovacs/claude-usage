@@ -48,7 +48,15 @@ python3 collect.py only remove "my-org/*"
 - With `--shared` it goes into [`exclude.json`](exclude.json) and every device applies it on its next sync.
 - Adding a rule also removes that project's already-pushed data from the device's files; removing one re-imports it from the local logs. Commit messages don't say what was hidden, but older commits still contain the data until the repo history is rewritten.
 
-## Plan and /usage readings
+## Recording the weekly limit (/usage)
+
+The installer adds a **`/log-usage`** command to Claude Code. When you check `/usage` and it shows, for example, 42% of the weekly limit, type `/log-usage 42` in any Claude Code chat; the reading is recorded and appears in the **Weekly limit** table. You can add `--session 15` (the 5-hour %) or `--resets "Thu 10:00"`.
+
+## Report builder
+
+GitHub Actions rebuilds the README after every sync. One device can do the same as a fallback (for example while Actions is unavailable): install it with `--reporter`, or run `python3 ~/.claude-usage/repo/collector/collect.py reporter on`. That device downloads every device's data and pushes the rebuilt README after each sync. Only one device needs it.
+
+## Plan and /usage readings (command line)
 
 ```bash
 python3 ~/.claude-usage/repo/collector/collect.py plan "Max 20x" 200    # once: plan name and USD per month

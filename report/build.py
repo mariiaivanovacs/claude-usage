@@ -343,7 +343,7 @@ def build(root=ROOT, now=None):
 
     if len(devices) > 1:
         parts.append(all_devices(replies, others, r_week, o_week, prev, devices, label, today, save))
-    parts.append(plan_section(months, replies, checks, today))
+    parts.append(weekly_limit_section(months, checks, today))
     parts.append(month_table(months, today))
     md = readme(replies, others, today, root, parts, devices)
     (root / "README.md").write_text(md, encoding="utf-8")
@@ -604,8 +604,15 @@ def month_weeks(key):
     return out
 
 
-def plan_weeks(key, replies, checks, today, tracking_start):
+def locked_in(others, first, last):
+    """5-hour windows that ran out with their first hit in [first, last], and the time locked out."""
+    win = {k: v for k, v in limit_windows(others).items() if first <= v[0].date() <= last}
+    return len(win), sum(((rst - hit) for hit, rst in win.values()), timedelta())
+
+
+def plan_weeks(key, replies, checks, today, tracking_start, others=()):
     per_week = plan_week_price()
+    others = list(others)
     rows = []
     for ws, we in month_weeks(key):
         if ws > today:
@@ -620,24 +627,19 @@ def plan_weeks(key, replies, checks, today, tracking_start):
                               **({"session_pct": c["session_pct"]} if "session_pct" in c else {}),
                               **({"resets": c["resets"]} if "resets" in c else {})} for c in seen],
             "last_weekly_pct": last["weekly_pct"] if last else None,
+            "windows_run_out": locked_in(others, ws, we)[0],
+            "locked_min": int(locked_in(others, ws, we)[1].total_seconds() // 60),
+            "sessions": len(sessions_of([e for e in replies + others if ws <= e["day"] <= we])),
             "status": "in progress" if ws <= today <= we else ("partial" if ws < tracking_start else "final"),
         })
     return rows
 
 
-def plan_section(months, replies, checks, today):
-    per_week = plan_week_price()
-    out = ["## Plan\n"]
-    if per_week:
-        out.append("**%s** · $%g/month ≈ **%s per week** (monthly × 12 ÷ 52). The %% column is the week's "
-                   "API-equivalent cost against that: above 100%% means the subscription paid for itself "
-                   "that week.\n\n" % (CFG.get("plan_name") or "Plan", CFG["plan_monthly_usd"], usd(per_week)))
-    else:
-        out.append("_Set your plan to see the % of its price used each week: "
-                   "`python3 collector/collect.py plan \"Max 20x\" 200`._\n\n")
-    out.append("Only projects this tracker collects are counted. **/usage** is the weekly-limit % you "
-               "recorded by hand that week (the latest reading; the limit resets on its own schedule, "
-               "not on Mondays).\n\n")
+def weekly_limit_section(months, checks, today):
+    out = ["## Weekly limit\n\n",
+           "**Weekly limit used** is the % that Claude's own `/usage` screen shows. Claude Code doesn't let scripts read it, "
+           "so record it yourself: open `/usage`, then type **`/log-usage 42`** in Claude Code (42 = the weekly % it shows). "
+           "The table keeps the latest reading of each week; the other columns fill in by themselves.\n\n"]
     for m in sorted(months, key=lambda m: m["month"], reverse=True)[:2]:
         first, _ = month_bounds(m["month"])
         rows = []
@@ -646,14 +648,14 @@ def plan_section(months, replies, checks, today):
             reading = "–"
             if w["last_weekly_pct"] is not None:
                 at = datetime.fromisoformat(w["usage_checks"][-1]["at"].replace("Z", "+00:00")).astimezone(TZ)
-                reading = "%g%% (%s)" % (w["last_weekly_pct"], at.strftime("%a %d %b %H:%M"))
-            rows.append(["%s – %s" % (ws.strftime("%d %b"), we.strftime("%d %b")), usd(w["cost_usd"]),
-                         ("%g%%" % w["pct_of_plan_week"]) if w["pct_of_plan_week"] is not None else "–",
-                         reading, w["status"]])
+                reading = "%g%% (%s)" % (w["last_weekly_pct"], at.strftime("%a %d %b"))
+            locked = timedelta(minutes=w.get("locked_min", 0))
+            rows.append(["%s – %s" % (ws.strftime("%d %b"), we.strftime("%d %b")), reading,
+                         w.get("windows_run_out", 0), fmt_dur(locked) if locked else "–", w.get("sessions", 0), w["status"]])
         if rows:
             out.append("### %s\n\n" % first.strftime("%B %Y"))
-            out.append(md_table(["Week (Mon–Sun)", "API cost", "% of plan's weekly price", "/usage", "Status"],
-                                rows, ["l", "r", "r", "r", "l"]) + "\n\n")
+            out.append(md_table(["Week (Mon–Sun)", "Weekly limit used", "5-hour windows run out", "Locked out", "Sessions", "Status"],
+                                rows, ["l", "r", "r", "r", "r", "l"]) + "\n\n")
     if checks:
         recent = checks[-8:][::-1]
         out.append("**Recorded /usage readings** (latest %d)\n\n" % len(recent))
@@ -661,9 +663,6 @@ def plan_section(months, replies, checks, today):
                             [[c["dt"].strftime("%a %d %b %H:%M"), c["device"], "%g%%" % c["weekly_pct"],
                               ("%g%%" % c["session_pct"]) if "session_pct" in c else "–", c.get("resets", "–")]
                              for c in recent], ["l", "l", "r", "r", "l"]) + "\n\n")
-    out.append('_Record a reading: open `/usage` in Claude Code, then run '
-               '`python3 ~/.claude-usage/repo/collector/collect.py usage 42` (add `--session 15`, '
-               '`--resets "Thu 10:00"`, or `--at "2026-09-28 14:30"` for an earlier reading)._\n')
     return "".join(out)
 
 
@@ -673,13 +672,22 @@ def month_table(months, today):
     rows = []
     for m in sorted(months, key=lambda m: m["month"], reverse=True):
         t = m["total"]
-        top = max(m["devices"].items(), key=lambda kv: kv[1]["cost_usd"])[0] if m["devices"] else "–"
+        tk = t["tokens"]
+        tin = tk["input"] + tk["cache_read"] + tk["cache_write"]
+        readings = [w["last_weekly_pct"] for w in m.get("plan_weeks", []) if w.get("last_weekly_pct") is not None]
+        lim = m.get("limit", {})
+        locked = timedelta(minutes=lim.get("locked_min", 0))
         status = "in progress" if m.get("in_progress") else ("final" if m["final"] else "may still change")
         link = m["month"] if m.get("in_progress") else "[%s](archive/%s.json)" % (m["month"], m["month"])
-        rows.append([link, usd(t["cost_usd"]), compact(t["tokens"]["output"]), format(t["prompts"], ","),
-                     top, status])
-    return ("## By month\n\n" + md_table(["Month", "API cost", "Output", "Prompts", "Most-used device", "Status"],
-                                           rows, ["l", "r", "r", "r", "l", "l"]) + "\n")
+        rows.append([link, "%s / %s" % (compact(tin), compact(tk["output"])), format(t["sessions"], ","),
+                     format(t["prompts"], ","), m.get("devices_active", len(m["devices"])), lim.get("windows_run_out", 0),
+                     fmt_dur(locked) if locked else "–",
+                     ("%d%% (avg of %d)" % (round(sum(readings) / len(readings)), len(readings))) if readings else "–", status])
+    return ("## By month\n\n"
+            "Tokens are input (including what is read from cache) / output. Weekly limit used is the average of that "
+            "month's weekly `/usage` readings.\n\n"
+            + md_table(["Month", "Tokens in / out", "Sessions", "Prompts", "Devices", "Windows run out", "Locked out",
+                        "Weekly limit used", "Status"], rows, ["l", "r", "r", "r", "r", "r", "r", "r", "l"]) + "\n")
 
 
 def header(today):
@@ -696,7 +704,7 @@ def readme(replies, others, today, root, parts, devices):
     jump = ["[%s](#%s)" % (d, anchor("Device: %s" % d)) for d in devices]
     if len(devices) > 1:
         jump.append("[All devices](#all-devices)")
-    jump += ["[Plan](#plan)", "[By month](#by-month)"]
+    jump += ["[Weekly limit](#weekly-limit)", "[By month](#by-month)"]
     out = [
         header(today),
         "Tracking since %s · %d device%s · %s replies · %s prompts\n\n" % (
@@ -795,7 +803,10 @@ def month_doc(key, replies, others, today, in_progress=False, checks=()):
         "devices": {d: scope_stats([e for e in r if e["device"] == d], [e for e in o if e["device"] == d])
                     for d in devices},
         "plan": {"name": CFG.get("plan_name"), "monthly_usd": CFG.get("plan_monthly_usd")},
-        "plan_weeks": plan_weeks(key, replies, list(checks), today, replies[0]["day"] if replies else first),
+        "plan_weeks": plan_weeks(key, replies, list(checks), today, replies[0]["day"] if replies else first, others),
+        "limit": {"windows_run_out": locked_in(others, first, last)[0],
+                  "locked_min": int(locked_in(others, first, last)[1].total_seconds() // 60)},
+        "devices_active": len(devices),
     }
 
 

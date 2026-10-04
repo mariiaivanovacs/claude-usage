@@ -404,3 +404,101 @@ class LimitEventTests(ExcludeTests):
         self.assertEqual([e["k"] for e in self.lines()], ["limit"])
         self.run_main()
         self.assertEqual(len(self.lines()), 1)                      # not added twice
+
+
+class ReporterTests(unittest.TestCase):
+    """The report builder against real git repos: a bare 'GitHub' and two device clones."""
+
+    def sh(self, cwd, *args):
+        import subprocess
+        r = subprocess.run(["git"] + list(args), cwd=str(cwd), capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        return r.stdout
+
+    def setUp(self):
+        import shutil
+        self.root = TMP / "rep"
+        shutil.rmtree(self.root, ignore_errors=True)
+        src = Path(__file__).resolve().parents[1]
+        seed = self.root / "seed"
+        (seed / "devices" / "dev1").mkdir(parents=True)
+        shutil.copytree(src / "report", seed / "report")
+        for f in ("config.json", "aliases.json"):
+            shutil.copy(src / f, seed / f)
+        (seed / "devices" / "dev1" / "2026-09-29.jsonl").write_text(json.dumps(
+            {"k": "reply", "id": "a1", "ts": "2026-09-29T04:00:00Z", "project": "me/app", "session": "s1",
+             "model": "claude-sonnet-5", "in": 3, "out": 100, "cr": 1000}) + "\n")
+        self.sh(self.root, "init", "-q", "--bare", "-b", "main", "remote.git")
+        self.sh(seed, "init", "-q", "-b", "main")
+        for repo in (seed,):
+            self.sh(repo, "config", "user.email", "t@t"); self.sh(repo, "config", "user.name", "t")
+        self.sh(seed, "add", "-A"); self.sh(seed, "commit", "-q", "-m", "seed")
+        self.sh(seed, "remote", "add", "origin", str(self.root / "remote.git")); self.sh(seed, "push", "-q", "-u", "origin", "main")
+        for name in ("a", "b"):
+            self.sh(self.root, "clone", "-q", str(self.root / "remote.git"), name)
+            self.sh(self.root / name, "config", "user.email", "t@t"); self.sh(self.root / name, "config", "user.name", "t")
+        self._repo = collect.REPO
+        collect.REPO = self.root / "a"
+
+    def tearDown(self):
+        collect.REPO = self._repo
+
+    def remote_file(self, path):
+        return self.sh(self.root / "b", "show", "origin/main:" + path)
+
+    def test_builds_and_pushes_the_report(self):
+        self.assertTrue(collect.build_and_push_report("dev1"))
+        self.sh(self.root / "b", "fetch", "-q")
+        self.assertIn("## Device: dev1", self.remote_file("README.md"))
+        self.assertTrue(collect.build_and_push_report("dev1"))      # nothing new: no extra commit
+        log = self.sh(self.root / "b", "log", "--oneline", "origin/main")
+        self.assertEqual(log.count("report:"), 1)
+
+    def test_retries_when_another_device_pushed_meanwhile(self):
+        b = self.root / "b"
+        real_git = collect.git
+        state = {"pushed": False}
+
+        def git(*args, **kw):
+            if args[:1] == ("push",) and not state["pushed"]:
+                state["pushed"] = True                             # dev2 pushes right before our push
+                (b / "devices" / "dev2").mkdir(parents=True, exist_ok=True)
+                (b / "devices" / "dev2" / "2026-09-30.jsonl").write_text(json.dumps(
+                    {"k": "reply", "id": "b1", "ts": "2026-09-30T04:00:00Z", "project": "me/api", "session": "s9",
+                     "model": "claude-sonnet-5", "in": 3, "out": 50, "cr": 500}) + "\n")
+                self.sh(b, "add", "-A"); self.sh(b, "commit", "-q", "-m", "data(dev2)"); self.sh(b, "push", "-q")
+            return real_git(*args, **kw)
+
+        collect.git = git
+        try:
+            self.assertTrue(collect.build_and_push_report("dev1", attempts=3))
+        finally:
+            collect.git = real_git
+        self.sh(b, "fetch", "-q")
+        readme = self.remote_file("README.md")
+        self.assertIn("## Device: dev2", readme)                  # the rebuilt report includes the newer data
+        self.assertIn("data(dev2)", self.sh(b, "log", "--oneline", "origin/main"))
+
+    def test_refuses_with_unpushed_data(self):
+        a = self.root / "a"
+        (a / "devices" / "dev1" / "2026-10-01.jsonl").write_text("{}\n")
+        self.sh(a, "add", "-A"); self.sh(a, "commit", "-q", "-m", "local data")
+        self.assertFalse(collect.build_and_push_report("dev1"))
+
+
+class LogUsageCommandTests(unittest.TestCase):
+    def test_install_and_uninstall(self):
+        p = collect.settings_path()
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text("{}")
+        collect.edit_settings("install")
+        cmd = collect.log_usage_command_path()
+        text = cmd.read_text()
+        self.assertIn('usage $ARGUMENTS', text)
+        self.assertIn(Path(collect.__file__).resolve().as_posix(), text)
+        collect.edit_settings("uninstall")
+        self.assertFalse(cmd.exists())
+        cmd.parent.mkdir(parents=True, exist_ok=True)
+        cmd.write_text("someone else's command")                  # never delete a file we didn't write
+        collect.edit_settings("uninstall")
+        self.assertTrue(cmd.exists())

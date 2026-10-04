@@ -18,6 +18,7 @@ Standard library only; Python 3.8+; macOS, Linux and Windows.
     collect.py exclude add|remove PATTERN [--shared]
     collect.py only add|remove PATTERN [--shared]   keep ONLY matching projects
     collect.py rename NEW-NAME              rename this device (history moves with it)
+    collect.py reporter on|off              this device also rebuilds the README after each sync
     collect.py usage 42 [--session 15] [--resets "Thu 10:00"] [--at "2026-09-28 14:30"]
                                             record the weekly % that /usage shows right now
     collect.py plan "Max 20x" 200           set the plan and its monthly price in USD
@@ -780,6 +781,35 @@ def hook_command():
     return '"%s" "%s" --detach' % (py.as_posix(), Path(__file__).resolve().as_posix())
 
 
+LOG_USAGE_MARK = "claude-usage:log-usage"
+
+
+def log_usage_command_path():
+    return settings_path().parent / "commands" / "log-usage.md"
+
+
+def write_log_usage_command(action):
+    """A Claude Code command: after looking at /usage, type /log-usage 42 to record the reading."""
+    path = log_usage_command_path()
+    if action == "uninstall":
+        if path.exists() and LOG_USAGE_MARK in path.read_text(encoding="utf-8"):
+            path.unlink()
+        return
+    py = Path(sys.executable).as_posix()
+    me = Path(__file__).resolve().as_posix()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        "---\n"
+        "description: Record the weekly limit %% that /usage shows, in the Claude usage tracker\n"
+        "argument-hint: <weekly %%> [--session <5-hour %%>] [--resets \"Thu 10:00\"]\n"
+        "---\n"
+        "<!-- %s -->\n"
+        "Record a /usage reading in the Claude usage tracker.\n\n"
+        "If no number was given after /log-usage, ask for the weekly %% that /usage shows and stop.\n"
+        "Otherwise run exactly this with the Bash tool, then reply with its output in one line and nothing else:\n\n"
+        "\"%s\" \"%s\" usage $ARGUMENTS\n" % (LOG_USAGE_MARK, py, me), encoding="utf-8")
+
+
 def edit_settings(action):
     path = settings_path()
     s = read_json(path, None)
@@ -802,7 +832,61 @@ def edit_settings(action):
     if not hooks:
         s.pop("hooks")
     write_json(path, s)
+    write_log_usage_command(action)
     print("updated %s (%s)" % (path, action))
+
+
+# ---------------------------------------------------------- report builder
+
+REPORT_OUTPUTS = ("README.md", "reports", "archive")
+
+
+def set_checkout(full, device):
+    """The report builder needs every device's data; other devices only their own folder."""
+    if full:
+        git("sparse-checkout", "set", "--no-cone", "/*")
+    else:
+        git("sparse-checkout", "set", "--no-cone", "/*", "!/devices/*", "/devices/%s/" % device)
+
+
+def build_and_push_report(device, attempts=3):
+    """Rebuild the README from all devices' data and push it. Runs only when this device's own
+    data is already pushed, so dropping a failed report commit can never lose data."""
+    code, out = git("rev-list", "--count", "@{u}..HEAD")
+    if code or out.strip() != "0":
+        log("report not built: this device has unpushed data")
+        return False
+    for attempt in range(attempts):
+        git_pull()
+        set_checkout(True, device)
+        r = subprocess.run([sys.executable, str(REPO / "report" / "build.py")], cwd=str(REPO),
+                           capture_output=True, text=True, timeout=600)
+        if r.returncode:
+            log("report build failed: %s" % (r.stderr.strip().splitlines()[-1:] or ["?"]))
+            return False
+        git("add", "-A", "--", *REPORT_OUTPUTS)
+        code, _ = git("diff", "--cached", "--quiet")
+        if code == 0:
+            return True                                  # nothing changed
+        git("commit", "-q", "-m", "report: %s (built on %s)" % (datetime.now().strftime("%Y-%m-%d %H:%M"), device))
+        code, _ = git("push", "-q")
+        if code == 0:
+            log("report rebuilt and pushed")
+            return True
+        git("reset", "-q", "--hard", "@{u}")             # only the report commit is dropped
+        time.sleep(2 * (attempt + 1))
+    log("report not pushed after %d attempts; next sync retries" % attempts)
+    return False
+
+
+def reporter_cmd(state):
+    cfg = read_json(CONFIG, {})
+    if state not in ("on", "off"):
+        sys.exit("usage: collect.py reporter on|off")
+    cfg["reporter"] = state == "on"
+    write_json(CONFIG, cfg)
+    set_checkout(cfg["reporter"], cfg.get("device"))
+    print("report builder %s on this device" % ("enabled" if cfg["reporter"] else "disabled"))
 
 
 # -------------------------------------------------------------------- main
@@ -935,6 +1019,8 @@ def record_usage(device, weekly, session=None, resets=None, at=None):
         f.write(json.dumps(rec, separators=(",", ":")) + "\n")
     git_commit(device, "usage(%s): %g%% of weekly limit" % (device, rec["weekly_pct"]))
     pushed = git_push()
+    if pushed and read_json(CONFIG, {}).get("reporter"):
+        build_and_push_report(device)
     print("recorded %g%% of the weekly limit at %s%s" % (rec["weekly_pct"], when.strftime("%a %d %b %H:%M"),
                                                          "" if pushed else " (not pushed yet; will retry)"))
 
@@ -974,6 +1060,9 @@ def main():
             return 0
         print("\nSyncing now so the change takes effect...")
         a.cmd = []
+    if a.cmd[:1] == ["reporter"] and len(a.cmd) == 2:
+        reporter_cmd(a.cmd[1])
+        return 0
     if a.cmd[:1] in (["usage"], ["plan"]):
         device = read_json(CONFIG, {}).get("device")
         if not device:
@@ -1074,6 +1163,8 @@ def main():
         log("%d new events on %s%s in %.1fs" % (
             len(events), device, "" if pushed is None else (", pushed" if pushed else ", NOT pushed"),
             time.time() - started))
+        if pushed and read_json(CONFIG, {}).get("reporter"):
+            build_and_push_report(device)
     finally:
         release_lock()
     return 0

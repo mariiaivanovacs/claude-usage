@@ -216,39 +216,35 @@ class ReportTests(unittest.TestCase):
         root, _ = self.build_at(self.events(), datetime.fromisoformat("2026-10-15T12:00:00+08:00"))
         self.assertTrue(json.loads((root / "archive" / "2026-09.json").read_text())["final"])
 
-    def test_plan_section(self):
+    def test_weekly_limit_and_by_month(self):
         ev = self.events()
         root = repo_with(ev)
         (root / "limits").mkdir()
         (root / "limits" / "mac.jsonl").write_text(
             '{"ts":"2026-09-22T06:00:00Z","tz":"+08:00","weekly_pct":30}\n'
             '{"ts":"2026-09-29T06:00:00Z","tz":"+08:00","weekly_pct":12,"session_pct":40,"resets":"Thu 10:00"}\n')
-        build.CFG.update(plan_name="Max 20x", plan_monthly_usd=200)
-        try:
-            build.build(root, now=self.NOW)
-        finally:
-            build.CFG.update(plan_name=None, plan_monthly_usd=None)
+        build.build(root, now=self.NOW)
         md = (root / "README.md").read_text()
-        plan = md[md.index("## Plan"):md.index("## By month")]
-        self.assertIn("**Max 20x** · $200/month ≈ **$46.15 per week**", plan)
-        self.assertIn("### September 2026", plan)
-        sep = plan[plan.index("### September 2026"):plan.index("### August 2026")]
+        self.assertNotIn("## Plan", md)
+        wl = md[md.index("## Weekly limit"):md.index("## By month")]
+        self.assertIn("`/log-usage 42`", wl)
+        self.assertNotIn("$", wl)                                      # no dollars anywhere in it
+        sep = wl[wl.index("### September 2026"):wl.index("### August 2026")]
         rows = [l for l in sep.splitlines() if l.startswith("| ") and " – " in l.split("|")[1]]
         self.assertEqual([r.split("|")[1].strip() for r in rows],
                          ["07 Sep – 13 Sep", "14 Sep – 20 Sep", "21 Sep – 27 Sep", "28 Sep – 04 Oct"])
-        aug = plan[plan.index("### August 2026"):]
-        self.assertIn("| 31 Aug – 06 Sep |", aug)            # crosses into September, listed under August
+        self.assertIn("| 12% (Tue 29 Sep) | 1 | 1h 30m |", rows[-1])  # reading, the window that ran out, lockout
         self.assertIn("in progress", rows[-1])
-        self.assertIn("12% (Tue 29 Sep 14:00)", rows[-1])
-        self.assertIn("30% (Tue 22 Sep 14:00)", rows[-2])
-        week = [e for e in build.load(root)[0] if date(2026, 9, 21) <= e["day"] <= date(2026, 9, 27)]
-        self.assertIn("%g%%" % round(100 * sum(e["cost"] for e in week) / (200 * 12 / 52), 1), rows[-2])
-        self.assertIn("| Tue 29 Sep 14:00 | mac | 12% | 40% | Thu 10:00 |", plan)
-        # without a plan: costs still shown, % blank, and how to set it
-        _, md = self.build_at(ev)
-        plan = md[md.index("## Plan"):md.index("## By month")]
-        self.assertIn('collect.py plan \\"Max 20x\\" 200', plan.replace('"', '\\"'))
-        self.assertIn("| – |", plan)
+        self.assertIn("| 30% (Tue 22 Sep) | 0 | – |", rows[-2])
+        self.assertIn("| 31 Aug – 06 Sep |", wl[wl.index("### August 2026"):])
+        bm = md[md.index("## By month"):md.index("## Data")]
+        self.assertNotIn("Most-used device", bm)
+        self.assertNotIn("$", bm)
+        sep_row = [l for l in bm.splitlines() if l.startswith("| 2026-09")][0]
+        cells = [c.strip() for c in sep_row.strip("|").split("|")]
+        self.assertEqual(cells[4], "3")                                # devices active in September
+        self.assertEqual(cells[5], "1")                                # windows run out
+        self.assertEqual(cells[7], "21% (avg of 2)")                   # average of the two weekly readings
         self.assertNotIn("%%", md)
 
     def test_archive_follows_raw_data(self):

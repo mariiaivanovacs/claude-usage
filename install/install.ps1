@@ -8,6 +8,7 @@
 # SessionEnd hook.
 param(
   [string]$Device = "",
+  [switch]$Reporter,
   [switch]$Uninstall
 )
 $ErrorActionPreference = "Stop"
@@ -81,8 +82,12 @@ if (-not $Device) { throw "device name is empty" }
 $Config["device"] = $Device
 $Config | ConvertTo-Json | Set-Content -Encoding UTF8 $ConfigPath
 
-# ---- repo: only this device's folder is checked out -------------------------
-git -C $RepoDir sparse-checkout set --no-cone "/*" "!/devices/*" "/devices/$Device/" 2>$null | Out-Null
+# ---- repo: only this device's folder is checked out (the report builder needs all) ----
+if ($Reporter) {
+  & $Py $Collect reporter on
+} elseif (-not $Config["reporter"]) {
+  git -C $RepoDir sparse-checkout set --no-cone "/*" "!/devices/*" "/devices/$Device/" 2>$null | Out-Null
+}
 
 # ---- when to run: 08:00 Malaysia time (UTC+8, no DST) on this PC's clock -----
 $myt = [DateTimeOffset]::new((Get-Date).Date.AddHours(8), [TimeSpan]::FromHours(8))
