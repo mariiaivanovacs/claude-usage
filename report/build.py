@@ -218,7 +218,7 @@ def chart_heatmap(others, label, first, last):
     for e in others:
         if e["k"] == "prompt" and e["day"] in pos:
             grid[pos[e["day"]]][e["dt"].hour] += 1
-    return svg.heatmap("When you prompt", "Prompts per day and hour · %s · %s time · weekends in grey"
+    return svg.heatmap("When you prompt (prompts count)", "Prompts per day and hour · %s · %s time · weekends in grey"
                        % (label, CFG.get("timezone")), grid, [d.strftime("%a %d %b") for d in days],
                        lambda v: "%d prompts" % v if v != 1 else "1 prompt", ch=18,
                        row_classes=["tm" if d.weekday() >= 5 else "ts" for d in days])
@@ -301,8 +301,7 @@ def build(root=ROOT, now=None):
 
     if not replies:
         (root / "README.md").write_text(header(today) + "_No data yet. Install the collector on a device "
-                                        "(see below) and it will appear after the first sync._\n\n"
-                                        + setup_text(root), encoding="utf-8")
+                                        "([SETUP.md](SETUP.md)) and it will appear after the first sync._\n", encoding="utf-8")
         return
 
     checks = load_checks(root)
@@ -357,6 +356,11 @@ def fmt_dur(td):
     return "%dh %02dm" % (m // 60, m % 60) if m >= 60 else "%d min" % m
 
 
+def week_span(today):
+    ws = week_start(today)
+    return "%s – %s" % (ws.strftime("%d %b"), (ws + timedelta(days=6)).strftime("%d %b"))
+
+
 def this_week(today):
     ws = week_start(today)
     days = [ws + timedelta(days=i) for i in range(7)]
@@ -406,7 +410,7 @@ def chart_usage_grid(replies, others, devices, today):
         rows.append({"name": d or "All devices", "total": d is None, "cells": cells,
                      "bar": (dv / total, "tp" if d is None else cls[d]),
                      "right": ("%d%%" % round(100 * dv / total), plural(n_week, "session") + " this week")})
-    return svg.day_grid("Usage per device, %s – %s" % (days[0].strftime("%d %b"), days[-1].strftime("%d %b")),
+    return svg.day_grid("",
                         "Cell: the day's share of the week's usage, all devices (cells add up to 100%) · sessions that day",
                         [d.strftime("%a %d") for d in days], future, rows, "Share of the week",
                         note="A session that runs past midnight counts on both days.")
@@ -450,7 +454,7 @@ def chart_hits_grid(others, devices, today):
         rows.append({"name": d or "All devices", "total": d is None, "cells": cells,
                      "right": ("%s · %s" % (plural(len({(e["device"], e.get("session")) for e in mine}), "session"), plural(len(wk_keys), "window")),
                                ("locked out " + fmt_dur(locked)) if locked else "never locked out")})
-    return svg.day_grid("Sessions stopped by the limit, %s – %s" % (days[0].strftime("%d %b"), days[-1].strftime("%d %b")),
+    return svg.day_grid("",
                         "Cell: sessions stopped by \"limit reached\" that day, and the 5-hour windows they were in",
                         [d.strftime("%a %d") for d in days], future, rows, "This week",
                         note="The limit is shared, so the total row counts each window once. Locked out = from the first hit to the reset.")
@@ -491,7 +495,7 @@ def chart_week_hours(replies, others, devices, today):
                                                                        (" · %d sessions at once" % n) if n > 1 else "")))
         cells.append(row)
         right.append("" if day > today else ("%d h · %d h" % (on, par) if on else "–"))
-    return svg.hour_grid("Who used Claude when, %s – %s" % (days[0].strftime("%d %b"), days[-1].strftime("%d %b")),
+    return svg.hour_grid("",
                          "Row = day, cell = hour (%s). Colour = device, split = several · number = sessions at once" % CFG.get("timezone").split("/")[-1].replace("_", " "),
                          [(d, cls[d]) for d in devices], [d.strftime("%a %d") for d in days], [f or d.weekday() >= 5 for d, f in zip(days, future)],
                          cells, right, "Active · parallel", note="Right: hours with any activity · hours with 2+ sessions at once.")
@@ -513,8 +517,8 @@ def chart_profile(replies, others, devices, today, days_n=28):
     share = lambda sets: [len(x) / days_n for x in sets]  # noqa: E731
     rows = [(d, share(act[d]), "q", False) for d in devices]
     rows += [("2+ devices at once", share(pd), "a", True), ("2+ sessions at once", share(ps), "a", False)]
-    return svg.profile_grid("A typical day, last %d days" % days_n,
-                            "Blue: how often a device is active that hour · amber: two devices, or two sessions, at once",
+    return svg.profile_grid("",
+                            "Blue: how often a device is active that hour · red: two devices, or two sessions, at once",
                             rows, note="Numbers: %% of the last %d days on which that hour had it (shown from 15%%). %s time." % (days_n, CFG.get("timezone")))
 
 
@@ -526,17 +530,27 @@ def all_devices(replies, others, r_week, o_week, prev, devices, label, today, sa
         st = token_stats(r, o)
         name = "**Total**" if d is None else "[%s](#%s)" % (d, anchor("Device: %s" % d))
         rows.append([name, compact(st["input"]), compact(st["output"]), pct(st["cache"]),
-                     format(st["prompts"], ","), st["sessions"]])
+                     format(st["prompts"], ","), st["sessions"],
+                     "%d%%" % round(100 * st["cost"] / (sum(e["cost"] for e in r_week) or 1))])
     cur = token_stats(r_week, o_week)
     _, vs = stats_line(cur, token_stats(in_range(replies, *prev), in_range(others, *prev)))
     return "".join([
         "## All devices\n",
         "Side by side, %s.\n\n" % label,
-        md_table(["Device", "Input", "Output", "Cache", "Prompts", "Sessions"], rows), "\n\n",
+        "**Cache:** every message sends the whole conversation again. The part Claude has already seen is read "
+        "from the cache at about a tenth of the normal price; only the new part costs full price. The Cache column is "
+        "the share of input read that way: higher is cheaper. A long conversation is re-read on every message, so "
+        "starting a fresh session for a new task keeps usage down. **Share of usage:** how much of the subscription's "
+        "usage this week each device took; the column adds up to 100%.\n\n",
+        md_table(["Device", "Input", "Output", "Cache", "Prompts", "Sessions", "Share of usage"], rows), "\n\n",
         vs + "\n\n",
+        "## Usage per device, %s\n\n" % week_span(today),
         save("all", "usage-grid", chart_usage_grid(replies, others, devices, today)) + "\n\n",
+        "## Sessions stopped by the limit, %s\n\n" % week_span(today),
         save("all", "limit-grid", chart_hits_grid(others, devices, today)) + "\n\n",
+        "## Who used Claude when, %s\n\n" % week_span(today),
         save("all", "week-hours", chart_week_hours(replies, others, devices, today)) + "\n\n",
+        "## A typical day, last 28 days\n\n",
         save("all", "typical-day", chart_profile(replies, others, devices, today)) + "\n",
     ])
 
@@ -637,9 +651,7 @@ def month_table(months, today):
 
 
 def header(today):
-    return ("# Claude usage\n\nClaude Code usage across all my devices, rebuilt automatically every day "
-            "(and after every sync). Weeks start Monday; times are %s. Updated %s.\n\n"
-            % (CFG.get("timezone"), today.isoformat()))
+    return "# Claude usage\n\n"
 
 
 def anchor(title):
@@ -667,7 +679,7 @@ def readme(replies, others, today, root, parts, devices):
         "- Costs are API list prices from [`report/pricing.json`](report/pricing.json), for comparison only: "
         "a subscription is not billed per token." + (" Models marked * are priced by their family." if est else "")
         + "\n",
-        "\n" + setup_text(root),
+        "- [`SETUP.md`](SETUP.md): set up a device, keep projects out, record `/usage`, rename a device\n",
     ]
     return tidy_md("".join(out))
 
@@ -791,11 +803,6 @@ def tidy_md(md):
     while "\n\n\n" in text:
         text = text.replace("\n\n\n", "\n\n")
     return text.strip() + "\n"
-
-
-def setup_text(root):
-    p = root / "report" / "setup.md"
-    return p.read_text(encoding="utf-8") if p.exists() else ""
 
 
 def write_daily_csv(replies, path):

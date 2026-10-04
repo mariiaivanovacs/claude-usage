@@ -19,8 +19,8 @@ W = 760
 
 RED = ["#f8d4d4", "#ec8f8f", "#c42f2f"]
 RED_DARK = ["#4a2023", "#8c2c2f", "#e25555"]
-AMBER = ["#fbedc9", "#f5d27f", "#e8ac2c", "#c98500", "#8f5d00"]
-AMBER_DARK = ["#3a2d10", "#6b4e12", "#a87413", "#e0a526", "#f5d27f"]
+AMBER = ["#fbe3e3", "#f5b8b8", "#ec8f8f", "#d65252", "#a82525"]          # parallel use: shades of red
+AMBER_DARK = ["#3a1a1c", "#5e2427", "#8c2c2f", "#c43c3f", "#f07070"]
 INK, PAPER = "#0b0b0b", "#ffffff"
 
 
@@ -38,7 +38,7 @@ def _style():
     seq_d = "".join(".q%d{fill:%s}" % (i, c) for i, c in enumerate(SEQ_DARK))
     seq_l += "".join(".r%d{fill:%s}" % (i, c) for i, c in enumerate(RED)) + "".join(".a%d{fill:%s}" % (i, c) for i, c in enumerate(AMBER))
     seq_d += "".join(".r%d{fill:%s}" % (i, c) for i, c in enumerate(RED_DARK)) + "".join(".a%d{fill:%s}" % (i, c) for i, c in enumerate(AMBER_DARK))
-    for args in ((SEQ, SEQ_DARK, "tq", 3, 5), (RED, RED_DARK, "tr", 2, 3), (AMBER, AMBER_DARK, "ta", 3, 3)):
+    for args in ((SEQ, SEQ_DARK, "tq", 3, 5), (RED, RED_DARK, "tr", 2, 3), (AMBER, AMBER_DARK, "ta", 3, 4)):
         lt, dk = _ink(*args)
         seq_l += lt
         seq_d += dk
@@ -56,7 +56,16 @@ def _style():
         "</style>" % (FONT, OTHER_LIGHT, OTHER_LIGHT, light, seq_l, OTHER_DARK, OTHER_DARK, dark, seq_d))
 
 
-def card(h, title, subtitle, body):
+def card(h, title, subtitle, body, label=None):
+    """A chart card. With an empty title the chart's name is a Markdown heading above the
+    image instead, so the card starts at the subtitle and moves everything up by 20px."""
+    if not title:
+        h -= 20
+        return (
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" role="img" '
+            'aria-label="%s">%s<rect class="bg" x=".5" y=".5" width="%d" height="%d" rx="10"/>'
+            '<text class="ts" x="20" y="30" font-size="12">%s</text><g transform="translate(0,-20)">%s</g></svg>'
+            % (W, h, W, h, escape(label or subtitle), _style(), W - 1, h - 1, escape(subtitle), body))
     return (
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" role="img" '
         'aria-label="%s">%s<rect class="bg" x=".5" y=".5" width="%d" height="%d" rx="10"/>'

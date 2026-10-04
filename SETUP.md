@@ -1,4 +1,4 @@
-## Set up a device
+# Set up a device
 
 Each device syncs its own Claude Code usage here every day at **08:00 Malaysia time**, and after every Claude Code session ends. Nothing needs to be done after installing.
 
@@ -22,11 +22,11 @@ The installer asks for a device name, schedules the daily run (launchd on macOS,
 
 Remove it: run the same installer with `--uninstall` (Windows: `-Uninstall`).
 
-### What is collected
+## What is collected
 
 Metadata only, per model reply: time, model, token counts, project (git remote, e.g. `owner/repo`, or the folder name), branch, short session id, tools called, skills used, effort setting, whether a subagent did it. Per prompt: time and length. **Never the text of prompts, replies, files or commands.**
 
-### Keep a project out of the tracker
+## Keep a project out of the tracker
 
 Excluded projects are dropped on the device itself, so nothing about them is written or pushed. Run these on the device (`~/.claude-usage/repo/collector/collect.py`; on Windows `python` instead of `python3`):
 
@@ -48,7 +48,7 @@ python3 collect.py only remove "my-org/*"
 - With `--shared` it goes into [`exclude.json`](exclude.json) and every device applies it on its next sync.
 - Adding a rule also removes that project's already-pushed data from the device's files; removing one re-imports it from the local logs. Commit messages don't say what was hidden, but older commits still contain the data until the repo history is rewritten.
 
-### Plan and /usage readings
+## Plan and /usage readings
 
 ```bash
 python3 ~/.claude-usage/repo/collector/collect.py plan "Max 20x" 200    # once: plan name and USD per month
@@ -59,11 +59,11 @@ python3 ~/.claude-usage/repo/collector/collect.py usage 38 --at "2026-09-27 21:0
 
 The **Plan** section shows, per calendar month, each Monday–Sunday week's API-equivalent cost as a % of the plan's weekly price (monthly × 12 ÷ 52), next to the latest `/usage` reading recorded that week. Past weeks stay fixed; the current week grows until Sunday. Readings are stored in `limits/<device>.jsonl` and kept in the monthly archive.
 
-### Rename a device
+## Rename a device
 
 `python3 collect.py rename new-name` moves the device's data folder in the repo (history stays) and updates its local config. The name shows as "Device: new-name" in the report.
 
-### Settings
+## Settings
 
 - `config.json`: time zone for the report, `device_order` (e.g. `["macbook-pro", "work-pc", "home-pc"]`) for the order of the device sections, and `plan_monthly_usd` / `plan_name` to compare API-equivalent cost with your subscription.
 - `aliases.json`: rename or merge projects, e.g. `{"website": "my-org/website"}`.

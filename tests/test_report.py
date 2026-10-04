@@ -134,7 +134,12 @@ class ReportTests(unittest.TestCase):
         for chart in ("usage-grid", "limit-grid", "week-hours", "typical-day"):
             self.assertIn("reports/charts/all/%s.svg" % chart, allsec)
         usage = (root / "reports/charts/all/usage-grid.svg").read_text()
-        self.assertIn("Usage per device, 28 Sep – 04 Oct", usage)
+        for head in ("## Usage per device, 28 Sep – 04 Oct", "## Sessions stopped by the limit, 28 Sep – 04 Oct",
+                     "## Who used Claude when, 28 Sep – 04 Oct", "## A typical day, last 28 days"):
+            self.assertIn(head, allsec)                                # chart names as headings, same size as "All devices"
+        self.assertIn("| Share of usage |", allsec)
+        self.assertIn("**Cache:**", allsec)
+        self.assertNotIn("Set up a device", md)                        # lives in SETUP.md now
         self.assertNotIn("$", usage)                                   # shares, never dollars
         limit = (root / "reports/charts/all/limit-grid.svg").read_text()
         self.assertIn(">2</text>", limit)                              # two sessions stopped on Tue 29
@@ -149,7 +154,7 @@ class ReportTests(unittest.TestCase):
         html = (root / "reports" / "dashboard.html").read_text()
         self.assertEqual(html.count("<svg"), len(svgs))
         self.assertIn('id="device-mac"', html)
-        self.assertIn("A typical day, last 28 days", (root / "reports/charts/all/typical-day.svg").read_text())
+        self.assertIn("red: two devices", (root / "reports/charts/all/typical-day.svg").read_text())
 
 
     def test_single_device_has_no_all_devices_section(self):
