@@ -366,13 +366,13 @@
    "windows_run_out": 0
   },
   {
-   "cost_usd": 1741.9432,
+   "cost_usd": 1742.4382,
    "last_fable_pct": 0.0,
    "last_weekly_pct": 100.0,
    "locked_min": 324,
    "pct_of_plan_week": null,
    "sessions": 15,
-   "status": "in progress",
+   "status": "final",
    "usage_checks": [
     {
      "at": "2026-10-02T05:00:00Z",

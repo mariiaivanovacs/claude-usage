@@ -1,14 +1,14 @@
 # Claude usage
 
-Tracking since 2026-07-28 · 1 device · 44,843 replies · 1,612 prompts
+Tracking since 2026-07-28 · 1 device · 44,846 replies · 1,614 prompts
 
 **Jump to:** [mariia-macbook](#device-mariia-macbook) · [Weekly limit](#weekly-limit) · [By month](#by-month)
 
 ## Device: mariia-macbook
 
-**This week so far (Mon 28 Sep – today):**  
-4.2B input · 11.9M output · 98% from cache · 331 prompts · $1,742 API-equivalent  
-vs the same days last week: output ▲ 132% · prompts ▲ 36% · cost ▲ 38%
+**This week so far (Mon 05 Oct – today):**  
+0 input · 0 output · 0% from cache · 0 prompts · $0.00 API-equivalent  
+vs the same days last week: output ▼ 100% · prompts ▼ 100% · cost ▼ 100%
 
 <img src="reports/charts/mariia-macbook/projects.svg" alt="projects" width="760">
 
@@ -22,6 +22,12 @@ vs the same days last week: output ▲ 132% · prompts ▲ 36% · cost ▲ 38%
 
 **Locked out time** is how long you could not use Claude because a usage limit had run out: counted from the first "limit reached" message until the moment Claude said it would reset. For example, hit at 15:17 and reset at 16:30 is 1h 13m. It is measured from Claude's own messages, not estimated. Every limit message in the logs so far is the 5-hour limit; a weekly limit message would be counted the same way.
 
+### October 2026
+
+| Week (Mon–Sun) | Weekly limit used | Fable limit used | 5-hour windows run out | Locked out time | Sessions | Status |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| 05 Oct – 11 Oct | – | – | 1 | 2h 56m | 1 | in progress |
+
 ### September 2026
 
 | Week (Mon–Sun) | Weekly limit used | Fable limit used | 5-hour windows run out | Locked out time | Sessions | Status |
@@ -29,7 +35,7 @@ vs the same days last week: output ▲ 132% · prompts ▲ 36% · cost ▲ 38%
 | 07 Sep – 13 Sep | – | – | 2 | 1h 39m | 13 | final |
 | 14 Sep – 20 Sep | 100% | 100% | 1 | 1h 32m | 5 | final |
 | 21 Sep – 27 Sep | 55% | 0% | 0 | – | 9 | final |
-| 28 Sep – 04 Oct | 100% | 0% | 6 | 5h 24m | 15 | in progress |
+| 28 Sep – 04 Oct | 100% | 0% | 6 | 5h 24m | 15 | final |
 
 **Recorded /usage readings** (latest 3)
 
@@ -45,7 +51,7 @@ Tokens are input (including what is read from cache) / output. Weekly and Fable 
 
 | Month | Tokens in / out | Sessions | Prompts | Devices | Windows run out | Locked out time | Weekly limit used | Fable limit used | Status |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| 2026-10 | 1.2B / 2.8M | 6 | 96 | 1 | 2 | 37 min | 100% (avg of 1) | 0% | in progress |
+| 2026-10 | 1.2B / 2.8M | 7 | 98 | 1 | 3 | 3h 34m | 100% (avg of 1) | 0% | in progress |
 | [2026-09](archive/2026-09.json) | 10.3B / 23.2M | 44 | 838 | 1 | 8 | 8h 57m | 78% (avg of 2) | 50% | final |
 | [2026-08](archive/2026-08.json) | 3.9B / 6.3M | 41 | 540 | 1 | 0 | – | – | – | final |
 | [2026-07](archive/2026-07.json) | 2.3B / 3M | 10 | 138 | 1 | 0 | – | – | – | final |
