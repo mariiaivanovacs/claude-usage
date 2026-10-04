@@ -647,10 +647,7 @@ def weekly_limit_section(months, checks, today):
         rows = []
         for w in m.get("plan_weeks", []):
             ws, we = date.fromisoformat(w["week_start"]), date.fromisoformat(w["week_end"])
-            reading = "–"
-            if w["last_weekly_pct"] is not None:
-                at = datetime.fromisoformat(w["usage_checks"][-1]["at"].replace("Z", "+00:00")).astimezone(TZ)
-                reading = "%g%% (%s)" % (w["last_weekly_pct"], at.strftime("%a %d %b"))
+            reading = "%g%%" % w["last_weekly_pct"] if w["last_weekly_pct"] is not None else "–"
             locked = timedelta(minutes=w.get("locked_min", 0))
             fable = "%g%%" % w["last_fable_pct"] if w.get("last_fable_pct") is not None else "–"
             rows.append(["%s – %s" % (ws.strftime("%d %b"), we.strftime("%d %b")), reading, fable,
