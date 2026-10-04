@@ -363,3 +363,44 @@ class UsageCheckTests(ExcludeTests):
         finally:
             sys.argv = old
         self.assertEqual(len((TMP / "xrepo" / "limits" / "dev1.jsonl").read_text().splitlines()), 2)
+
+
+def limit_rec(uid, ts, resets, session="s1", status="rejected", cwd="/nowhere/geco_website"):
+    return {"type": "assistant", "uuid": uid, "timestamp": ts, "sessionId": session, "cwd": cwd,
+            "quotaLimits": {"status": status, "resetsAt": resets, "rateLimitType": "five_hour"},
+            "message": {"id": "msg_" + uid, "model": "<synthetic>", "content": [], "usage": {"output_tokens": 0}}}
+
+
+class LimitEventTests(ExcludeTests):
+    def test_limit_events(self):
+        e = collect.limit_event(limit_rec("L1", "2026-09-30T03:28:00Z", 1790747400))
+        self.assertEqual((e["k"], e["type"], e["resets"], e["session"]), ("limit", "five_hour", 1790747400, "s1"))
+        self.assertNotIn("project", e)
+        self.assertIsNone(collect.limit_event(limit_rec("L2", "2026-09-30T03:28:00Z", 1, status="allowed")))
+        self.assertIsNone(collect.limit_event({"type": "system", "error": {"rateLimits": None}}))
+
+    def test_hidden_project_hit_is_still_recorded(self):
+        write(PROJ / "a.jsonl", [reply("1", 5), limit_rec("L1", "2026-09-30T03:28:00Z", 1790747400)])
+        evs, _ = collect.collect("dev1", {}, collect.Filter(only=["/somewhere/else"]))
+        self.assertEqual([e["k"] for e in evs], ["limit"])          # the reply is hidden, the hit is not
+
+    def test_purge_keeps_limits_and_scan_runs_once(self):
+        write(PROJ / "a.jsonl", [user("u1", "hi"), reply("1", 5), limit_rec("L1", "2026-09-30T03:28:00Z", 1790747400)])
+        self.run_main()
+        kinds = sorted(e["k"] for e in self.lines())
+        self.assertEqual(kinds, ["limit", "prompt", "reply"])
+        cfg = collect.read_json(collect.CONFIG, {})
+        cfg["only"] = ["/somewhere/else"]                           # hide everything
+        collect.write_json(collect.CONFIG, cfg)
+        self.run_main()
+        self.assertEqual([e["k"] for e in self.lines()], ["limit"])
+        # an install that predates limit events: drop the flag and the event, the next run finds it once
+        st = collect.read_json(collect.STATE, {})
+        st.pop("limits_v1")
+        collect.write_json(collect.STATE, st)
+        for f in (TMP / "xrepo" / "devices" / "dev1").glob("*.jsonl"):
+            f.unlink()
+        self.run_main()
+        self.assertEqual([e["k"] for e in self.lines()], ["limit"])
+        self.run_main()
+        self.assertEqual(len(self.lines()), 1)                      # not added twice

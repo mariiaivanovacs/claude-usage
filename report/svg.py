@@ -17,11 +17,33 @@ FONT = 'system-ui,-apple-system,"Segoe UI",sans-serif'
 W = 760
 
 
+RED = ["#f8d4d4", "#ec8f8f", "#c42f2f"]
+RED_DARK = ["#4a2023", "#8c2c2f", "#e25555"]
+AMBER = ["#fbedc9", "#f5d27f", "#e8ac2c", "#c98500", "#8f5d00"]
+AMBER_DARK = ["#3a2d10", "#6b4e12", "#a87413", "#e0a526", "#f5d27f"]
+INK, PAPER = "#0b0b0b", "#ffffff"
+
+
+def _ink(colors_light, colors_dark, prefix, dark_from_light, dark_from_dark):
+    """Text classes that stay readable on each step of a ramp, in both themes."""
+    lt = "".join(".%s%d{fill:%s}" % (prefix, i, PAPER if i >= dark_from_light else INK) for i in range(len(colors_light)))
+    dk = "".join(".%s%d{fill:%s}" % (prefix, i, INK if i >= dark_from_dark else PAPER) for i in range(len(colors_dark)))
+    return lt, dk
+
+
 def _style():
     light = "".join(".s%d{fill:%s}.l%d{stroke:%s}" % (i, c, i, c) for i, c in enumerate(SERIES_LIGHT))
     dark = "".join(".s%d{fill:%s}.l%d{stroke:%s}" % (i, c, i, c) for i, c in enumerate(SERIES_DARK))
     seq_l = "".join(".q%d{fill:%s}" % (i, c) for i, c in enumerate(SEQ))
     seq_d = "".join(".q%d{fill:%s}" % (i, c) for i, c in enumerate(SEQ_DARK))
+    seq_l += "".join(".r%d{fill:%s}" % (i, c) for i, c in enumerate(RED)) + "".join(".a%d{fill:%s}" % (i, c) for i, c in enumerate(AMBER))
+    seq_d += "".join(".r%d{fill:%s}" % (i, c) for i, c in enumerate(RED_DARK)) + "".join(".a%d{fill:%s}" % (i, c) for i, c in enumerate(AMBER_DARK))
+    for args in ((SEQ, SEQ_DARK, "tq", 3, 5), (RED, RED_DARK, "tr", 2, 3), (AMBER, AMBER_DARK, "ta", 3, 3)):
+        lt, dk = _ink(*args)
+        seq_l += lt
+        seq_d += dk
+    seq_l += ".tw{fill:#ffffff}"
+    seq_d += ".tw{fill:#ffffff}"
     return (
         "<style>"
         "text{font-family:%s;font-variant-numeric:tabular-nums}"
@@ -330,4 +352,114 @@ def lines(title, subtitle, labels, series, fmt, tick_every=3):
         if i % tick_every == 0:
             body.append('<text class="tm" x="%.1f" y="%d" font-size="11" text-anchor="middle">%s</text>'
                         % (left + step * i, h - bottom + 18, escape(lab)))
+    return card(h, title, subtitle, "".join(body))
+
+
+def day_grid(title, subtitle, cols, future, rows, right_title, note=""):
+    """Rows x day columns. rows: [{"name", "total", "cells": [(fill, line1, line2, tip) or None],
+    "bar": (fraction, fill) or None, "right": (line1, line2)}]. fill is a class: q1..q6, r0..r2, "qe"."""
+    left, top, cw, ch, gap = 156, 84, 62, 46, 4
+    rx = left + len(cols) * cw + 14
+    h = top + ch * len(rows) + (40 if note else 18)
+    body = []
+    for i, c in enumerate(cols):
+        body.append('<text class="%s" x="%.1f" y="%d" font-size="11.5" text-anchor="middle">%s</text>'
+                    % ("tm" if future[i] else "ts", left + i * cw + (cw - gap) / 2, top - 10, escape(c)))
+    body.append('<text class="ts" x="%d" y="%d" font-size="11.5">%s</text>' % (rx, top - 10, escape(right_title)))
+    for r, row in enumerate(rows):
+        y = top + r * ch
+        if row.get("total"):
+            body.append('<line class="base" x1="20" x2="%d" y1="%d" y2="%d"/>' % (W - 16, y - 3, y - 3))
+        body.append('<text class="%s" x="%d" y="%.1f" font-size="12" text-anchor="end"%s>%s</text>'
+                    % ("tp" if row.get("total") else "ts", left - 10, y + (ch - gap) / 2 + 4,
+                       ' font-weight="600"' if row.get("total") else "", escape(row["name"])))
+        for i, cell in enumerate(row["cells"]):
+            x = left + i * cw
+            fill, l1, l2, tip = cell if cell else ("qe", "", "", "")
+            body.append('<rect class="%s" x="%.1f" y="%d" width="%d" height="%d" rx="4"><title>%s</title></rect>'
+                        % (fill, x, y, cw - gap, ch - gap, escape(tip)))
+            ink = "t" + fill if fill[0] in "qra" and fill != "qe" else ("tp" if row.get("total") else "tm")
+            if l1:
+                body.append('<text class="%s" x="%.1f" y="%.1f" font-size="12" font-weight="600" text-anchor="middle">%s</text>'
+                            % (ink, x + (cw - gap) / 2, y + (ch - gap) / 2 - (2 if l2 else -4), escape(l1)))
+            if l2:
+                body.append('<text class="%s" x="%.1f" y="%.1f" font-size="9.5" text-anchor="middle" opacity=".85">%s</text>'
+                            % (ink, x + (cw - gap) / 2, y + (ch - gap) / 2 + 12, escape(l2)))
+        bar = row.get("bar")
+        r1, r2 = row.get("right", ("", ""))
+        if bar:
+            frac, bfill = bar
+            body.append('<rect class="qe" x="%d" y="%.1f" width="70" height="9" rx="3"/>' % (rx, y + 6))
+            body.append('<rect class="%s" x="%d" y="%.1f" width="%.1f" height="9" rx="3"/>' % (bfill, rx, y + 6, max(70 * frac, 1)))
+            body.append('<text class="tp" x="%d" y="%.1f" font-size="12" font-weight="600">%s</text>' % (rx + 78, y + 14, escape(r1)))
+            body.append('<text class="tm" x="%d" y="%.1f" font-size="10.5">%s</text>' % (rx, y + 32, escape(r2)))
+        else:
+            body.append('<text class="tp" x="%d" y="%.1f" font-size="12" font-weight="600">%s</text>' % (rx, y + 16, escape(r1)))
+            body.append('<text class="tm" x="%d" y="%.1f" font-size="10.5">%s</text>' % (rx, y + 32, escape(r2)))
+    if note:
+        body.append('<text class="tm" x="20" y="%d" font-size="11">%s</text>' % (h - 14, escape(note)))
+    return card(h, title, subtitle, "".join(body))
+
+
+def hour_grid(title, subtitle, legend_items, row_labels, row_muted, cells, right, right_title, note=""):
+    """Days x 24 hours. cells[r][h] = ([device classes], number or 0, tip) or None."""
+    leg, ly = legend([n for n, _ in legend_items], [c for _, c in legend_items], 76)
+    left, cw, ch = 64, 25, 24
+    top = ly + 34
+    rx = left + 24 * cw + 10
+    h = top + ch * len(row_labels) + (36 if note else 14)
+    body = [leg]
+    for hr in range(0, 24, 3):
+        body.append('<text class="tm" x="%.1f" y="%d" font-size="11" text-anchor="middle">%02d:00</text>' % (left + hr * cw + cw / 2, top - 8, hr))
+    body.append('<text class="ts" x="%d" y="%d" font-size="11">%s</text>' % (rx, top - 8, escape(right_title)))
+    for r, lab in enumerate(row_labels):
+        y = top + r * ch
+        body.append('<text class="%s" x="%d" y="%.1f" font-size="11.5" text-anchor="end">%s</text>' % ("tm" if row_muted[r] else "ts", left - 8, y + ch / 2 + 2, escape(lab)))
+        for hr in range(24):
+            x = left + hr * cw
+            cell = cells[r][hr]
+            if not cell:
+                body.append('<rect class="qe" x="%.1f" y="%d" width="%d" height="%d" rx="3"/>' % (x, y, cw - 2, ch - 3))
+                continue
+            classes, n, tip = cell
+            seg = (cw - 2) / len(classes)
+            for k, c in enumerate(classes):
+                body.append('<rect class="%s" x="%.1f" y="%d" width="%.1f" height="%d" rx="%d"/>' % (c, x + k * seg, y, seg - (0.8 if k < len(classes) - 1 else 0), ch - 3, 3 if len(classes) == 1 else 1))
+            body.append('<rect x="%.1f" y="%d" width="%d" height="%d" fill="transparent"><title>%s</title></rect>' % (x, y, cw - 2, ch - 3, escape(tip)))
+            if n > 1:
+                body.append('<text class="tw" x="%.1f" y="%.1f" font-size="11" font-weight="700" text-anchor="middle">%d</text>' % (x + (cw - 2) / 2, y + (ch - 3) / 2 + 4, n))
+        body.append('<text class="ts" x="%d" y="%.1f" font-size="11">%s</text>' % (rx, y + ch / 2 + 2, escape(right[r])))
+    if note:
+        body.append('<text class="tm" x="20" y="%d" font-size="11">%s</text>' % (h - 12, escape(note)))
+    return card(h, title, subtitle, "".join(body))
+
+
+def profile_grid(title, subtitle, rows, note=""):
+    """Typical day: rows x 24 hours, value = share of days (0..1). rows: [(label, [24 values], ramp "q"|"a", separator_before)]."""
+    left, top, cw, ch = 150, 84, 24, 26
+    h = top + ch * len(rows) + 36
+    body = []
+    for hr in range(0, 24, 3):
+        body.append('<text class="tm" x="%.1f" y="%d" font-size="11" text-anchor="middle">%02d:00</text>' % (left + hr * cw + cw / 2, top - 8, hr))
+    for r, (lab, vals, ramp, sep) in enumerate(rows):
+        y = top + r * ch
+        if sep:
+            body.append('<line class="base" x1="20" x2="%d" y1="%d" y2="%d"/>' % (W - 16, y - 3, y - 3))
+        body.append('<text class="ts" x="%d" y="%.1f" font-size="11.5" text-anchor="end">%s</text>' % (left - 8, y + ch / 2 + 2, escape(lab)))
+        empty = not any(vals)
+        for hr, v in enumerate(vals):
+            x = left + hr * cw
+            if v <= 0:
+                body.append('<rect class="qe" x="%.1f" y="%d" width="%d" height="%d" rx="3"/>' % (x, y, cw - 2, ch - 4))
+                continue
+            q = (1 + min(5, int(6 * v))) if ramp == "q" else min(4, int(5 * v))
+            cls = "%s%d" % (ramp, q)
+            body.append('<rect class="%s" x="%.1f" y="%d" width="%d" height="%d" rx="3"><title>%s · %02d:00 · %d%% of days</title></rect>'
+                        % (cls, x, y, cw - 2, ch - 4, escape(lab), hr, round(100 * v)))
+            if v >= .15:
+                body.append('<text class="t%s" x="%.1f" y="%.1f" font-size="10" font-weight="600" text-anchor="middle">%d</text>'
+                            % (cls, x + (cw - 2) / 2, y + (ch - 4) / 2 + 3.5, round(100 * v)))
+        if empty:
+            body.append('<text class="tm" x="%d" y="%.1f" font-size="11">%s</text>' % (left + 6, y + ch / 2 + 2, "none in the last 28 days"))
+    body.append('<text class="tm" x="20" y="%d" font-size="11">%s</text>' % (h - 12, escape(note)))
     return card(h, title, subtitle, "".join(body))

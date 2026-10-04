@@ -203,21 +203,6 @@ def five_hour_windows(replies):
 
 # ------------------------------------------------------------------ charts
 
-def chart_devices(replies, today, weeks=12):
-    starts = [week_start(today) - timedelta(weeks=weeks - 1 - i) for i in range(weeks)]
-    r = [e for e in replies if e["day"] >= starts[0]]
-    devices = device_order(replies)
-    cls = colour_classes(devices)
-    idx = {s: i for i, s in enumerate(starts)}
-    series = {d: [0.0] * weeks for d in devices}
-    for e in r:
-        series[e["device"]][idx[week_start(e["day"])]] += e["cost"]
-    return svg.stacked_columns(
-        "Weekly API-equivalent cost, by device",
-        "Last %d weeks · weeks start Monday · the last column is this week so far" % weeks,
-        [s.strftime("%d %b") for s in starts], [(d, cls[d], series[d]) for d in devices], usd)
-
-
 def chart_projects(replies, label, top=10):
     c = Counter()
     for e in replies:
@@ -251,46 +236,6 @@ def chart_models(replies, label):
                      [(short_model(m), v) for m, v in rows], compact,
                      classes=[cls[m] for m, _ in rows],
                      tips=["%d%% · %s" % (round(100 * v / total), usd(usd_by[m])) for m, v in rows])
-
-
-def chart_model_share(replies, devices, label):
-    fixed = CFG.get("model_colors")
-    keep, folded = ranked_series(replies, "model", MAX_SERIES, fixed)
-    cls = colour_classes(keep, fixed)
-    vals = {m: [0] * len(devices) for m in keep}
-    other = [0] * len(devices)
-    pos = {d: i for i, d in enumerate(devices)}
-    for e in replies:
-        (vals[e["model"]] if e["model"] in vals else other)[pos[e["device"]]] += e.get("out", 0)
-    segs = [(short_model(m), cls[m], vals[m]) for m in keep]
-    if folded:
-        segs.append(("other", "so", other))
-    return svg.share_bars("Model mix per device", "%s · share of output tokens" % label, devices, segs, compact)
-
-
-def chart_project_grid(replies, devices, label, top=12):
-    c = Counter()
-    for e in replies:
-        c[e["project"]] += e["cost"]
-    projects = [p for p, _ in c.most_common(top)]
-    cell = defaultdict(float)
-    for e in replies:
-        cell[(e["project"], e["device"])] += e["cost"]
-    values = [[cell[(p, d)] for d in devices] for p in projects]
-    return svg.matrix("Projects by device", "%s · API-equivalent cost · top %d projects" % (label, top),
-                      projects, devices, values, usd)
-
-
-def chart_hours(others, devices, label):
-    counts = {d: [0] * 24 for d in devices}
-    for e in others:
-        if e["k"] == "prompt" and e["device"] in counts:
-            counts[e["device"]][e["dt"].hour] += 1
-    cls = colour_classes(devices)
-    series = [(d, int(cls[d][1:]) if cls[d] != "so" else 0, counts[d]) for d in devices]
-    return svg.lines("When each device is used", "Prompts per hour of day · %s · %s time"
-                     % (label, CFG.get("timezone")), ["%02d:00" % h for h in range(24)], series,
-                     lambda v: "%d" % v)
 
 
 def md_table(headers, rows, align=None):
@@ -407,11 +352,173 @@ def build(root=ROOT, now=None):
     (out / "dashboard.html").write_text(dashboard(md, charts), encoding="utf-8")
 
 
+def fmt_dur(td):
+    m = int(round(td.total_seconds() / 60))
+    return "%dh %02dm" % (m // 60, m % 60) if m >= 60 else "%d min" % m
+
+
+def this_week(today):
+    ws = week_start(today)
+    days = [ws + timedelta(days=i) for i in range(7)]
+    return ws, days, [d > today for d in days]
+
+
+def sessions_of(events):
+    return {(e["device"], e.get("session")) for e in events if e.get("session")}
+
+
+def share_label(v, total):
+    if v <= 0:
+        return ""
+    p = 100 * v / total
+    return "<1%" if p < 1 else "%d%%" % round(p)
+
+
+def plural(n, word):
+    return "%d %s%s" % (n, word, "" if n == 1 else "s")
+
+
+def chart_usage_grid(replies, others, devices, today):
+    """Each cell: that day's share of the whole week's usage across all devices; second line: sessions."""
+    ws, days, future = this_week(today)
+    week = [e for e in replies + others if ws <= e["day"] <= days[-1]]
+    use = defaultdict(float)
+    for e in week:
+        if e["k"] == "reply":
+            use[(e["device"], e["day"])] += e["cost"]
+    total = sum(use.values()) or 1
+    vmax = max(use.values() or [1]) or 1
+    cls = colour_classes(devices, devices)
+    rows = []
+    for d in devices + [None]:
+        cells = []
+        for i, day in enumerate(days):
+            if future[i]:
+                cells.append(None)
+                continue
+            v = sum(use[(x, day)] for x in devices) if d is None else use[(d, day)]
+            n = len(sessions_of([e for e in week if e["day"] == day and (d is None or e["device"] == d)]))
+            fill = "qe" if d is None or v <= 0 else "q%d" % (1 + min(5, int(5 * v / vmax + .5)))
+            cells.append((fill, share_label(v, total), plural(n, "session") if n else "",
+                          "%s · %s · %s of the week" % (d or "All devices", day.strftime("%a %d %b"), share_label(v, total) or "0%")))
+        dv = sum(use[(d, day)] for day in days) if d else total
+        n_week = len(sessions_of([e for e in week if d is None or e["device"] == d]))
+        rows.append({"name": d or "All devices", "total": d is None, "cells": cells,
+                     "bar": (dv / total, "tp" if d is None else cls[d]),
+                     "right": ("%d%%" % round(100 * dv / total), plural(n_week, "session") + " this week")})
+    return svg.day_grid("Usage per device, %s – %s" % (days[0].strftime("%d %b"), days[-1].strftime("%d %b")),
+                        "Cell: the day's share of the week's usage, all devices (cells add up to 100%) · sessions that day",
+                        [d.strftime("%a %d") for d in days], future, rows, "Share of the week",
+                        note="A session that runs past midnight counts on both days.")
+
+
+def limit_windows(others):
+    """{(type, reset): (first hit, reset time)} for every limit window that ran out."""
+    first = {}
+    for e in others:
+        if e["k"] == "limit":
+            key = (e.get("type"), e["resets"])
+            first[key] = min(first.get(key, e["dt"]), e["dt"])
+    return {k: (t, datetime.fromtimestamp(k[1], timezone.utc).astimezone(TZ)) for k, t in first.items()}
+
+
+def chart_hits_grid(others, devices, today):
+    ws, days, future = this_week(today)
+    lim = [e for e in others if e["k"] == "limit" and ws <= e["day"] <= days[-1]]
+    windows = limit_windows(others)
+    key = lambda e: (e.get("type"), e["resets"])  # noqa: E731
+    vmax = max([len({e.get("session") for e in lim if e["device"] == d and e["day"] == day}) for d in devices for day in days] or [1]) or 1
+    rows = []
+    for d in devices + [None]:
+        mine = [e for e in lim if d is None or e["device"] == d]
+        cells = []
+        for i, day in enumerate(days):
+            if future[i]:
+                cells.append(None)
+                continue
+            today_hits = [e for e in mine if e["day"] == day]
+            n_s = len({(e["device"], e.get("session")) for e in today_hits})
+            n_w = len({key(e) for e in today_hits})
+            if not n_s:
+                cells.append(("qe", "none", "", "%s · %s · no limit hit" % (d or "All devices", day.strftime("%a %d %b"))))
+                continue
+            fill = "qe" if d is None else "r%d" % min(2, int(2 * (n_s - 1) / max(vmax - 1, 1) + .5))
+            cells.append((fill, str(n_s), plural(n_w, "window"),
+                          "%s · %s · %s stopped, %s ran out" % (d or "All devices", day.strftime("%a %d %b"), plural(n_s, "session"), plural(n_w, "window"))))
+        wk_keys = {key(e) for e in mine}
+        locked = sum(((windows[k][1] - windows[k][0]) for k in wk_keys if k in windows), timedelta())
+        rows.append({"name": d or "All devices", "total": d is None, "cells": cells,
+                     "right": ("%s · %s" % (plural(len({(e["device"], e.get("session")) for e in mine}), "session"), plural(len(wk_keys), "window")),
+                               ("locked out " + fmt_dur(locked)) if locked else "never locked out")})
+    return svg.day_grid("Sessions stopped by the limit, %s – %s" % (days[0].strftime("%d %b"), days[-1].strftime("%d %b")),
+                        "Cell: sessions stopped by \"limit reached\" that day, and the 5-hour windows they were in",
+                        [d.strftime("%a %d") for d in days], future, rows, "This week",
+                        note="The limit is shared, so the total row counts each window once. Locked out = from the first hit to the reset.")
+
+
+def activity_slots(events, first, last):
+    """{(day, hour, 10-min): (devices, sessions)} from every event with a time."""
+    slots = {}
+    for e in events:
+        if first <= e["day"] <= last:
+            devs, sess = slots.setdefault((e["day"], e["dt"].hour, e["dt"].minute // 10), (set(), set()))
+            devs.add(e["device"])
+            if e.get("session"):
+                sess.add((e["device"], e["session"]))
+    return slots
+
+
+def chart_week_hours(replies, others, devices, today):
+    ws, days, future = this_week(today)
+    slots = activity_slots(replies + others, ws, days[-1])
+    cls = colour_classes(devices, devices)
+    act, conc = defaultdict(set), defaultdict(int)
+    for (day, hr, _), (devs, sess) in slots.items():
+        act[(day, hr)] |= devs
+        conc[(day, hr)] = max(conc[(day, hr)], len(sess))
+    cells, right = [], []
+    for day in days:
+        row, on, par = [], 0, 0
+        for hr in range(24):
+            devs = [d for d in devices if d in act.get((day, hr), ())]
+            if not devs:
+                row.append(None)
+                continue
+            on += 1
+            n = conc[(day, hr)]
+            par += n > 1
+            row.append(([cls[d] for d in devs], n, "%s %02d:00 · %s%s" % (day.strftime("%a %d"), hr, ", ".join(devs),
+                                                                       (" · %d sessions at once" % n) if n > 1 else "")))
+        cells.append(row)
+        right.append("" if day > today else ("%d h · %d h" % (on, par) if on else "–"))
+    return svg.hour_grid("Who used Claude when, %s – %s" % (days[0].strftime("%d %b"), days[-1].strftime("%d %b")),
+                         "Row = day, cell = hour (%s). Colour = device, split = several · number = sessions at once" % CFG.get("timezone").split("/")[-1].replace("_", " "),
+                         [(d, cls[d]) for d in devices], [d.strftime("%a %d") for d in days], [f or d.weekday() >= 5 for d, f in zip(days, future)],
+                         cells, right, "Active · parallel", note="Right: hours with any activity · hours with 2+ sessions at once.")
+
+
+def chart_profile(replies, others, devices, today, days_n=28):
+    first = today - timedelta(days=days_n - 1)
+    slots = activity_slots(replies + others, first, today)
+    act = {d: [set() for _ in range(24)] for d in devices}
+    pd, ps = [set() for _ in range(24)], [set() for _ in range(24)]
+    for (day, hr, _), (devs, sess) in slots.items():
+        for d in devs:
+            if d in act:
+                act[d][hr].add(day)
+        if len(devs) > 1:
+            pd[hr].add(day)
+        if len(sess) > 1:
+            ps[hr].add(day)
+    share = lambda sets: [len(x) / days_n for x in sets]  # noqa: E731
+    rows = [(d, share(act[d]), "q", False) for d in devices]
+    rows += [("2+ devices at once", share(pd), "a", True), ("2+ sessions at once", share(ps), "a", False)]
+    return svg.profile_grid("A typical day, last %d days" % days_n,
+                            "Blue: how often a device is active that hour · amber: two devices, or two sessions, at once",
+                            rows, note="Numbers: %% of the last %d days on which that hour had it (shown from 15%%). %s time." % (days_n, CFG.get("timezone")))
+
+
 def all_devices(replies, others, r_week, o_week, prev, devices, label, today, save):
-    ms = today.replace(day=1)
-    month_label = "this month so far (%s – today)" % ms.strftime("%d %b")
-    o_month = in_range(others, ms, today)
-    active_month = [d for d in devices if any(e["device"] == d for e in o_month)] or devices
     rows = []
     for d in devices + [None]:
         r = [e for e in r_week if d is None or e["device"] == d]
@@ -419,26 +526,18 @@ def all_devices(replies, others, r_week, o_week, prev, devices, label, today, sa
         st = token_stats(r, o)
         name = "**Total**" if d is None else "[%s](#%s)" % (d, anchor("Device: %s" % d))
         rows.append([name, compact(st["input"]), compact(st["output"]), pct(st["cache"]),
-                     format(st["prompts"], ","), st["sessions"], usd(st["cost"])])
+                     format(st["prompts"], ","), st["sessions"]])
     cur = token_stats(r_week, o_week)
     _, vs = stats_line(cur, token_stats(in_range(replies, *prev), in_range(others, *prev)))
-    active = [d for d in devices if any(e["device"] == d for e in r_week)] or devices
-    blocks = [b for b in five_hour_windows(replies) if b["start"].date() >= week_start(today)]
-    top_blocks = sorted(blocks, key=lambda b: -b["cost"])[:5]
-    block_rows = [[b["start"].strftime("%a %d %b %H:%M"), usd(b["cost"]), compact(b["out"]),
-                   ", ".join(sorted(b["devices"]))] for b in top_blocks] or [["–", "–", "–", "–"]]
     return "".join([
         "## All devices\n",
         "Side by side, %s.\n\n" % label,
-        md_table(["Device", "Input", "Output", "Cache", "Prompts", "Sessions", "API cost"], rows), "\n\n",
+        md_table(["Device", "Input", "Output", "Cache", "Prompts", "Sessions"], rows), "\n\n",
         vs + "\n\n",
-        save("all", "devices", chart_devices(replies, today)) + "\n\n",
-        save("all", "model-share", chart_model_share(r_week, active, label)) + "\n\n",
-        save("all", "project-grid", chart_project_grid(r_week, active, label)) + "\n\n",
-        save("all", "hours", chart_hours(o_month, active_month, month_label)) + "\n\n",
-        "### Heaviest 5-hour windows, this week\n",
-        "Subscription limits count usage in 5-hour windows across all devices together.\n\n",
-        md_table(["Window start", "API cost", "Output", "Devices"], block_rows, ["l", "r", "r", "l"]), "\n",
+        save("all", "usage-grid", chart_usage_grid(replies, others, devices, today)) + "\n\n",
+        save("all", "limit-grid", chart_hits_grid(others, devices, today)) + "\n\n",
+        save("all", "week-hours", chart_week_hours(replies, others, devices, today)) + "\n\n",
+        save("all", "typical-day", chart_profile(replies, others, devices, today)) + "\n",
     ])
 
 

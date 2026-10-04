@@ -97,6 +97,11 @@ class ReportTests(unittest.TestCase):
         ev["mac"].append(reply("edge", "2026-08-31T20:00:00Z", project="me/edge"))
         ev["mac"].append(reply("aug", "2026-08-10T04:00:00Z", project="me/aug"))
         ev["old-pc"].append(reply("old", "2026-09-02T04:00:00Z", model="claude-opus-5", project="me/old"))
+        # a 5-hour window that ran out on Tue 29 (Malaysia time): hit 13:00, reset 14:30, two sessions stopped
+        reset = int(datetime.fromisoformat("2026-09-29T14:30:00+08:00").timestamp())
+        for i, sess in enumerate(("s29", "s29b")):
+            ev["mac"].append({"k": "limit", "id": "lim%d" % i, "ts": "2026-09-29T05:0%d:00Z" % i, "session": sess,
+                              "type": "five_hour", "resets": reset})
         return ev
 
     def build_at(self, ev, now=None):
@@ -126,8 +131,17 @@ class ReportTests(unittest.TestCase):
         self.assertNotIn("<img", old)                             # old-pc has no prompts this month either
         allsec = md[md.index("## All devices"):md.index("## By month")]
         self.assertIn("| **Total** |", allsec)
-        for chart in ("devices", "model-share", "project-grid", "hours"):
+        for chart in ("usage-grid", "limit-grid", "week-hours", "typical-day"):
             self.assertIn("reports/charts/all/%s.svg" % chart, allsec)
+        usage = (root / "reports/charts/all/usage-grid.svg").read_text()
+        self.assertIn("Usage per device, 28 Sep – 04 Oct", usage)
+        self.assertNotIn("$", usage)                                   # shares, never dollars
+        limit = (root / "reports/charts/all/limit-grid.svg").read_text()
+        self.assertIn(">2</text>", limit)                              # two sessions stopped on Tue 29
+        self.assertIn("1 window", limit)
+        self.assertIn("locked out 1h 30m", limit)
+        hours = (root / "reports/charts/all/week-hours.svg").read_text()
+        self.assertIn("mac, work-pc", hours)                           # both devices in the same hour
         svgs = list((root / "reports" / "charts").glob("*/*.svg"))
         for f in svgs:
             ET.fromstring(f.read_text())
@@ -135,9 +149,8 @@ class ReportTests(unittest.TestCase):
         html = (root / "reports" / "dashboard.html").read_text()
         self.assertEqual(html.count("<svg"), len(svgs))
         self.assertIn('id="device-mac"', html)
-        self.assertIn("this month so far (01 Sep – today)", (root / "reports/charts/all/hours.svg").read_text())
-        # the model-share chart only lists devices active this week
-        self.assertNotIn(">old-pc<", (root / "reports/charts/all/model-share.svg").read_text())
+        self.assertIn("A typical day, last 28 days", (root / "reports/charts/all/typical-day.svg").read_text())
+
 
     def test_single_device_has_no_all_devices_section(self):
         ev = self.events()

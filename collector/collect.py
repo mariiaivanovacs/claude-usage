@@ -334,10 +334,14 @@ def purge(device, flt, projects):
         with open(f, encoding="utf-8") as fh:
             for line in fh:
                 try:
-                    name = json.loads(line).get("project")
+                    rec = json.loads(line)
                 except ValueError:
                     keep.append(line)
                     continue
+                if rec.get("k") == "limit":          # no project: never hidden
+                    keep.append(line)
+                    continue
+                name = rec.get("project")
                 if name not in verdict:
                     verdict[name] = flt.hides_name(name, paths)
                 if verdict[name]:
@@ -418,8 +422,26 @@ def common(d, device, projects, excluder=None, root=None):
     }
 
 
+def limit_event(d):
+    """A "usage limit reached" record -> a limit event: when, which limit, when it resets.
+    No project or text is kept, so it is recorded whatever the project rules say."""
+    q = d.get("quotaLimits") or (d.get("message") or {}).get("quotaLimits")
+    if not isinstance(q, dict) or q.get("status") != "rejected" or not q.get("resetsAt"):
+        return None
+    dt = parse_ts(d.get("timestamp"))
+    if not dt:
+        return None
+    return {"k": "limit", "id": short_id("limit:%s:%s" % (d.get("uuid") or d.get("timestamp"), q["resetsAt"])),
+            "ts": dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "tz": utc_offset(dt),
+            "session": (d.get("sessionId") or "")[:8] or None, "type": q.get("rateLimitType") or "unknown",
+            "resets": int(q["resetsAt"])}
+
+
 def extract(d, device, projects, excluder=None, root=None):
     """One transcript record -> an event dict, or None."""
+    lim = limit_event(d)
+    if lim:
+        return lim
     t = d.get("type")
     if t == "assistant":
         m = d.get("message") or {}
@@ -559,7 +581,7 @@ def collect(device, state, excluder=None, only=None, skip=frozenset()):
         if fs.get("offset", 0) >= old.get("offset", 0) and old.get("root"):
             fs["root"] = old["root"]
         for raw in lines:
-            if b'"assistant"' not in raw and b'"user"' not in raw:   # cheap pre-filter
+            if b'"assistant"' not in raw and b'"user"' not in raw and b'quotaLimits' not in raw:   # cheap pre-filter
                 continue
             try:
                 d = json.loads(raw)
@@ -604,6 +626,27 @@ def session_root(path, d, fs, roots):
         if not sub and sid:
             roots[sid] = d["cwd"]
     return fs.get("root")
+
+
+def scan_limits(device, state):
+    """Past limit hits, read once from the whole logs (installs that predate limit events)."""
+    if state.get("limits_v1"):
+        return []
+    have = existing_ids(device)
+    found = {}
+    for path in scan_files():
+        with open(path, "rb") as f:
+            for raw in f:
+                if b"quotaLimits" not in raw:
+                    continue
+                try:
+                    ev = limit_event(json.loads(raw))
+                except ValueError:
+                    continue
+                if ev and ev["id"] not in have:
+                    found[ev["id"]] = ev
+    state["limits_v1"] = True
+    return list(found.values())
 
 
 def backfill(device, state, excluder, only):
@@ -989,6 +1032,11 @@ def main():
         flt = Filter(patterns["exclude"], patterns["only"])
         fresh = not rebuild and "files" not in state
         events, state = collect(device, state, flt, skip=existing_ids(device) if fresh else frozenset())
+        if not fresh and not rebuild:
+            seen_ids = {e["id"] for e in events}
+            events += [e for e in scan_limits(device, state) if e["id"] not in seen_ids]
+        else:
+            state["limits_v1"] = True             # a full read just happened
         if a.dry_run:
             kinds = {}
             for ev in events:
