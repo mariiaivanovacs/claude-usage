@@ -213,5 +213,6 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-10-02,work-pc-sample,sample/office-app,claude-sonnet-5,255,765,360285,76790755,2749339,29.9599
 2026-10-03,home-pc-sample,sample/side-project,claude-sonnet-5,57,171,81801,18030950,678209,7.1374
 2026-10-04,home-pc-sample,sample/side-project,claude-sonnet-5,61,183,92417,17989636,662765,7.1735
-2026-10-04,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,145,290,233905,104715471,1772006,39.7984
-2026-10-04,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-sonnet-5,12,24,3374,859040,122209,0.6944
+2026-10-04,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,158,316,258648,114743240,2596781,48.8971
+2026-10-04,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-sonnet-5,32,64,15461,2808280,236283,1.6615
+2026-10-04,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-sonnet-5-5,10,20,11842,6210062,696603,4.1469

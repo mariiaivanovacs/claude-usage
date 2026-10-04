@@ -966,10 +966,15 @@
    }
   }
  },
+ "devices_active": 4,
  "final": true,
  "first_day": "2026-09-01",
  "in_progress": false,
  "last_day": "2026-09-30",
+ "limit": {
+  "locked_min": 681,
+  "windows_run_out": 10
+ },
  "month": "2026-09",
  "plan": {
   "monthly_usd": null,
@@ -979,38 +984,50 @@
   {
    "cost_usd": 1978.3794,
    "last_weekly_pct": null,
+   "locked_min": 99,
    "pct_of_plan_week": null,
+   "sessions": 47,
    "status": "final",
    "usage_checks": [],
    "week_end": "2026-09-13",
-   "week_start": "2026-09-07"
+   "week_start": "2026-09-07",
+   "windows_run_out": 2
   },
   {
    "cost_usd": 585.0672,
    "last_weekly_pct": null,
+   "locked_min": 168,
    "pct_of_plan_week": null,
+   "sessions": 39,
    "status": "final",
    "usage_checks": [],
    "week_end": "2026-09-20",
-   "week_start": "2026-09-14"
+   "week_start": "2026-09-14",
+   "windows_run_out": 2
   },
   {
    "cost_usd": 1635.6416,
    "last_weekly_pct": null,
+   "locked_min": 0,
    "pct_of_plan_week": null,
+   "sessions": 42,
    "status": "final",
    "usage_checks": [],
    "week_end": "2026-09-27",
-   "week_start": "2026-09-21"
+   "week_start": "2026-09-21",
+   "windows_run_out": 0
   },
   {
-   "cost_usd": 2138.0678,
+   "cost_usd": 2152.2805,
    "last_weekly_pct": null,
+   "locked_min": 566,
    "pct_of_plan_week": null,
+   "sessions": 51,
    "status": "in progress",
    "usage_checks": [],
    "week_end": "2026-10-04",
-   "week_start": "2026-09-28"
+   "week_start": "2026-09-28",
+   "windows_run_out": 9
   }
  ],
  "pricing": "2026-06-24",
