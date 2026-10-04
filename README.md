@@ -1,13 +1,13 @@
 # Claude usage
 
-Tracking since 2026-07-28 · 1 device · 44,828 replies · 1,609 prompts
+Tracking since 2026-07-28 · 1 device · 44,830 replies · 1,609 prompts
 
 **Jump to:** [mariia-macbook](#device-mariia-macbook) · [Weekly limit](#weekly-limit) · [By month](#by-month)
 
 ## Device: mariia-macbook
 
 **This week so far (Mon 28 Sep – today):**  
-4.2B input · 11.8M output · 98% from cache · 328 prompts · $1,736 API-equivalent  
+4.2B input · 11.8M output · 98% from cache · 328 prompts · $1,737 API-equivalent  
 vs the same days last week: output ▲ 131% · prompts ▲ 34% · cost ▲ 37%
 
 <img src="reports/charts/mariia-macbook/projects.svg" alt="projects" width="760">
