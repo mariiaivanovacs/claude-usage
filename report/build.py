@@ -344,7 +344,7 @@ def build(root=ROOT, now=None):
     if len(devices) > 1:
         parts.append(all_devices(replies, others, r_week, o_week, prev, devices, label, today, save))
     parts.append(weekly_limit_section(months, checks, today))
-    parts.append(month_table(months, today))
+    parts.append(month_table(months, today, checks))
     md = readme(replies, others, today, root, parts, devices)
     (root / "README.md").write_text(md, encoding="utf-8")
     write_daily_csv(replies, out / "daily.csv")
@@ -625,8 +625,10 @@ def plan_weeks(key, replies, checks, today, tracking_start, others=()):
             "pct_of_plan_week": round(100 * cost / per_week, 1) if per_week else None,
             "usage_checks": [{"at": c["ts"], "device": c["device"], "weekly_pct": c["weekly_pct"],
                               **({"session_pct": c["session_pct"]} if "session_pct" in c else {}),
+                              **({"fable_pct": c["fable_pct"]} if "fable_pct" in c else {}),
                               **({"resets": c["resets"]} if "resets" in c else {})} for c in seen],
             "last_weekly_pct": last["weekly_pct"] if last else None,
+            "last_fable_pct": last.get("fable_pct") if last else None,
             "windows_run_out": locked_in(others, ws, we)[0],
             "locked_min": int(locked_in(others, ws, we)[1].total_seconds() // 60),
             "sessions": len(sessions_of([e for e in replies + others if ws <= e["day"] <= we])),
@@ -650,23 +652,25 @@ def weekly_limit_section(months, checks, today):
                 at = datetime.fromisoformat(w["usage_checks"][-1]["at"].replace("Z", "+00:00")).astimezone(TZ)
                 reading = "%g%% (%s)" % (w["last_weekly_pct"], at.strftime("%a %d %b"))
             locked = timedelta(minutes=w.get("locked_min", 0))
-            rows.append(["%s – %s" % (ws.strftime("%d %b"), we.strftime("%d %b")), reading,
+            fable = "%g%%" % w["last_fable_pct"] if w.get("last_fable_pct") is not None else "–"
+            rows.append(["%s – %s" % (ws.strftime("%d %b"), we.strftime("%d %b")), reading, fable,
                          w.get("windows_run_out", 0), fmt_dur(locked) if locked else "–", w.get("sessions", 0), w["status"]])
         if rows:
             out.append("### %s\n\n" % first.strftime("%B %Y"))
-            out.append(md_table(["Week (Mon–Sun)", "Weekly limit used", "5-hour windows run out", "Locked out", "Sessions", "Status"],
-                                rows, ["l", "r", "r", "r", "r", "l"]) + "\n\n")
+            out.append(md_table(["Week (Mon–Sun)", "Weekly limit used", "Fable limit used", "5-hour windows run out", "Locked out",
+                                 "Sessions", "Status"], rows, ["l", "r", "r", "r", "r", "r", "l"]) + "\n\n")
     if checks:
         recent = checks[-8:][::-1]
         out.append("**Recorded /usage readings** (latest %d)\n\n" % len(recent))
-        out.append(md_table(["When", "Device", "Weekly limit", "5-hour limit", "Resets"],
+        out.append(md_table(["When", "Device", "Weekly limit", "Fable limit", "5-hour limit", "Resets"],
                             [[c["dt"].strftime("%a %d %b %H:%M"), c["device"], "%g%%" % c["weekly_pct"],
+                              ("%g%%" % c["fable_pct"]) if "fable_pct" in c else "–",
                               ("%g%%" % c["session_pct"]) if "session_pct" in c else "–", c.get("resets", "–")]
-                             for c in recent], ["l", "l", "r", "r", "l"]) + "\n\n")
+                             for c in recent], ["l", "l", "r", "r", "r", "l"]) + "\n\n")
     return "".join(out)
 
 
-def month_table(months, today):
+def month_table(months, today, checks=()):
     if not months:
         return ""
     rows = []
@@ -674,7 +678,10 @@ def month_table(months, today):
         t = m["total"]
         tk = t["tokens"]
         tin = tk["input"] + tk["cache_read"] + tk["cache_write"]
-        readings = [w["last_weekly_pct"] for w in m.get("plan_weeks", []) if w.get("last_weekly_pct") is not None]
+        mf, ml = month_bounds(m["month"])
+        in_month = [c for c in checks if mf <= c["day"] <= ml]
+        readings = [c["weekly_pct"] for c in in_month]
+        fables = [c["fable_pct"] for c in in_month if "fable_pct" in c]
         lim = m.get("limit", {})
         locked = timedelta(minutes=lim.get("locked_min", 0))
         status = "in progress" if m.get("in_progress") else ("final" if m["final"] else "may still change")
@@ -682,12 +689,13 @@ def month_table(months, today):
         rows.append([link, "%s / %s" % (compact(tin), compact(tk["output"])), format(t["sessions"], ","),
                      format(t["prompts"], ","), m.get("devices_active", len(m["devices"])), lim.get("windows_run_out", 0),
                      fmt_dur(locked) if locked else "–",
-                     ("%d%% (avg of %d)" % (round(sum(readings) / len(readings)), len(readings))) if readings else "–", status])
+                     ("%d%% (avg of %d)" % (round(sum(readings) / len(readings)), len(readings))) if readings else "–",
+                     ("%d%%" % round(sum(fables) / len(fables))) if fables else "–", status])
     return ("## By month\n\n"
-            "Tokens are input (including what is read from cache) / output. Weekly limit used is the average of that "
-            "month's weekly `/usage` readings.\n\n"
+            "Tokens are input (including what is read from cache) / output. Weekly and Fable limit used are the averages of "
+            "the `/usage` readings dated in that month.\n\n"
             + md_table(["Month", "Tokens in / out", "Sessions", "Prompts", "Devices", "Windows run out", "Locked out",
-                        "Weekly limit used", "Status"], rows, ["l", "r", "r", "r", "r", "r", "r", "r", "l"]) + "\n")
+                        "Weekly limit used", "Fable limit used", "Status"], rows, ["l", "r", "r", "r", "r", "r", "r", "r", "r", "l"]) + "\n")
 
 
 def header(today):

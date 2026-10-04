@@ -801,7 +801,7 @@ def write_log_usage_command(action):
     path.write_text(
         "---\n"
         "description: Record the weekly limit %% that /usage shows, in the Claude usage tracker\n"
-        "argument-hint: <weekly %%> [--session <5-hour %%>] [--resets \"Thu 10:00\"]\n"
+        "argument-hint: <weekly %%> [--fable <Fable %%>] [--session <5-hour %%>] [--resets \"Fri 18 Sep\"]\n"
         "---\n"
         "<!-- %s -->\n"
         "Record a /usage reading in the Claude usage tracker.\n\n"
@@ -998,7 +998,7 @@ def percent(text, what):
     return v
 
 
-def record_usage(device, weekly, session=None, resets=None, at=None):
+def record_usage(device, weekly, session=None, resets=None, at=None, fable=None):
     """Append one reading of /usage to limits/<device>.jsonl and push it.
 
     Kept out of devices/ on purpose: rebuild and purge rewrite that folder from the
@@ -1010,6 +1010,8 @@ def record_usage(device, weekly, session=None, resets=None, at=None):
            "weekly_pct": percent(weekly, "the weekly %")}
     if session is not None:
         rec["session_pct"] = percent(session, "--session")
+    if fable is not None:
+        rec["fable_pct"] = percent(fable, "--fable")
     if resets:
         rec["resets"] = resets
     git_pull()
@@ -1049,6 +1051,7 @@ def main():
     ap.add_argument("--session", help="usage: the 5-hour session %% shown by /usage")
     ap.add_argument("--resets", help='usage: when the weekly limit resets, as /usage shows it')
     ap.add_argument("--at", help='usage: when you read it, "YYYY-MM-DD HH:MM" (default now)')
+    ap.add_argument("--fable", help="usage: the Fable limit %% shown by /usage")
     ap.add_argument("cmd", nargs="*")
     a = ap.parse_args()
 
@@ -1068,14 +1071,14 @@ def main():
         if not device:
             sys.exit("no device name: run install first")
         if a.cmd[0] == "usage" and len(a.cmd) != 2:
-            sys.exit('usage: collect.py usage 42 [--session 15] [--resets "Thu 10:00"] [--at "YYYY-MM-DD HH:MM"]')
+            sys.exit('usage: collect.py usage 42 [--session 15] [--fable 0] [--resets "Fri 18 Sep"] [--at "YYYY-MM-DD HH:MM"]')
         if a.cmd[0] == "plan" and len(a.cmd) != 3:
             sys.exit('usage: collect.py plan "Max 20x" 200')
         if not acquire_lock():
             sys.exit("a sync is running; try again in a minute")
         try:
             if a.cmd[0] == "usage":
-                record_usage(device, a.cmd[1], a.session, a.resets, a.at)
+                record_usage(device, a.cmd[1], a.session, a.resets, a.at, a.fable)
             else:
                 set_plan(a.cmd[1], a.cmd[2])
         finally:

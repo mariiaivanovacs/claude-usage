@@ -233,9 +233,9 @@ class ReportTests(unittest.TestCase):
         rows = [l for l in sep.splitlines() if l.startswith("| ") and " – " in l.split("|")[1]]
         self.assertEqual([r.split("|")[1].strip() for r in rows],
                          ["07 Sep – 13 Sep", "14 Sep – 20 Sep", "21 Sep – 27 Sep", "28 Sep – 04 Oct"])
-        self.assertIn("| 12% (Tue 29 Sep) | 1 | 1h 30m |", rows[-1])  # reading, the window that ran out, lockout
+        self.assertIn("| 12% (Tue 29 Sep) | – | 1 | 1h 30m |", rows[-1])  # reading, no Fable reading, window run out, lockout
         self.assertIn("in progress", rows[-1])
-        self.assertIn("| 30% (Tue 22 Sep) | 0 | – |", rows[-2])
+        self.assertIn("| 30% (Tue 22 Sep) | – | 0 | – |", rows[-2])
         self.assertIn("| 31 Aug – 06 Sep |", wl[wl.index("### August 2026"):])
         bm = md[md.index("## By month"):md.index("## Data")]
         self.assertNotIn("Most-used device", bm)
@@ -246,6 +246,24 @@ class ReportTests(unittest.TestCase):
         self.assertEqual(cells[5], "1")                                # windows run out
         self.assertEqual(cells[7], "21% (avg of 2)")                   # average of the two weekly readings
         self.assertNotIn("%%", md)
+
+    def test_readings_by_calendar_month_and_fable(self):
+        root = repo_with(self.events())
+        (root / "limits").mkdir()
+        (root / "limits" / "mac.jsonl").write_text(
+            '{"ts":"2026-09-16T04:00:00Z","tz":"+08:00","weekly_pct":100,"fable_pct":100,"resets":"Fri 18 Sep"}\n'
+            '{"ts":"2026-09-25T04:00:00Z","tz":"+08:00","weekly_pct":55,"fable_pct":0,"resets":"Fri 25 Sep"}\n'
+            '{"ts":"2026-10-02T04:00:00Z","tz":"+08:00","weekly_pct":100,"fable_pct":0,"resets":"Fri 02 Oct"}\n')
+        build.build(root, now=datetime.fromisoformat("2026-10-04T12:00:00+08:00"))
+        md = (root / "README.md").read_text()
+        wl = md[md.index("## Weekly limit"):md.index("## By month")]
+        self.assertIn("| 14 Sep – 20 Sep | 100% (Wed 16 Sep) | 100% |", wl)
+        self.assertIn("| 21 Sep – 27 Sep | 55% (Fri 25 Sep) | 0% |", wl)
+        self.assertIn("| 28 Sep – 04 Oct | 100% (Fri 02 Oct) | 0% |", wl)      # the week sits under September
+        bm = md[md.index("## By month"):md.index("## Data")]
+        row = lambda m: [c.strip() for c in [l for l in bm.splitlines() if l.startswith("| " + m) or l.startswith("| [" + m)][0].strip("|").split("|")]
+        self.assertEqual(row("2026-09")[7:9], ["78% (avg of 2)", "50%"])          # 16 and 25 Sep
+        self.assertEqual(row("2026-10")[7:9], ["100% (avg of 1)", "0%"])          # 2 Oct counts for October
 
     def test_archive_follows_raw_data(self):
         ev = self.events()
