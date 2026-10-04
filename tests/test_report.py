@@ -228,6 +228,9 @@ class ReportTests(unittest.TestCase):
         self.assertNotIn("## Plan", md)
         wl = md[md.index("## Weekly limit"):md.index("## By month")]
         self.assertIn("`/log-usage 42`", wl)
+        self.assertIn("**Locked out time** is how long you could not use Claude", wl)
+        self.assertIn("| Locked out time |", wl)
+        self.assertNotIn("| Locked out |", wl)
         self.assertNotIn("$", wl)                                      # no dollars anywhere in it
         sep = wl[wl.index("### September 2026"):wl.index("### August 2026")]
         rows = [l for l in sep.splitlines() if l.startswith("| ") and " – " in l.split("|")[1]]
@@ -239,6 +242,7 @@ class ReportTests(unittest.TestCase):
         self.assertIn("| 31 Aug – 06 Sep |", wl[wl.index("### August 2026"):])
         bm = md[md.index("## By month"):md.index("## Data")]
         self.assertNotIn("Most-used device", bm)
+        self.assertIn("| Locked out time |", bm)
         self.assertNotIn("$", bm)
         sep_row = [l for l in bm.splitlines() if l.startswith("| 2026-09")][0]
         cells = [c.strip() for c in sep_row.strip("|").split("|")]

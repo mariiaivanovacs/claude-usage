@@ -641,7 +641,11 @@ def weekly_limit_section(months, checks, today):
     out = ["## Weekly limit\n\n",
            "**Weekly limit used** is the % that Claude's own `/usage` screen shows. Claude Code doesn't let scripts read it, "
            "so record it yourself: open `/usage`, then type **`/log-usage 42`** in Claude Code (42 = the weekly % it shows). "
-           "The table keeps the latest reading of each week; the other columns fill in by themselves.\n\n"]
+           "The table keeps the latest reading of each week; the other columns fill in by themselves.\n\n"
+           "**Locked out time** is how long you could not use Claude because a usage limit had run out: counted from the first "
+           "\"limit reached\" message until the moment Claude said it would reset. For example, hit at 15:17 and reset at 16:30 "
+           "is 1h 13m. It is measured from Claude's own messages, not estimated. Every limit message in the logs so far is the "
+           "5-hour limit; a weekly limit message would be counted the same way.\n\n"]
     for m in sorted(months, key=lambda m: m["month"], reverse=True)[:2]:
         first, _ = month_bounds(m["month"])
         rows = []
@@ -654,7 +658,7 @@ def weekly_limit_section(months, checks, today):
                          w.get("windows_run_out", 0), fmt_dur(locked) if locked else "–", w.get("sessions", 0), w["status"]])
         if rows:
             out.append("### %s\n\n" % first.strftime("%B %Y"))
-            out.append(md_table(["Week (Mon–Sun)", "Weekly limit used", "Fable limit used", "5-hour windows run out", "Locked out",
+            out.append(md_table(["Week (Mon–Sun)", "Weekly limit used", "Fable limit used", "5-hour windows run out", "Locked out time",
                                  "Sessions", "Status"], rows, ["l", "r", "r", "r", "r", "r", "l"]) + "\n\n")
     if checks:
         recent = checks[-8:][::-1]
@@ -690,8 +694,9 @@ def month_table(months, today, checks=()):
                      ("%d%%" % round(sum(fables) / len(fables))) if fables else "–", status])
     return ("## By month\n\n"
             "Tokens are input (including what is read from cache) / output. Weekly and Fable limit used are the averages of "
-            "the `/usage` readings dated in that month.\n\n"
-            + md_table(["Month", "Tokens in / out", "Sessions", "Prompts", "Devices", "Windows run out", "Locked out",
+            "the `/usage` readings dated in that month. Locked out time: the time you could not use Claude after a limit "
+            "ran out, until it reset (explained under Weekly limit).\n\n"
+            + md_table(["Month", "Tokens in / out", "Sessions", "Prompts", "Devices", "Windows run out", "Locked out time",
                         "Weekly limit used", "Fable limit used", "Status"], rows, ["l", "r", "r", "r", "r", "r", "r", "r", "r", "l"]) + "\n")
 
 
