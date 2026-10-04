@@ -346,13 +346,21 @@
   },
   {
    "cost_usd": 1266.8608,
-   "last_fable_pct": null,
-   "last_weekly_pct": null,
+   "last_fable_pct": 0.0,
+   "last_weekly_pct": 55.0,
    "locked_min": 0,
    "pct_of_plan_week": null,
    "sessions": 9,
    "status": "final",
-   "usage_checks": [],
+   "usage_checks": [
+    {
+     "at": "2026-09-25T05:00:00Z",
+     "device": "mariia-macbook",
+     "fable_pct": 0.0,
+     "resets": "Fri 25 Sep",
+     "weekly_pct": 55.0
+    }
+   ],
    "week_end": "2026-09-27",
    "week_start": "2026-09-21",
    "windows_run_out": 0

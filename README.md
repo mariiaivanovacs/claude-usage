@@ -26,13 +26,14 @@ vs the same days last week: output ▲ 131% · prompts ▲ 34% · cost ▲ 37%
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
 | 07 Sep – 13 Sep | – | – | 2 | 1h 39m | 13 | final |
 | 14 Sep – 20 Sep | 100% (Wed 16 Sep) | 100% | 1 | 1h 32m | 5 | final |
-| 21 Sep – 27 Sep | – | – | 0 | – | 9 | final |
+| 21 Sep – 27 Sep | 55% (Fri 25 Sep) | 0% | 0 | – | 9 | final |
 | 28 Sep – 04 Oct | – | – | 6 | 5h 24m | 15 | in progress |
 
-**Recorded /usage readings** (latest 1)
+**Recorded /usage readings** (latest 2)
 
 | When | Device | Weekly limit | Fable limit | 5-hour limit | Resets |
 | --- | --- | ---: | ---: | ---: | --- |
+| Fri 25 Sep 13:00 | mariia-macbook | 55% | 0% | – | Fri 25 Sep |
 | Wed 16 Sep 13:00 | mariia-macbook | 100% | 100% | – | Fri 18 Sep |
 
 ## By month
@@ -42,7 +43,7 @@ Tokens are input (including what is read from cache) / output. Weekly and Fable 
 | Month | Tokens in / out | Sessions | Prompts | Devices | Windows run out | Locked out | Weekly limit used | Fable limit used | Status |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
 | 2026-10 | 1.2B / 2.8M | 6 | 93 | 1 | 2 | 37 min | – | – | in progress |
-| [2026-09](archive/2026-09.json) | 10.3B / 23.2M | 44 | 838 | 1 | 8 | 8h 57m | 100% (avg of 1) | 100% | final |
+| [2026-09](archive/2026-09.json) | 10.3B / 23.2M | 44 | 838 | 1 | 8 | 8h 57m | 78% (avg of 2) | 50% | final |
 | [2026-08](archive/2026-08.json) | 3.9B / 6.3M | 41 | 540 | 1 | 0 | – | – | – | final |
 | [2026-07](archive/2026-07.json) | 2.3B / 3M | 10 | 138 | 1 | 0 | – | – | – | final |
 
