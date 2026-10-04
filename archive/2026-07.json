@@ -278,6 +278,7 @@
  "plan_weeks": [
   {
    "cost_usd": 0,
+   "last_fable_pct": null,
    "last_weekly_pct": null,
    "locked_min": 0,
    "pct_of_plan_week": null,
@@ -290,6 +291,7 @@
   },
   {
    "cost_usd": 0,
+   "last_fable_pct": null,
    "last_weekly_pct": null,
    "locked_min": 0,
    "pct_of_plan_week": null,
@@ -302,6 +304,7 @@
   },
   {
    "cost_usd": 0,
+   "last_fable_pct": null,
    "last_weekly_pct": null,
    "locked_min": 0,
    "pct_of_plan_week": null,
@@ -314,6 +317,7 @@
   },
   {
    "cost_usd": 692.24,
+   "last_fable_pct": null,
    "last_weekly_pct": null,
    "locked_min": 0,
    "pct_of_plan_week": null,

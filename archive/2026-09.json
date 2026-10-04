@@ -312,6 +312,7 @@
  "plan_weeks": [
   {
    "cost_usd": 1585.4788,
+   "last_fable_pct": null,
    "last_weekly_pct": null,
    "locked_min": 99,
    "pct_of_plan_week": null,
@@ -324,18 +325,28 @@
   },
   {
    "cost_usd": 197.1862,
-   "last_weekly_pct": null,
+   "last_fable_pct": 100.0,
+   "last_weekly_pct": 100.0,
    "locked_min": 92,
    "pct_of_plan_week": null,
    "sessions": 5,
    "status": "final",
-   "usage_checks": [],
+   "usage_checks": [
+    {
+     "at": "2026-09-16T05:00:00Z",
+     "device": "mariia-macbook",
+     "fable_pct": 100.0,
+     "resets": "Fri 18 Sep",
+     "weekly_pct": 100.0
+    }
+   ],
    "week_end": "2026-09-20",
    "week_start": "2026-09-14",
    "windows_run_out": 1
   },
   {
    "cost_usd": 1266.8608,
+   "last_fable_pct": null,
    "last_weekly_pct": null,
    "locked_min": 0,
    "pct_of_plan_week": null,
@@ -348,6 +359,7 @@
   },
   {
    "cost_usd": 1736.7363,
+   "last_fable_pct": null,
    "last_weekly_pct": null,
    "locked_min": 324,
    "pct_of_plan_week": null,
