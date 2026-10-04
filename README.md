@@ -62,7 +62,7 @@ Side by side, this week so far (Mon 28 Sep – today).
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | [mariia-macbook](#device-mariia-macbook) | 4.2B | 11.8M | 98% | 319 | 15 | 80% |
 | [home-pc-sample](#device-home-pc-sample) | 53.9M | 249.3K | 96% | 45 | 3 | 1% |
-| [office-laptop-sample](#device-office-laptop-sample) | 168.7M | 777.9K | 97% | 139 | 8 | 4% |
+| [office-laptop-sample](#device-office-laptop-sample) | 168.7M | 777.9K | 97% | 139 | 8 | 5% |
 | [work-pc-sample](#device-work-pc-sample) | 554.2M | 2.5M | 96% | 454 | 25 | 14% |
 | **Total** | 4.9B | 15.3M | 98% | 957 | 51 | 100% |
 

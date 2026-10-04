@@ -77,6 +77,11 @@ class ReportTests(unittest.TestCase):
         self.assertEqual([b["replies"] for b in blocks], [2, 1, 1])
         self.assertEqual(blocks[0]["start"].strftime("%H:%M"), "09:00")  # 01:10Z -> 09:10 MYT, floored
 
+    def test_shares_add_up_to_100(self):
+        self.assertEqual(sum(build.shares_100([80.4, 1.4, 4.4, 13.8])), 100)
+        self.assertEqual(build.shares_100([1, 1, 1]), [34, 33, 33])
+        self.assertEqual(build.shares_100([0, 0]), [0, 0])
+
     def test_empty_repo(self):
         root = repo_with({})
         build.build(root)

@@ -378,6 +378,18 @@ def share_label(v, total):
     return "<1%" if p < 1 else "%d%%" % round(p)
 
 
+def shares_100(values):
+    """Whole percentages that add up to exactly 100 (largest remainder), for columns that say they do."""
+    total = sum(values)
+    if not total:
+        return [0] * len(values)
+    raw = [100 * v / total for v in values]
+    out = [int(r) for r in raw]
+    for i in sorted(range(len(raw)), key=lambda i: raw[i] - out[i], reverse=True)[:100 - sum(out)]:
+        out[i] += 1
+    return out
+
+
 def plural(n, word):
     return "%d %s%s" % (n, word, "" if n == 1 else "s")
 
@@ -393,6 +405,8 @@ def chart_usage_grid(replies, others, devices, today):
     total = sum(use.values()) or 1
     vmax = max(use.values() or [1]) or 1
     cls = colour_classes(devices, devices)
+    pct_of = dict(zip(devices, shares_100([sum(use[(d, day)] for day in days) for d in devices])))
+    pct_of[None] = 100
     rows = []
     for d in devices + [None]:
         cells = []
@@ -409,7 +423,7 @@ def chart_usage_grid(replies, others, devices, today):
         n_week = len(sessions_of([e for e in week if d is None or e["device"] == d]))
         rows.append({"name": d or "All devices", "total": d is None, "cells": cells,
                      "bar": (dv / total, "tp" if d is None else cls[d]),
-                     "right": ("%d%%" % round(100 * dv / total), plural(n_week, "session") + " this week")})
+                     "right": ("%d%%" % pct_of[d], plural(n_week, "session") + " this week")})
     return svg.day_grid("",
                         "Cell: the day's share of the week's usage, all devices (cells add up to 100%) · sessions that day",
                         [d.strftime("%a %d") for d in days], future, rows, "Share of the week",
@@ -523,6 +537,8 @@ def chart_profile(replies, others, devices, today, days_n=28):
 
 
 def all_devices(replies, others, r_week, o_week, prev, devices, label, today, save):
+    share = dict(zip(devices, shares_100([sum(e["cost"] for e in r_week if e["device"] == d) for d in devices])))
+    share[None] = 100
     rows = []
     for d in devices + [None]:
         r = [e for e in r_week if d is None or e["device"] == d]
@@ -531,7 +547,7 @@ def all_devices(replies, others, r_week, o_week, prev, devices, label, today, sa
         name = "**Total**" if d is None else "[%s](#%s)" % (d, anchor("Device: %s" % d))
         rows.append([name, compact(st["input"]), compact(st["output"]), pct(st["cache"]),
                      format(st["prompts"], ","), st["sessions"],
-                     "%d%%" % round(100 * st["cost"] / (sum(e["cost"] for e in r_week) or 1))])
+                     "%d%%" % share[d]])
     cur = token_stats(r_week, o_week)
     _, vs = stats_line(cur, token_stats(in_range(replies, *prev), in_range(others, *prev)))
     return "".join([
