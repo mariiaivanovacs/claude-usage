@@ -152,6 +152,8 @@ class ReportTests(unittest.TestCase):
         self.assertIn("locked out 1h 30m", limit)
         hours = (root / "reports/charts/all/week-hours.svg").read_text()
         self.assertIn("mac, work-pc", hours)                           # both devices in the same hour
+        self.assertIn("mac · 4 h", hours)                              # hours per device in the legend
+        self.assertIn("work-pc · 3 h", hours)
         svgs = list((root / "reports" / "charts").glob("*/*.svg"))
         for f in svgs:
             ET.fromstring(f.read_text())

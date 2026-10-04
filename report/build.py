@@ -494,6 +494,10 @@ def chart_week_hours(replies, others, devices, today):
     for (day, hr, _), (devs, sess) in slots.items():
         act[(day, hr)] |= devs
         conc[(day, hr)] = max(conc[(day, hr)], len(sess))
+    hours = Counter()
+    for (day, hr), devs in act.items():
+        for d in devs:
+            hours[d] += 1
     cells, right = [], []
     for day in days:
         row, on, par = [], 0, 0
@@ -511,8 +515,9 @@ def chart_week_hours(replies, others, devices, today):
         right.append("" if day > today else ("%d h · %d h" % (on, par) if on else "–"))
     return svg.hour_grid("",
                          "Row = day, cell = hour (%s). Colour = device, split = several · number = sessions at once" % CFG.get("timezone").split("/")[-1].replace("_", " "),
-                         [(d, cls[d]) for d in devices], [d.strftime("%a %d") for d in days], [f or d.weekday() >= 5 for d, f in zip(days, future)],
-                         cells, right, "Active · parallel", note="Right: hours with any activity · hours with 2+ sessions at once.")
+                         [("%s · %d h" % (d, hours[d]), cls[d]) for d in devices], [d.strftime("%a %d") for d in days], [f or d.weekday() >= 5 for d, f in zip(days, future)],
+                         cells, right, "Active · parallel",
+                         note="Legend: hours each device was active this week. Right: hours with any device active · hours with 2+ sessions at once.")
 
 
 def chart_profile(replies, others, devices, today, days_n=28):
@@ -533,7 +538,8 @@ def chart_profile(replies, others, devices, today, days_n=28):
     rows += [("2+ devices at once", share(pd), "a", True), ("2+ sessions at once", share(ps), "a", False)]
     return svg.profile_grid("",
                             "Blue: how often a device is active that hour · red: two devices, or two sessions, at once",
-                            rows, note="Numbers: %% of the last %d days on which that hour had it (shown from 15%%). %s time." % (days_n, CFG.get("timezone")))
+                            rows, note="Each number = %% of the last %d days on which it happened in that hour, e.g. 71 = on 20 of %d days. Shown from 15."
+                            % (days_n, days_n))
 
 
 def all_devices(replies, others, r_week, o_week, prev, devices, label, today, save):
