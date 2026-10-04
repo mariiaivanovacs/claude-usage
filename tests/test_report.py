@@ -77,6 +77,18 @@ class ReportTests(unittest.TestCase):
         self.assertEqual([b["replies"] for b in blocks], [2, 1, 1])
         self.assertEqual(blocks[0]["start"].strftime("%H:%M"), "09:00")  # 01:10Z -> 09:10 MYT, floored
 
+    def test_share_hours_small_and_empty_cells(self):
+        import svg
+        vals = [0.0] * 24
+        vals[9], vals[10], vals[11] = 0.004, 0.2, 0.796                # under 1%, normal, large
+        rows = [{"name": "d", "vals": vals, "ramp": "q", "total": "100%"},
+                {"name": "2+ sessions at once", "vals": [0.0] * 24, "ramp": "a", "total": "0%", "sep": True}]
+        out = svg.share_hours("", "sub", rows, note="n")
+        ET.fromstring(out)                                             # "<1%" must not break the markup
+        self.assertIn("under 1% of the week", out)
+        self.assertIn(">80<", out)
+        self.assertNotIn(">0<", out)                                   # empty cells carry no number
+
     def test_shares_add_up_to_100(self):
         self.assertEqual(sum(build.shares_100([80.4, 1.4, 4.4, 13.8])), 100)
         self.assertEqual(build.shares_100([1, 1, 1]), [34, 33, 33])
@@ -136,11 +148,11 @@ class ReportTests(unittest.TestCase):
         self.assertNotIn("<img", old)                             # old-pc has no prompts this month either
         allsec = md[md.index("## All devices"):md.index("## By month")]
         self.assertIn("| **Total** |", allsec)
-        for chart in ("usage-grid", "limit-grid", "week-hours", "typical-day"):
+        for chart in ("usage-grid", "limit-grid", "week-hours", "hour-share"):
             self.assertIn("reports/charts/all/%s.svg" % chart, allsec)
         usage = (root / "reports/charts/all/usage-grid.svg").read_text()
         for head in ("## Usage per device, 28 Sep – 04 Oct", "## Sessions stopped by the limit, 28 Sep – 04 Oct",
-                     "## Who used Claude when, 28 Sep – 04 Oct", "## A typical day, last 28 days"):
+                     "## Who used Claude when, 28 Sep – 04 Oct", "## Usage by hour of day, 28 Sep – 04 Oct"):
             self.assertIn(head, allsec)                                # chart names as headings, same size as "All devices"
         self.assertIn("| Share of usage |", allsec)
         self.assertIn("**Cache:**", allsec)
@@ -161,7 +173,12 @@ class ReportTests(unittest.TestCase):
         html = (root / "reports" / "dashboard.html").read_text()
         self.assertEqual(html.count("<svg"), len(svgs))
         self.assertIn('id="device-mac"', html)
-        self.assertIn("red: two devices", (root / "reports/charts/all/typical-day.svg").read_text())
+        for f in (root / "reports" / "charts").glob("*/*.svg"):
+            ET.fromstring(f.read_text())                               # every chart is well-formed XML
+        share = (root / "reports/charts/all/hour-share.svg").read_text()
+        self.assertIn("device rows add up to 100%", share)
+        self.assertIn(">100%<", share)                                 # the All devices row
+        self.assertIn("2+ sessions at once", share)
 
 
     def test_single_device_has_no_all_devices_section(self):

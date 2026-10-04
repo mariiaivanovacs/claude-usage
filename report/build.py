@@ -520,26 +520,36 @@ def chart_week_hours(replies, others, devices, today):
                          note="Legend: hours each device was active this week. Right: hours with any device active · hours with 2+ sessions at once.")
 
 
-def chart_profile(replies, others, devices, today, days_n=28):
-    first = today - timedelta(days=days_n - 1)
-    slots = activity_slots(replies + others, first, today)
-    act = {d: [set() for _ in range(24)] for d in devices}
-    pd, ps = [set() for _ in range(24)], [set() for _ in range(24)]
-    for (day, hr, _), (devs, sess) in slots.items():
-        for d in devs:
-            if d in act:
-                act[d][hr].add(day)
+def chart_hour_share(replies, others, devices, today):
+    """Each device's share of this week's usage, hour of day by hour of day. Cells and row ends use the
+    same unit as the Share of usage column, so the device rows add up to 100%."""
+    ws, days, _ = this_week(today)
+    slots = activity_slots(replies + others, ws, days[-1])
+    use = defaultdict(float)
+    par_dev, par_sess = [0.0] * 24, [0.0] * 24
+    for e in replies:
+        if not ws <= e["day"] <= days[-1]:
+            continue
+        hr = e["dt"].hour
+        use[(e["device"], hr)] += e["cost"]
+        devs, sess = slots.get((e["day"], hr, e["dt"].minute // 10), (set(), set()))
         if len(devs) > 1:
-            pd[hr].add(day)
+            par_dev[hr] += e["cost"]
         if len(sess) > 1:
-            ps[hr].add(day)
-    share = lambda sets: [len(x) / days_n for x in sets]  # noqa: E731
-    rows = [(d, share(act[d]), "q", False) for d in devices]
-    rows += [("2+ devices at once", share(pd), "a", True), ("2+ sessions at once", share(ps), "a", False)]
-    return svg.profile_grid("",
-                            "Blue: how often a device is active that hour · red: two devices, or two sessions, at once",
-                            rows, note="Each number = %% of the last %d days on which it happened in that hour, e.g. 71 = on 20 of %d days. Shown from 15."
-                            % (days_n, days_n))
+            par_sess[hr] += e["cost"]
+    total = sum(use.values()) or 1
+    dev_share = dict(zip(devices, shares_100([sum(use[(d, h)] for h in range(24)) for d in devices])))
+    dev_vals = {d: [use[(d, h)] / total for h in range(24)] for d in devices}
+    scale = max([v for vals in dev_vals.values() for v in vals] or [1]) or 1           # one scale for every device row
+    rows = [{"name": d, "vals": dev_vals[d], "ramp": "q", "total": "%d%%" % dev_share[d], "vmax": scale} for d in devices]
+    all_row = [sum(use[(d, h)] for d in devices) / total for h in range(24)]
+    rows.append({"name": "All devices", "vals": all_row, "ramp": "q", "total": "100%", "bold": True, "sep": True})
+    par_scale = max(par_dev + par_sess + [1e-9]) / total
+    for name, vals in (("2+ devices at once", par_dev), ("2+ sessions at once", par_sess)):
+        rows.append({"name": name, "vals": [v / total for v in vals], "ramp": "a", "total": "%d%%" % round(100 * sum(vals) / total),
+                     "sep": name.startswith("2+ devices"), "vmax": par_scale})
+    return svg.share_hours("", "Cell: the device's share of the week's usage in that hour · row end: its share of the whole week · device rows add up to 100%",
+                           rows, note="Red rows: the part of the week's usage that ran with 2+ devices, or 2+ sessions, active in the same 10 minutes.")
 
 
 def all_devices(replies, others, r_week, o_week, prev, devices, label, today, save):
@@ -572,8 +582,8 @@ def all_devices(replies, others, r_week, o_week, prev, devices, label, today, sa
         save("all", "limit-grid", chart_hits_grid(others, devices, today)) + "\n\n",
         "## Who used Claude when, %s\n\n" % week_span(today),
         save("all", "week-hours", chart_week_hours(replies, others, devices, today)) + "\n\n",
-        "## A typical day, last 28 days\n\n",
-        save("all", "typical-day", chart_profile(replies, others, devices, today)) + "\n",
+        "## Usage by hour of day, %s\n\n" % week_span(today),
+        save("all", "hour-share", chart_hour_share(replies, others, devices, today)) + "\n",
     ])
 
 

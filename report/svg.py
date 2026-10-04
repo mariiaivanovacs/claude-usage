@@ -443,32 +443,41 @@ def hour_grid(title, subtitle, legend_items, row_labels, row_muted, cells, right
     return card(h, title, subtitle, "".join(body))
 
 
-def profile_grid(title, subtitle, rows, note=""):
-    """Typical day: rows x 24 hours, value = share of days (0..1). rows: [(label, [24 values], ramp "q"|"a", separator_before)]."""
-    left, top, cw, ch = 150, 84, 24, 26
-    h = top + ch * len(rows) + 36
+def share_hours(title, subtitle, rows, note=""):
+    """Devices x 24 hours. Each row: {"name", "vals": 24 fractions of the week's usage, "ramp": "q"|"a",
+    "total": text at the row end, "bold", "sep"}. A cell shows its percentage when it is at least 1%."""
+    left, top, cw, ch = 146, 88, 22, 26
+    rx = left + 24 * cw + 12
+    h = top + ch * len(rows) + 40
     body = []
     for hr in range(0, 24, 3):
         body.append('<text class="tm" x="%.1f" y="%d" font-size="11" text-anchor="middle">%02d:00</text>' % (left + hr * cw + cw / 2, top - 8, hr))
-    for r, (lab, vals, ramp, sep) in enumerate(rows):
+    body.append('<text class="ts" x="%d" y="%d" font-size="11">Whole week</text>' % (rx, top - 8))
+    for r, row in enumerate(rows):
         y = top + r * ch
-        if sep:
+        if row.get("sep"):
             body.append('<line class="base" x1="20" x2="%d" y1="%d" y2="%d"/>' % (W - 16, y - 3, y - 3))
-        body.append('<text class="ts" x="%d" y="%.1f" font-size="11.5" text-anchor="end">%s</text>' % (left - 8, y + ch / 2 + 2, escape(lab)))
-        empty = not any(vals)
+        bold = ' font-weight="600"' if row.get("bold") else ""
+        body.append('<text class="%s" x="%d" y="%.1f" font-size="11.5" text-anchor="end"%s>%s</text>'
+                    % ("tp" if row.get("bold") else "ts", left - 8, y + ch / 2 + 2, bold, escape(row["name"])))
+        vals = row["vals"]
+        vmax = row.get("vmax") or max(vals) or 1
         for hr, v in enumerate(vals):
             x = left + hr * cw
             if v <= 0:
                 body.append('<rect class="qe" x="%.1f" y="%d" width="%d" height="%d" rx="3"/>' % (x, y, cw - 2, ch - 4))
                 continue
-            q = (1 + min(5, int(6 * v))) if ramp == "q" else min(4, int(5 * v))
-            cls = "%s%d" % (ramp, q)
-            body.append('<rect class="%s" x="%.1f" y="%d" width="%d" height="%d" rx="3"><title>%s · %02d:00 · %d%% of days</title></rect>'
-                        % (cls, x, y, cw - 2, ch - 4, escape(lab), hr, round(100 * v)))
-            if v >= .15:
-                body.append('<text class="t%s" x="%.1f" y="%.1f" font-size="10" font-weight="600" text-anchor="middle">%d</text>'
-                            % (cls, x + (cw - 2) / 2, y + (ch - 4) / 2 + 3.5, round(100 * v)))
-        if empty:
-            body.append('<text class="tm" x="%d" y="%.1f" font-size="11">%s</text>' % (left + 6, y + ch / 2 + 2, "none in the last 28 days"))
-    body.append('<text class="tm" x="20" y="%d" font-size="11">%s</text>' % (h - 12, escape(note)))
+            pct = 100 * v
+            shown = "under 1%" if pct < 1 else "%d%%" % round(pct)
+            if row["ramp"] == "q":
+                cls = "q%d" % (1 + min(5, int(5.999 * v / vmax)))
+            else:
+                cls = "a%d" % min(4, int(4.999 * v / vmax))
+            body.append('<rect class="%s" x="%.1f" y="%d" width="%d" height="%d" rx="3"><title>%s · %02d:00 · %s of the week\'s usage</title></rect>'
+                        % (cls, x, y, cw - 2, ch - 4, escape(row["name"]), hr, shown))
+            if pct >= 1:
+                body.append('<text class="t%s" x="%.1f" y="%.1f" font-size="9.5" font-weight="600" text-anchor="middle">%d</text>'
+                            % (cls, x + (cw - 2) / 2, y + (ch - 4) / 2 + 3.5, round(pct)))
+        body.append('<text class="tp" x="%d" y="%.1f" font-size="12" font-weight="600">%s</text>' % (rx, y + ch / 2 + 2, escape(row["total"])))
+    body.append('<text class="tm" x="20" y="%d" font-size="11">%s</text>' % (h - 14, escape(note)))
     return card(h, title, subtitle, "".join(body))
