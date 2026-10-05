@@ -89,6 +89,16 @@ class ReportTests(unittest.TestCase):
         self.assertIn(">80<", out)
         self.assertNotIn(">0<", out)                                   # empty cells carry no number
 
+    def test_sample_device_is_labelled(self):
+        root = repo_with({"mac": [reply("a", "2026-09-30T04:00:00Z")], "kenneth": [reply("k", "2026-09-30T05:00:00Z")]})
+        (root / "devices" / "kenneth" / "SAMPLE").write_text("sample")
+        build.build(root, now=self.NOW)
+        md = (root / "README.md").read_text()
+        ken = md[md.index("## Device: kenneth"):md.index("## Device: mac")] if md.index("## Device: kenneth") < md.index("## Device: mac") else md[md.index("## Device: kenneth"):]
+        self.assertIn("_Sample data:", ken)
+        mac = md[md.index("## Device: mac"):]
+        self.assertNotIn("_Sample data:", mac.split("## Device: ")[1] if mac.count("## Device: ") > 1 else mac.split("## All devices")[0])
+
     def test_shares_add_up_to_100(self):
         self.assertEqual(sum(build.shares_100([80.4, 1.4, 4.4, 13.8])), 100)
         self.assertEqual(build.shares_100([1, 1, 1]), [34, 33, 33])

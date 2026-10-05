@@ -59,7 +59,10 @@ fi
 # the device table) and the folder its data goes into (devices/<name>/).
 mkdir -p "$BASE"
 slug() { printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9-' '-' | sed 's/--*/-/g;s/^-//;s/-$//' | cut -c1-40; }
-taken="$(git -C "$REPO_DIR" ls-tree --name-only HEAD devices/ 2>/dev/null | sed 's#^devices/##' | grep -v '^\.gitkeep$' | tr '\n' ' ' || true)"
+# names already used by real devices; folders holding a SAMPLE marker are demo data and free to take
+tree="$(git -C "$REPO_DIR" ls-tree -r --name-only HEAD devices/ 2>/dev/null || true)"
+sample_devs="$(printf '%s\n' "$tree" | awk -F/ '$3=="SAMPLE"{print $2}')"
+taken="$(printf '%s\n' "$tree" | awk -F/ 'NF>=3{print $2}' | sort -u | grep -vxF -f <(printf '%s\n' "$sample_devs" ".gitkeep") | tr '\n' ' ' || true)"
 is_taken() { case " $taken " in *" $1 "*) return 0 ;; *) return 1 ;; esac; }
 TTY=""
 if [ -t 0 ]; then TTY=/dev/stdin; elif [ -r /dev/tty ] && (exec </dev/tty) 2>/dev/null; then TTY=/dev/tty; fi

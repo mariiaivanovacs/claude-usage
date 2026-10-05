@@ -43,6 +43,11 @@ ALIASES = read_json(ROOT / "aliases.json", {})
 
 # ------------------------------------------------------------------ loading
 
+def sample_devices(root=ROOT):
+    """Devices whose folder holds a SAMPLE marker: made-up demo data."""
+    return {f.parent.name for f in (root / "devices").glob("*/SAMPLE")}
+
+
 def load(root=ROOT):
     """All events, one per id; later copies of a reply are merged into it."""
     replies, others = {}, {}
@@ -312,6 +317,7 @@ def build(root=ROOT, now=None):
     r_week, o_week = in_range(replies, ws, today), in_range(others, ws, today)
     prev = (ws - timedelta(days=7), today - timedelta(days=7))
     devices = device_order(replies)
+    samples = sample_devices(root)
 
     def save(slug, name, body):
         (out / "charts" / slug).mkdir(parents=True, exist_ok=True)
@@ -327,6 +333,9 @@ def build(root=ROOT, now=None):
         o = [e for e in o_week if e["device"] == d]
         om = [e for e in o_month if e["device"] == d]
         parts.append("## Device: %s\n" % d)
+        if d in samples:
+            parts.append("_Sample data: made-up numbers that show how this device will look. They are replaced "
+                         "automatically when the device first syncs._\n")
         if not r and not o:
             last = max(e["day"] for e in replies if e["device"] == d)
             parts.append("_No activity this week · last active %s._\n" % last.strftime("%a %d %b"))

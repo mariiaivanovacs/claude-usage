@@ -502,3 +502,27 @@ class LogUsageCommandTests(unittest.TestCase):
         cmd.write_text("someone else's command")                  # never delete a file we didn't write
         collect.edit_settings("uninstall")
         self.assertTrue(cmd.exists())
+
+
+class SampleDataTests(ExcludeTests):
+    def test_real_sync_replaces_sample_data(self):
+        d = TMP / "xrepo" / "devices" / "dev1"
+        d.mkdir(parents=True)
+        (d / "SAMPLE").write_text("sample")
+        (d / "2026-09-01.jsonl").write_text(json.dumps({"k": "reply", "id": "fake", "ts": "2026-09-01T03:00:00Z", "project": "sample/x", "model": "claude-sonnet-5", "out": 5}) + "\n")
+        self.assertEqual(collect.drop_sample_data("dev1"), 2)
+        self.assertEqual(list(d.iterdir()), [])
+        self.assertEqual(collect.drop_sample_data("dev1"), 0)          # no marker: nothing is touched
+        (d / "2026-09-02.jsonl").write_text("real\n")
+        self.assertEqual(collect.drop_sample_data("dev1"), 0)
+        self.assertTrue((d / "2026-09-02.jsonl").exists())
+
+    def test_sync_keeps_only_real_events(self):
+        d = TMP / "xrepo" / "devices" / "dev1"
+        d.mkdir(parents=True)
+        (d / "SAMPLE").write_text("sample")
+        (d / "2026-09-01.jsonl").write_text(json.dumps({"k": "reply", "id": "fake", "ts": "2026-09-01T03:00:00Z", "project": "sample/x", "model": "claude-sonnet-5", "out": 5}) + "\n")
+        write(PROJ / "a.jsonl", [reply("1", 5)])
+        self.run_main()
+        self.assertFalse((d / "SAMPLE").exists())
+        self.assertEqual([e["project"] for e in self.lines()], ["geco_website"])

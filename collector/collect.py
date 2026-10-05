@@ -550,6 +550,23 @@ def new_lines(path, fstate):
     return lines, {"offset": offset + end + 1, "ino": ident}
 
 
+SAMPLE_MARK = "SAMPLE"
+
+
+def drop_sample_data(device):
+    """Devices/<name>/SAMPLE marks made-up demo data. The first real sync under that name
+    replaces it, so invented numbers never mix with real ones."""
+    d = REPO / "devices" / device
+    if not (d / SAMPLE_MARK).exists():
+        return 0
+    n = 0
+    for f in d.iterdir():
+        if f.is_file():
+            n += 1
+            f.unlink()
+    return n
+
+
 def existing_ids(device):
     """Ids already in this device's files: a fresh install (no local state) must not
     append events the repo already has, and must keep older ones its logs no longer hold."""
@@ -1114,6 +1131,7 @@ def main():
         if use_git:
             git_pull()
         state = read_json(STATE, {})
+        replaced_sample = drop_sample_data(device)
         if rebuild:
             # start over from the transcripts on disk (e.g. after naming improvements);
             # only as far back as this device still keeps its logs
@@ -1152,6 +1170,8 @@ def main():
             state["filter"] = patterns
             state.pop("exclude_hash", None)
             state.pop("exclude_patterns", None)
+        if replaced_sample:
+            notes.append("replaced sample data")
         days = write_events(events, device) if events else []
         if use_git and (events or notes):
             # neutral message: the history should not say what was hidden
