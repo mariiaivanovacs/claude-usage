@@ -1,6 +1,6 @@
 # Claude usage
 
-Tracking since 2026-07-13 · 4 devices · 80,760 replies · 10,778 prompts
+Tracking since 2026-07-13 · 4 devices · 80,787 replies · 10,784 prompts
 
 **Jump to:** [mariia-macbook](#device-mariia-macbook) · [aaron-laptop](#device-aaron-laptop) · [kenneth-laptop](#device-kenneth-laptop) · [nik](#device-nik) · [All devices](#all-devices) · [Weekly limit](#weekly-limit) · [By month](#by-month)
 
@@ -47,7 +47,7 @@ vs the same days last week: output ▼ 98% · prompts ▼ 98% · cost ▼ 98%
 ## Device: nik
 
 **This week so far (Mon 05 Oct – today):**  
-3.9M input · 40.9K output · 98% from cache · 5 prompts · $2.15 API-equivalent  
+9.1M input · 77.1K output · 99% from cache · 11 prompts · $4.26 API-equivalent  
 vs the same days last week: output – · prompts – · cost –
 
 <img src="reports/charts/nik/projects.svg" alt="projects" width="760">
@@ -67,10 +67,10 @@ Side by side, the last 7 days (29 Sep – 05 Oct).
 | [mariia-macbook](#device-mariia-macbook) | 3.9B | 11.1M | 98% | 288 | 13 | 74% |
 | [aaron-laptop](#device-aaron-laptop) | 440.8M | 2M | 96% | 343 | 26 | 12% |
 | [kenneth-laptop](#device-kenneth-laptop) | 536.8M | 2.5M | 96% | 425 | 27 | 14% |
-| [nik](#device-nik) | 3.9M | 40.9K | 98% | 5 | 1 | 0% |
-| **Total** | 4.9B | 15.7M | 98% | 1,061 | 67 | 100% |
+| [nik](#device-nik) | 9.1M | 77.1K | 99% | 11 | 1 | 0% |
+| **Total** | 4.9B | 15.7M | 98% | 1,067 | 67 | 100% |
 
-vs the 7 days before: output ▲ 82% · prompts ▲ 27% · cost ▲ 30%
+vs the 7 days before: output ▲ 83% · prompts ▲ 28% · cost ▲ 30%
 
 ## Usage per device, 29 Sep – 05 Oct
 
@@ -123,7 +123,7 @@ Tokens are input (including what is read from cache) / output. Weekly and Fable 
 
 | Month | Tokens in / out | Sessions | Prompts | Devices | Windows run out | Locked out time | Weekly limit used | Fable limit used | Status |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| 2026-10 | 1.8B / 5.3M | 39 | 516 | 4 | 5 | 5h 46m | 100% (avg of 1) | 0% | in progress |
+| 2026-10 | 1.8B / 5.4M | 39 | 522 | 4 | 5 | 5h 46m | 100% (avg of 1) | 0% | in progress |
 | [2026-09](archive/2026-09.json) | 13.9B / 39.7M | 204 | 3,588 | 3 | 12 | 13h 36m | 78% (avg of 2) | 50% | final |
 | [2026-08](archive/2026-08.json) | 8.4B / 27.6M | 252 | 4,039 | 3 | 5 | 5h 32m | – | – | final |
 | [2026-07](archive/2026-07.json) | 5.5B / 18.1M | 164 | 2,635 | 3 | 6 | 6h 58m | – | – | final |
