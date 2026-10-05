@@ -1,6 +1,6 @@
 # Claude usage
 
-Tracking since 2026-07-28 · 3 devices · 57,608 replies · 4,883 prompts
+Tracking since 2026-07-13 · 3 devices · 80,709 replies · 10,769 prompts
 
 **Jump to:** [mariia-macbook](#device-mariia-macbook) · [aaron-laptop](#device-aaron-laptop) · [kenneth-laptop](#device-kenneth-laptop) · [All devices](#all-devices) · [Weekly limit](#weekly-limit) · [By month](#by-month)
 
@@ -21,8 +21,8 @@ vs the same days last week: output ▼ 98% · prompts ▼ 96% · cost ▼ 97%
 _Sample data: made-up numbers that show how this device will look. They are replaced automatically when the device first syncs._
 
 **This week so far (Mon 05 Oct – today):**  
-22.7M input · 100.6K output · 97% from cache · 19 prompts · $10.63 API-equivalent  
-vs the same days last week: output ▼ 79% · prompts ▼ 78% · cost ▼ 80%
+39.8M input · 186.8K output · 96% from cache · 32 prompts · $24.75 API-equivalent  
+vs the same days last week: output ▼ 78% · prompts ▼ 77% · cost ▼ 78%
 
 <img src="reports/charts/aaron-laptop/projects.svg" alt="projects" width="760">
 
@@ -35,8 +35,8 @@ vs the same days last week: output ▼ 79% · prompts ▼ 78% · cost ▼ 80%
 _Sample data: made-up numbers that show how this device will look. They are replaced automatically when the device first syncs._
 
 **This week so far (Mon 05 Oct – today):**  
-602.9K input · 2K output · 96% from cache · 1 prompt · $0.37 API-equivalent  
-vs the same days last week: output ▼ 99% · prompts ▼ 98% · cost ▼ 99%
+2.1M input · 10.5K output · 96% from cache · 2 prompts · $1.26 API-equivalent  
+vs the same days last week: output ▼ 98% · prompts ▼ 98% · cost ▼ 98%
 
 <img src="reports/charts/kenneth-laptop/projects.svg" alt="projects" width="760">
 
@@ -52,12 +52,12 @@ Side by side, this week so far (Mon 05 Oct – today).
 
 | Device | Input | Output | Cache | Prompts | Sessions | Share of usage |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| [mariia-macbook](#device-mariia-macbook) | 6.9M | 12.8K | 89% | 2 | 2 | 29% |
-| [aaron-laptop](#device-aaron-laptop) | 22.7M | 100.6K | 97% | 19 | 3 | 69% |
-| [kenneth-laptop](#device-kenneth-laptop) | 602.9K | 2K | 96% | 1 | 1 | 2% |
-| **Total** | 30.2M | 115.3K | 95% | 22 | 6 | 100% |
+| [mariia-macbook](#device-mariia-macbook) | 6.9M | 12.8K | 89% | 2 | 2 | 15% |
+| [aaron-laptop](#device-aaron-laptop) | 39.8M | 186.8K | 96% | 32 | 4 | 81% |
+| [kenneth-laptop](#device-kenneth-laptop) | 2.1M | 10.5K | 96% | 2 | 1 | 4% |
+| **Total** | 48.8M | 210K | 95% | 36 | 7 | 100% |
 
-vs the same days last week: output ▼ 93% · prompts ▼ 89% · cost ▼ 93%
+vs the same days last week: output ▼ 91% · prompts ▼ 88% · cost ▼ 91%
 
 ## Usage per device, 05 Oct – 11 Oct
 
@@ -85,16 +85,16 @@ vs the same days last week: output ▼ 93% · prompts ▼ 89% · cost ▼ 93%
 
 | Week (Mon–Sun) | Weekly limit used | Fable limit used | 5-hour windows run out | Locked out time | Sessions | Status |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| 05 Oct – 11 Oct | – | – | 1 | 2h 56m | 6 | in progress |
+| 05 Oct – 11 Oct | – | – | 1 | 2h 56m | 7 | in progress |
 
 ### September 2026
 
 | Week (Mon–Sun) | Weekly limit used | Fable limit used | 5-hour windows run out | Locked out time | Sessions | Status |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| 07 Sep – 13 Sep | – | – | 2 | 1h 39m | 54 | final |
-| 14 Sep – 20 Sep | 100% | 100% | 1 | 1h 32m | 47 | final |
-| 21 Sep – 27 Sep | 55% | 0% | 1 | 38 min | 55 | final |
-| 28 Sep – 04 Oct | 100% | 0% | 9 | 8h 40m | 65 | final |
+| 07 Sep – 13 Sep | – | – | 2 | 1h 39m | 39 | final |
+| 14 Sep – 20 Sep | 100% | 100% | 3 | 3h 48m | 38 | final |
+| 21 Sep – 27 Sep | 55% | 0% | 0 | – | 34 | final |
+| 28 Sep – 04 Oct | 100% | 0% | 9 | 9h 18m | 77 | final |
 
 **Recorded /usage readings** (latest 3)
 
@@ -110,10 +110,10 @@ Tokens are input (including what is read from cache) / output. Weekly and Fable 
 
 | Month | Tokens in / out | Sessions | Prompts | Devices | Windows run out | Locked out time | Weekly limit used | Fable limit used | Status |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| 2026-10 | 1.6B / 4.6M | 35 | 421 | 3 | 5 | 6h 04m | 100% (avg of 1) | 0% | in progress |
-| [2026-09](archive/2026-09.json) | 13.7B / 38.4M | 237 | 3,629 | 3 | 10 | 10h 21m | 78% (avg of 2) | 50% | final |
-| [2026-08](archive/2026-08.json) | 4.1B / 7.1M | 52 | 695 | 3 | 0 | – | – | – | final |
-| [2026-07](archive/2026-07.json) | 2.3B / 3M | 10 | 138 | 1 | 0 | – | – | – | final |
+| 2026-10 | 1.7B / 5.3M | 38 | 507 | 3 | 5 | 5h 46m | 100% (avg of 1) | 0% | in progress |
+| [2026-09](archive/2026-09.json) | 13.9B / 39.7M | 204 | 3,588 | 3 | 12 | 13h 36m | 78% (avg of 2) | 50% | final |
+| [2026-08](archive/2026-08.json) | 8.4B / 27.6M | 252 | 4,039 | 3 | 5 | 5h 32m | – | – | final |
+| [2026-07](archive/2026-07.json) | 5.5B / 18.1M | 164 | 2,635 | 3 | 6 | 6h 58m | – | – | final |
 
 ## Data
 
