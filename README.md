@@ -1,14 +1,14 @@
 # Claude usage
 
-Tracking since 2026-07-28 · 3 devices · 57,599 replies · 4,881 prompts
+Tracking since 2026-07-28 · 3 devices · 57,608 replies · 4,883 prompts
 
 **Jump to:** [mariia-macbook](#device-mariia-macbook) · [aaron-laptop](#device-aaron-laptop) · [kenneth-laptop](#device-kenneth-laptop) · [All devices](#all-devices) · [Weekly limit](#weekly-limit) · [By month](#by-month)
 
 ## Device: mariia-macbook
 
 **This week so far (Mon 05 Oct – today):**  
-0 input · 0 output · 0% from cache · 0 prompts · $0.00 API-equivalent  
-vs the same days last week: output ▼ 100% · prompts ▼ 100% · cost ▼ 100%
+6.9M input · 12.8K output · 89% from cache · 2 prompts · $4.44 API-equivalent  
+vs the same days last week: output ▼ 98% · prompts ▼ 96% · cost ▼ 97%
 
 <img src="reports/charts/mariia-macbook/projects.svg" alt="projects" width="760">
 
@@ -52,12 +52,12 @@ Side by side, this week so far (Mon 05 Oct – today).
 
 | Device | Input | Output | Cache | Prompts | Sessions | Share of usage |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| [mariia-macbook](#device-mariia-macbook) | 0 | 0 | 0% | 0 | 1 | 0% |
-| [aaron-laptop](#device-aaron-laptop) | 22.7M | 100.6K | 97% | 19 | 3 | 97% |
-| [kenneth-laptop](#device-kenneth-laptop) | 602.9K | 2K | 96% | 1 | 1 | 3% |
-| **Total** | 23.3M | 102.6K | 97% | 20 | 5 | 100% |
+| [mariia-macbook](#device-mariia-macbook) | 6.9M | 12.8K | 89% | 2 | 2 | 29% |
+| [aaron-laptop](#device-aaron-laptop) | 22.7M | 100.6K | 97% | 19 | 3 | 69% |
+| [kenneth-laptop](#device-kenneth-laptop) | 602.9K | 2K | 96% | 1 | 1 | 2% |
+| **Total** | 30.2M | 115.3K | 95% | 22 | 6 | 100% |
 
-vs the same days last week: output ▼ 94% · prompts ▼ 90% · cost ▼ 95%
+vs the same days last week: output ▼ 93% · prompts ▼ 89% · cost ▼ 93%
 
 ## Usage per device, 05 Oct – 11 Oct
 
@@ -85,7 +85,7 @@ vs the same days last week: output ▼ 94% · prompts ▼ 90% · cost ▼ 95%
 
 | Week (Mon–Sun) | Weekly limit used | Fable limit used | 5-hour windows run out | Locked out time | Sessions | Status |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| 05 Oct – 11 Oct | – | – | 1 | 2h 56m | 5 | in progress |
+| 05 Oct – 11 Oct | – | – | 1 | 2h 56m | 6 | in progress |
 
 ### September 2026
 
@@ -110,7 +110,7 @@ Tokens are input (including what is read from cache) / output. Weekly and Fable 
 
 | Month | Tokens in / out | Sessions | Prompts | Devices | Windows run out | Locked out time | Weekly limit used | Fable limit used | Status |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| 2026-10 | 1.6B / 4.6M | 35 | 419 | 3 | 5 | 6h 04m | 100% (avg of 1) | 0% | in progress |
+| 2026-10 | 1.6B / 4.6M | 35 | 421 | 3 | 5 | 6h 04m | 100% (avg of 1) | 0% | in progress |
 | [2026-09](archive/2026-09.json) | 13.7B / 38.4M | 237 | 3,629 | 3 | 10 | 10h 21m | 78% (avg of 2) | 50% | final |
 | [2026-08](archive/2026-08.json) | 4.1B / 7.1M | 52 | 695 | 3 | 0 | – | – | – | final |
 | [2026-07](archive/2026-07.json) | 2.3B / 3M | 10 | 138 | 1 | 0 | – | – | – | final |

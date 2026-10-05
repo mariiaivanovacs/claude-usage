@@ -242,3 +242,4 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-10-05,aaron-laptop,sample/data-service,claude-sonnet-5,30,90,39588,10028906,366845,3.8692
 2026-10-05,kenneth-laptop,sample/web-app,claude-opus-5,1,3,1281,171438,9489,0.2126
 2026-10-05,kenneth-laptop,sample/web-app,claude-sonnet-5,1,3,696,405832,16162,0.1528
+2026-10-05,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-sonnet-5-5,9,18,12758,6106438,772335,4.4382
