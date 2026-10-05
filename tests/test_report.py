@@ -99,6 +99,21 @@ class ReportTests(unittest.TestCase):
         mac = md[md.index("## Device: mac"):]
         self.assertNotIn("_Sample data:", mac.split("## Device: ")[1] if mac.count("## Device: ") > 1 else mac.split("## All devices")[0])
 
+    def test_image_links_carry_a_version_stamp(self):
+        import re
+        root, md = self.build_at(self.events())
+        links = re.findall(r'<img src="(reports/charts/[^"]+\.svg)\?v=([0-9a-f]{8})"', md)
+        self.assertGreater(len(links), 5)
+        first = dict(links)
+        # the stamp changes with the chart, so a stale cached picture can never be shown
+        ev = self.events()
+        ev["mac"].append(reply("extra", "2026-09-30T05:00:00Z", project="me/other"))
+        root2, md2 = self.build_at(ev)
+        second = dict(re.findall(r'<img src="(reports/charts/[^"]+\.svg)\?v=([0-9a-f]{8})"', md2))
+        self.assertNotEqual(first["reports/charts/mac/projects.svg"], second["reports/charts/mac/projects.svg"])
+        self.assertIn('<svg', (root2 / "reports" / "dashboard.html").read_text())     # the dashboard still inlines every chart
+        self.assertEqual((root2 / "reports" / "dashboard.html").read_text().count("<svg"), len(second))
+
     def test_shares_add_up_to_100(self):
         self.assertEqual(sum(build.shares_100([80.4, 1.4, 4.4, 13.8])), 100)
         self.assertEqual(build.shares_100([1, 1, 1]), [34, 33, 33])

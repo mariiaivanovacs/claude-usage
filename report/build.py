@@ -7,6 +7,7 @@ the raw events on every run, so late data from a device that was offline simply
 lands on the right day. Standard library only (Python 3.9+ for zoneinfo).
 """
 import csv
+import hashlib
 import io
 import json
 import re
@@ -323,7 +324,9 @@ def build(root=ROOT, now=None):
         (out / "charts" / slug).mkdir(parents=True, exist_ok=True)
         (out / "charts" / slug / ("%s.svg" % name)).write_text(body, encoding="utf-8")
         charts["%s/%s" % (slug, name)] = body
-        return '<img src="reports/charts/%s/%s.svg" alt="%s" width="760">' % (slug, name, name)
+        # a version stamp in the link makes browsers fetch the new picture whenever the chart changes
+        stamp = hashlib.sha1(body.encode("utf-8")).hexdigest()[:8]
+        return '<img src="reports/charts/%s/%s.svg?v=%s" alt="%s" width="760">' % (slug, name, stamp, name)
 
     ms = today.replace(day=1)
     month_label = "this month so far (%s – today)" % ms.strftime("%d %b")
@@ -941,7 +944,7 @@ def md_to_html(md, charts):
             rows.append([c.strip() for c in line.strip().strip("|").split("|")])
             continue
         flush()
-        m = re.match(r'<img src="reports/charts/(.+?)\.svg"', line)
+        m = re.match(r'<img src="reports/charts/(.+?)\.svg(?:\?v=[0-9a-f]+)?"', line)
         if m:
             out.append(charts[m.group(1)])
         elif line.startswith("<table>"):
