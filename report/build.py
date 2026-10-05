@@ -366,14 +366,14 @@ def fmt_dur(td):
 
 
 def week_span(today):
-    ws = week_start(today)
-    return "%s – %s" % (ws.strftime("%d %b"), (ws + timedelta(days=6)).strftime("%d %b"))
+    """The All devices views cover the last 7 days, today included, so they are never
+    half empty early in a calendar week."""
+    return "%s – %s" % ((today - timedelta(days=6)).strftime("%d %b"), today.strftime("%d %b"))
 
 
 def this_week(today):
-    ws = week_start(today)
-    days = [ws + timedelta(days=i) for i in range(7)]
-    return ws, days, [d > today for d in days]
+    days = [today - timedelta(days=6 - i) for i in range(7)]
+    return days[0], days, [False] * 7
 
 
 def sessions_of(events):
@@ -432,10 +432,10 @@ def chart_usage_grid(replies, others, devices, today):
         n_week = len(sessions_of([e for e in week if d is None or e["device"] == d]))
         rows.append({"name": d or "All devices", "total": d is None, "cells": cells,
                      "bar": (dv / total, "tp" if d is None else cls[d]),
-                     "right": ("%d%%" % pct_of[d], plural(n_week, "session") + " this week")})
+                     "right": ("%d%%" % pct_of[d], plural(n_week, "session") + " in 7 days")})
     return svg.day_grid("",
-                        "Cell: the day's share of the week's usage, all devices (cells add up to 100%) · sessions that day",
-                        [d.strftime("%a %d") for d in days], future, rows, "Share of the week",
+                        "Cell: the day's share of these 7 days' usage, all devices (cells add up to 100%) · sessions that day",
+                        [d.strftime("%a %d") for d in days], future, rows, "Share of the 7 days",
                         note="A session that runs past midnight counts on both days.")
 
 
@@ -479,7 +479,7 @@ def chart_hits_grid(others, devices, today):
                                ("locked out " + fmt_dur(locked)) if locked else "never locked out")})
     return svg.day_grid("",
                         "Cell: sessions stopped by \"limit reached\" that day, and the 5-hour windows they were in",
-                        [d.strftime("%a %d") for d in days], future, rows, "This week",
+                        [d.strftime("%a %d") for d in days], future, rows, "These 7 days",
                         note="The limit is shared, so the total row counts each window once. Locked out = from the first hit to the reset.")
 
 
@@ -526,7 +526,7 @@ def chart_week_hours(replies, others, devices, today):
                          "Row = day, cell = hour (%s). Colour = device, split = several · number = sessions at once" % CFG.get("timezone").split("/")[-1].replace("_", " "),
                          [("%s · %d h" % (d, hours[d]), cls[d]) for d in devices], [d.strftime("%a %d") for d in days], [f or d.weekday() >= 5 for d, f in zip(days, future)],
                          cells, right, "Active · parallel",
-                         note="Legend: hours each device was active this week. Right: hours with any device active · hours with 2+ sessions at once.")
+                         note="Legend: hours each device was active in these 7 days. Right: hours with any device active · hours with 2+ sessions at once.")
 
 
 def chart_hour_share(replies, others, devices, today):
@@ -557,11 +557,15 @@ def chart_hour_share(replies, others, devices, today):
     for name, vals in (("2+ devices at once", par_dev), ("2+ sessions at once", par_sess)):
         rows.append({"name": name, "vals": [v / total for v in vals], "ramp": "a", "total": "%d%%" % round(100 * sum(vals) / total),
                      "sep": name.startswith("2+ devices"), "vmax": par_scale})
-    return svg.share_hours("", "Cell: the device's share of the week's usage in that hour · row end: its share of the whole week · device rows add up to 100%",
-                           rows, note="Red rows: the part of the week's usage that ran with 2+ devices, or 2+ sessions, active in the same 10 minutes.")
+    return svg.share_hours("", "Cell: the device's share of the 7 days' usage in that hour · row end: its share of all 7 days · device rows add up to 100%",
+                           rows, note="Red rows: the part of the usage that ran with 2+ devices, or 2+ sessions, active in the same 10 minutes.")
 
 
 def all_devices(replies, others, r_week, o_week, prev, devices, label, today, save):
+    first = today - timedelta(days=6)
+    r_week, o_week = in_range(replies, first, today), in_range(others, first, today)
+    prev = (first - timedelta(days=7), today - timedelta(days=7))
+    label = "the last 7 days (%s)" % week_span(today)
     share = dict(zip(devices, shares_100([sum(e["cost"] for e in r_week if e["device"] == d) for d in devices])))
     share[None] = 100
     rows = []
@@ -575,6 +579,7 @@ def all_devices(replies, others, r_week, o_week, prev, devices, label, today, sa
                      "%d%%" % share[d]])
     cur = token_stats(r_week, o_week)
     _, vs = stats_line(cur, token_stats(in_range(replies, *prev), in_range(others, *prev)))
+    vs = vs.replace("vs the same days last week", "vs the 7 days before")
     return "".join([
         "## All devices\n",
         "Side by side, %s.\n\n" % label,
@@ -582,7 +587,7 @@ def all_devices(replies, others, r_week, o_week, prev, devices, label, today, sa
         "from the cache at about a tenth of the normal price; only the new part costs full price. The Cache column is "
         "the share of input read that way: higher is cheaper. A long conversation is re-read on every message, so "
         "starting a fresh session for a new task keeps usage down. **Share of usage:** how much of the subscription's "
-        "usage this week each device took; the column adds up to 100%.\n\n",
+        "usage in these 7 days each device took; the column adds up to 100%.\n\n",
         md_table(["Device", "Input", "Output", "Cache", "Prompts", "Sessions", "Share of usage"], rows), "\n\n",
         vs + "\n\n",
         "## Usage per device, %s\n\n" % week_span(today),

@@ -161,8 +161,8 @@ class ReportTests(unittest.TestCase):
         for chart in ("usage-grid", "limit-grid", "week-hours", "hour-share"):
             self.assertIn("reports/charts/all/%s.svg" % chart, allsec)
         usage = (root / "reports/charts/all/usage-grid.svg").read_text()
-        for head in ("## Usage per device, 28 Sep – 04 Oct", "## Sessions stopped by the limit, 28 Sep – 04 Oct",
-                     "## Who used Claude when, 28 Sep – 04 Oct", "## Usage by hour of day, 28 Sep – 04 Oct"):
+        for head in ("## Usage per device, 24 Sep – 30 Sep", "## Sessions stopped by the limit, 24 Sep – 30 Sep",
+                     "## Who used Claude when, 24 Sep – 30 Sep", "## Usage by hour of day, 24 Sep – 30 Sep"):
             self.assertIn(head, allsec)                                # chart names as headings, same size as "All devices"
         self.assertIn("| Share of usage |", allsec)
         self.assertIn("**Cache:**", allsec)
@@ -174,8 +174,8 @@ class ReportTests(unittest.TestCase):
         self.assertIn("locked out 1h 30m", limit)
         hours = (root / "reports/charts/all/week-hours.svg").read_text()
         self.assertIn("mac, work-pc", hours)                           # both devices in the same hour
-        self.assertIn("mac · 4 h", hours)                              # hours per device in the legend
-        self.assertIn("work-pc · 3 h", hours)
+        self.assertIn("mac · 8 h", hours)                              # 7 days at 12:00 + the 13:00 limit hits on Tue 29
+        self.assertIn("work-pc · 7 h", hours)
         svgs = list((root / "reports" / "charts").glob("*/*.svg"))
         for f in svgs:
             ET.fromstring(f.read_text())
