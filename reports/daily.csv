@@ -548,6 +548,7 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-09-01,kenneth-laptop,sample/web-app,claude-sonnet-5,54,162,81998,16845012,610142,6.6299
 2026-09-01,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,525,1050,373624,216837793,1732433,135.0891
 2026-09-01,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-sonnet-5,57,114,38341,42800549,1556409,15.1694
+2026-09-01,nik,geco-ai-labs/msia_infinity8_2026-02,claude-sonnet-5,15,30,14264,619756,93772,0.6417
 2026-09-02,aaron-laptop,sample/data-service,claude-opus-5,55,165,85627,17240911,642799,17.1899
 2026-09-02,aaron-laptop,sample/data-service,claude-opus-5-5,84,252,132067,26449273,1089879,16.6512
 2026-09-02,aaron-laptop,sample/data-service,claude-sonnet-5,50,150,76498,16407821,631419,6.5725
@@ -559,6 +560,7 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-09-02,aaron-laptop,sample/ml-pipeline,claude-sonnet-5,53,159,88281,15195382,638083,6.4745
 2026-09-02,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,68,136,59663,34576538,976935,28.5499
 2026-09-02,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-sonnet-5,74,148,56618,55442251,2152368,20.2644
+2026-09-02,nik,geco-ai-labs/msia_infinity8_2026-02,claude-sonnet-5,52,104,31327,4900057,83616,1.6280
 2026-09-03,aaron-laptop,sample/data-service,claude-opus-5,79,237,124730,25177396,944056,25.1487
 2026-09-03,aaron-laptop,sample/data-service,claude-opus-5-5,151,453,245494,47795190,1669438,27.8262
 2026-09-03,aaron-laptop,sample/data-service,claude-sonnet-5,78,234,121385,25020942,925392,9.9201
@@ -582,6 +584,7 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-09-04,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,879,1758,702125,263807760,2856668,178.0325
 2026-09-04,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-sonnet-5,1098,2196,813200,432581727,7840571,125.8913
 2026-09-04,mariia-macbook,website,claude-sonnet-5,411,822,115281,74629344,2087291,21.2986
+2026-09-04,nik,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,102,204,104190,13208941,179934,11.0096
 2026-09-05,kenneth-laptop,sample/web-app,claude-opus-5,13,39,22492,4279053,152262,4.2246
 2026-09-05,kenneth-laptop,sample/web-app,claude-opus-5-5,7,21,11905,2144785,70878,1.2342
 2026-09-05,kenneth-laptop,sample/web-app,claude-sonnet-5,44,132,67865,12143526,534436,5.2454
@@ -600,6 +603,8 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-09-07,kenneth-laptop,sample/web-app,claude-sonnet-5,36,108,58697,11614355,421013,4.5941
 2026-09-07,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,1290,2580,857997,500814489,5031236,320.8427
 2026-09-07,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-sonnet-5,504,1008,360879,313796820,5419586,88.0485
+2026-09-07,nik,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,369,738,276825,95023911,1291670,67.3530
+2026-09-07,nik,geco-ai-labs/msia_infinity8_2026-02,claude-sonnet-5,21,42,16208,2762461,121402,1.2003
 2026-09-08,aaron-laptop,sample/data-service,claude-opus-5,14,42,24709,3969437,181997,4.4226
 2026-09-08,aaron-laptop,sample/data-service,claude-opus-5-5,31,93,57911,9853382,366580,6.0619
 2026-09-08,aaron-laptop,sample/data-service,claude-sonnet-5,16,48,25750,4910534,245693,2.2225
@@ -609,6 +614,8 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-09-08,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,694,1388,486584,297516086,4451801,205.4476
 2026-09-08,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-sonnet-5,459,918,299057,246179084,6023229,76.2126
 2026-09-08,mariia-macbook,website,claude-opus-5,54,108,23231,2435239,167705,2.8471
+2026-09-08,nik,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,176,352,155865,31456021,618757,25.8140
+2026-09-08,nik,geco-ai-labs/msia_infinity8_2026-02,claude-sonnet-5,72,144,56848,14104390,208687,4.2244
 2026-09-09,aaron-laptop,sample/data-service,claude-opus-5,14,42,19050,3600040,146140,3.7379
 2026-09-09,aaron-laptop,sample/data-service,claude-opus-5-5,30,90,44762,9947153,412856,6.1879
 2026-09-09,aaron-laptop,sample/data-service,claude-sonnet-5,19,57,37296,5776014,230714,2.4511
@@ -623,6 +630,7 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-09-09,kenneth-laptop,sample/web-app,claude-sonnet-5,90,270,143193,28068034,1014366,11.1035
 2026-09-09,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,623,1246,410365,341633237,4600983,227.0918
 2026-09-09,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-sonnet-5,1247,2494,678650,539601768,7016513,142.7779
+2026-09-09,nik,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,267,534,243959,65069298,2229693,60.9332
 2026-09-10,aaron-laptop,sample/data-service,claude-opus-5,25,75,40855,6787294,305378,7.4692
 2026-09-10,aaron-laptop,sample/data-service,claude-opus-5-5,42,126,69148,13130961,478353,7.8365
 2026-09-10,aaron-laptop,sample/data-service,claude-sonnet-5,22,66,33311,6681887,272976,2.7615
@@ -638,6 +646,8 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-09-10,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-opus-4-8,98,196,81847,42348213,484941,28.0707
 2026-09-10,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,808,1616,495473,378666826,5213203,253.8603
 2026-09-10,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-sonnet-5,409,818,256264,287780324,4085333,76.4617
+2026-09-10,nik,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,271,542,252069,92927475,1816463,70.6079
+2026-09-10,nik,geco-ai-labs/msia_infinity8_2026-02,claude-sonnet-5,8,16,9314,1763380,222145,1.3344
 2026-09-11,aaron-laptop,sample/data-service,claude-opus-5,33,99,40602,10953005,343774,9.9298
 2026-09-11,aaron-laptop,sample/data-service,claude-opus-5-5,75,225,119130,23510877,808676,13.5551
 2026-09-11,aaron-laptop,sample/data-service,claude-sonnet-5,34,102,53707,10811447,317421,3.9692
@@ -652,8 +662,11 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-09-11,kenneth-laptop,sample/web-app,claude-sonnet-5,77,231,118390,23244391,818797,9.1084
 2026-09-11,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,79,158,80702,40840902,1064368,33.0825
 2026-09-11,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-sonnet-5,191,382,160951,110469118,700065,26.5044
+2026-09-11,nik,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,188,388,211267,63503669,2112774,58.1632
+2026-09-12,nik,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,554,1108,521244,67631361,2735283,64.7886
 2026-09-13,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,337,674,214743,111523761,1732610,78.4599
 2026-09-13,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-sonnet-5,179,358,145644,92641724,1446396,25.7711
+2026-09-13,nik,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,257,514,254880,43907686,5546759,64.9658
 2026-09-14,aaron-laptop,sample/data-service,claude-opus-5,63,189,96671,19466327,680473,18.9556
 2026-09-14,aaron-laptop,sample/data-service,claude-opus-5-5,153,459,238227,47144241,1846535,28.9675
 2026-09-14,aaron-laptop,sample/data-service,claude-sonnet-5,70,210,111932,22199952,885690,9.1025
@@ -662,6 +675,9 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-09-14,kenneth-laptop,sample/web-app,claude-sonnet-5,78,234,113094,25207415,939446,9.9307
 2026-09-14,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,216,432,127978,69500179,2060700,58.5587
 2026-09-14,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-sonnet-5,132,264,101768,96153250,1895893,27.8324
+2026-09-14,nik,geco website,claude-opus-5,13,386,13792,1302662,109555,2.0936
+2026-09-14,nik,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,146,3660,304946,38949754,1886466,43.5876
+2026-09-14,nik,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5,70,1768,86606,18197216,732914,18.6017
 2026-09-15,aaron-laptop,sample/data-service,claude-opus-5,83,249,129531,26445342,1032367,26.7859
 2026-09-15,aaron-laptop,sample/data-service,claude-opus-5-5,118,354,168076,37560583,1481924,22.7304
 2026-09-15,aaron-laptop,sample/data-service,claude-sonnet-5,68,204,93766,22330500,840757,8.7672
@@ -676,6 +692,8 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-09-15,kenneth-laptop,sample/web-app,claude-sonnet-5,55,165,87164,17187187,572964,6.6013
 2026-09-15,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-sonnet-5,34,68,44807,9550883,289412,3.5160
 2026-09-15,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-sonnet-5,9,18,4295,488746,25296,0.2419
+2026-09-15,nik,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,312,8152,490701,69294710,4314608,86.5061
+2026-09-15,nik,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5,34,856,32281,12255075,688919,13.8280
 2026-09-16,aaron-laptop,sample/data-service,claude-opus-5,41,123,56822,12806644,461629,12.4408
 2026-09-16,aaron-laptop,sample/data-service,claude-opus-5-5,59,177,90593,18495806,770914,11.6790
 2026-09-16,aaron-laptop,sample/data-service,claude-sonnet-5,30,90,42441,9104959,353176,3.6583
@@ -687,6 +705,7 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-09-16,kenneth-laptop,sample/web-app,claude-sonnet-5,84,252,124375,25386983,1061195,10.5664
 2026-09-16,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5,559,1120,657570,74760911,2693255,75.8651
 2026-09-16,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-sonnet-5,633,1266,885626,60898800,3374078,31.1720
+2026-09-16,nik,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,352,706,239244,66559067,3292888,70.8354
 2026-09-17,aaron-laptop,sample/data-service,claude-opus-5,57,171,87000,16774326,672775,17.2908
 2026-09-17,aaron-laptop,sample/data-service,claude-opus-5-5,117,351,183000,36295630,1345963,21.6882
 2026-09-17,aaron-laptop,sample/data-service,claude-sonnet-5,61,183,106067,19137251,715987,7.7524
@@ -696,6 +715,9 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-09-17,kenneth-laptop,sample/web-app,claude-opus-5,28,84,46244,9586422,351555,9.4653
 2026-09-17,kenneth-laptop,sample/web-app,claude-opus-5-5,24,72,36042,7855221,253261,4.3183
 2026-09-17,kenneth-laptop,sample/web-app,claude-sonnet-5,91,273,124397,31806905,1237013,12.5539
+2026-09-17,nik,geco website,claude-opus-5,4,8,1488,113247,15643,0.2503
+2026-09-17,nik,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,121,242,95595,37189731,867420,29.6602
+2026-09-17,nik,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5,9,18,5421,600223,45597,0.8917
 2026-09-18,aaron-laptop,sample/data-service,claude-opus-5,20,60,31919,5773547,193050,5.6155
 2026-09-18,aaron-laptop,sample/data-service,claude-opus-5-5,41,123,68064,12798617,500235,7.9234
 2026-09-18,aaron-laptop,sample/data-service,claude-sonnet-5,28,84,44890,8592085,359520,3.6056
@@ -708,6 +730,8 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-09-18,kenneth-laptop,sample/web-app,claude-opus-5,13,39,23120,4926393,154203,4.5834
 2026-09-18,kenneth-laptop,sample/web-app,claude-opus-5-5,16,48,27126,4682801,217315,3.2178
 2026-09-18,kenneth-laptop,sample/web-app,claude-sonnet-5,52,156,87595,16160833,604173,6.5251
+2026-09-18,nik,geco website,claude-opus-5,7,14,5542,1488537,8200,0.9649
+2026-09-18,nik,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5,23,46,26377,4286546,211227,4.9152
 2026-09-21,aaron-laptop,sample/data-service,claude-opus-5,8,24,11484,2855586,114918,2.8642
 2026-09-21,aaron-laptop,sample/data-service,claude-opus-5-5,37,111,60484,12033142,422904,7.0000
 2026-09-21,aaron-laptop,sample/data-service,claude-sonnet-5,27,81,41275,8890293,251755,3.1980
@@ -734,6 +758,8 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-09-22,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-sonnet-5,157,314,104125,73131370,4839400,35.0258
 2026-09-22,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5,157,314,241349,97443856,1951699,74.2742
 2026-09-22,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-sonnet-5,1,2,2212,37059,339146,1.3861
+2026-09-22,nik,geco website,claude-opus-5,64,128,92655,20259894,1295037,25.3973
+2026-09-22,nik,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5,70,140,55310,27533966,81682,15.9673
 2026-09-23,aaron-laptop,sample/data-service,claude-opus-5,56,168,87648,18484158,721004,18.6442
 2026-09-23,aaron-laptop,sample/data-service,claude-opus-5-5,111,333,179264,34660845,1421661,21.8921
 2026-09-23,aaron-laptop,sample/data-service,claude-sonnet-5,58,174,81732,18732125,686505,7.3101
@@ -747,6 +773,9 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-09-23,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-sonnet-5,70,140,36579,48182101,709782,12.8416
 2026-09-23,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5,25,50,35710,21843634,927612,21.0909
 2026-09-23,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-sonnet-5,23,46,9430,16847490,739098,6.4203
+2026-09-23,nik,geco website,claude-opus-5,46,92,41955,21806339,558951,17.5420
+2026-09-23,nik,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,184,368,107037,22228663,492503,18.0989
+2026-09-23,nik,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5,198,396,188154,31341069,886928,29.2456
 2026-09-24,aaron-laptop,sample/data-service,claude-opus-5,15,45,22104,4606222,199999,4.8559
 2026-09-24,aaron-laptop,sample/data-service,claude-opus-5-5,33,99,53107,10784655,460298,6.9019
 2026-09-24,aaron-laptop,sample/data-service,claude-sonnet-5,13,39,18957,3572029,165062,1.5643
@@ -764,6 +793,8 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-09-24,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5,562,1124,472328,229469370,3640081,162.9493
 2026-09-24,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,768,1542,808016,220017551,5216031,99.5687
 2026-09-24,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-sonnet-5,129,258,125287,58245928,4164390,29.5601
+2026-09-24,nik,geco website,claude-opus-5,17,34,12309,10085828,15718,5.5080
+2026-09-24,nik,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5,179,358,183031,81691428,1003710,55.4604
 2026-09-25,aaron-laptop,sample/data-service,claude-opus-5,24,72,39332,7096348,322851,7.7603
 2026-09-25,aaron-laptop,sample/data-service,claude-opus-5-5,33,99,44321,10306422,379070,5.9807
 2026-09-25,aaron-laptop,sample/data-service,claude-sonnet-5,24,72,35378,7976175,312943,3.2009
@@ -781,6 +812,13 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-09-25,kenneth-laptop,sample/web-app,claude-sonnet-5,52,156,77100,16072449,547167,6.1745
 2026-09-25,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,1243,2502,1498488,557524693,12747845,242.6433
 2026-09-25,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-sonnet-5,20,40,17699,13857601,1612500,9.3986
+2026-09-25,nik,geco website,claude-opus-5,19,38,17051,3953930,41969,2.8231
+2026-09-25,nik,geco website,claude-opus-5-5,106,212,95079,16473284,370458,8.1607
+2026-09-25,nik,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5,37,74,23501,11792728,322168,9.7059
+2026-09-25,nik,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5,329,658,252869,83838195,721056,55.1575
+2026-09-25,nik,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,9,18,6813,852573,8512,0.3749
+2026-09-26,nik,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5-5,44,92,54988,7277624,189464,4.0714
+2026-09-26,nik,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5,13,26,6523,4946972,855635,11.1930
 2026-09-27,kenneth-laptop,sample/web-app,claude-opus-5,16,48,25981,5179507,188604,5.1256
 2026-09-27,kenneth-laptop,sample/web-app,claude-opus-5-5,9,27,13713,2859600,89391,1.5614
 2026-09-27,kenneth-laptop,sample/web-app,claude-sonnet-5,43,129,69432,14565955,533905,5.7434
@@ -802,12 +840,16 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-09-28,kenneth-laptop,sample/web-app,claude-sonnet-5,219,657,345052,69410648,2814260,28.5910
 2026-09-28,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-haiku-4-5-20251001,10,82,3598,303519,53711,0.1156
 2026-09-28,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,746,1500,790627,342218483,6731044,137.7302
+2026-09-28,nik,geco website,claude-opus-5-5,10,20,8710,2511852,43408,1.0239
+2026-09-28,nik,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,264,534,191428,38736696,857552,17.0586
 2026-09-29,kenneth-laptop,sample/web-app,claude-opus-5,91,273,126684,28280399,1135946,28.6681
 2026-09-29,kenneth-laptop,sample/web-app,claude-opus-5-5,66,198,105196,21467827,892384,13.5373
 2026-09-29,kenneth-laptop,sample/web-app,claude-sonnet-5,252,756,369666,78487454,3093100,31.7681
 2026-09-29,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5,62,124,52794,39638493,660332,27.7430
 2026-09-29,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,1846,3818,2122176,674495052,20422226,305.0265
 2026-09-29,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-sonnet-5,297,594,142700,75736038,2097353,24.6637
+2026-09-29,nik,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,10,20,11993,3356905,355274,3.7535
+2026-09-29,nik,geco-ai-labs/sg_geco-ai_websitepoc_phase_1,claude-opus-5-5,570,1156,708585,196619127,2762554,73.0172
 2026-09-30,aaron-laptop,sample/data-service,claude-opus-5,50,150,85275,16588540,722802,17.6549
 2026-09-30,aaron-laptop,sample/data-service,claude-opus-5-5,128,384,198891,38139430,1500196,23.6088
 2026-09-30,aaron-laptop,sample/data-service,claude-sonnet-5,62,186,89210,18579884,706081,7.4328
@@ -826,6 +868,7 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-09-30,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5,563,1126,489060,282694860,2926820,182.8478
 2026-09-30,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,3962,8132,4868133,1302792716,34477585,576.2562
 2026-09-30,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-sonnet-5,651,1302,557921,228747048,4685636,69.9571
+2026-09-30,nik,geco-ai-labs/sg_geco-ai_websitepoc_phase_1,claude-opus-5-5,227,460,193590,65791325,1418805,28.3823
 2026-10-01,aaron-laptop,sample/data-service,claude-opus-5,100,300,144665,32604998,1257907,32.4997
 2026-10-01,aaron-laptop,sample/data-service,claude-opus-5-5,188,564,295527,59994309,2198740,35.5016
 2026-10-01,aaron-laptop,sample/data-service,claude-sonnet-5,92,276,140663,30444365,1056096,11.7204
@@ -844,10 +887,14 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-10-01,mariia-macbook,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5-5,10,20,10018,578905,52185,0.7337
 2026-10-01,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,2861,5814,2219764,878590774,11069178,290.3004
 2026-10-01,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-sonnet-5-5,31,62,32819,15568650,516113,5.5065
+2026-10-01,nik,geco-ai-labs/sg_geco-ai_websitepoc_phase_1,claude-opus-5-5,389,780,360017,130941032,2040025,49.7119
 2026-10-02,kenneth-laptop,sample/web-app,claude-opus-5,111,333,175694,33531856,1289032,34.0503
 2026-10-02,kenneth-laptop,sample/web-app,claude-opus-5-5,61,183,93109,18273226,664514,10.8337
 2026-10-02,kenneth-laptop,sample/web-app,claude-sonnet-5,236,708,353851,71064710,2861016,29.1969
 2026-10-02,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,244,488,262354,156279217,2839041,59.2172
+2026-10-02,nik,geco website,claude-opus-5-5,9,18,8348,492359,49228,0.6593
+2026-10-02,nik,geco-ai-labs/msia_infinity8_2026-02,claude-opus-5-5,36,72,54594,4888142,150050,3.2702
+2026-10-02,nik,geco-ai-labs/sg_geco-ai_websitepoc_phase_1,claude-opus-5-5,402,826,320371,93620655,1321668,35.3584
 2026-10-04,kenneth-laptop,sample/web-app,claude-opus-5,15,45,22961,4806389,200910,4.9865
 2026-10-04,kenneth-laptop,sample/web-app,claude-opus-5-5,9,27,19284,2676394,95373,1.6841
 2026-10-04,kenneth-laptop,sample/web-app,claude-sonnet-5,33,99,47222,10925785,421443,4.3433
@@ -865,3 +912,5 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-10-05,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-opus-5-5,7,14,6856,5552134,904226,8.4814
 2026-10-05,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-sonnet-5,9,18,7886,1092461,145358,0.8788
 2026-10-05,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc,claude-sonnet-5-5,16,32,20925,11549287,784012,5.6552
+2026-10-05,nik,geco website,claude-opus-5-5,10,20,20630,1015865,47351,0.9947
+2026-10-05,nik,geco-ai-labs/sg_geco-ai_websitepoc_phase_1,claude-opus-5-5,17,34,20982,1658013,126705,1.7650

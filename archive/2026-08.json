@@ -826,12 +826,12 @@
    "windows_run_out": 2
   },
   {
-   "cost_usd": 1469.0537,
+   "cost_usd": 1482.3329,
    "last_fable_pct": null,
    "last_weekly_pct": null,
    "locked_min": 101,
    "pct_of_plan_week": null,
-   "sessions": 66,
+   "sessions": 68,
    "status": "final",
    "usage_checks": [],
    "week_end": "2026-09-06",
