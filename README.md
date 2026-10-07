@@ -1,20 +1,20 @@
 # Claude usage
 
-Tracking since 2026-07-28 · 2 devices · 45,194 replies · 1,652 prompts
+Tracking since 2026-07-28 · 2 devices · 45,198 replies · 1,652 prompts
 
 **Jump to:** [mariia-macbook](#device-mariia-macbook) · [nik](#device-nik) · [All devices](#all-devices) · [Weekly limit](#weekly-limit) · [By month](#by-month)
 
 ## Device: mariia-macbook
 
 **This week so far (Mon 05 Oct – today):**  
-103.1M input · 419.7K output · 96% from cache · 27 prompts · $49.82 API-equivalent  
+105.3M input · 422.5K output · 96% from cache · 27 prompts · $50.37 API-equivalent  
 vs the same days last week: output ▼ 95% · prompts ▼ 89% · cost ▼ 96%
 
-<img src="reports/charts/mariia-macbook/projects.svg?v=3764a06e" alt="projects" width="760">
+<img src="reports/charts/mariia-macbook/projects.svg?v=0e07fa7e" alt="projects" width="760">
 
 <img src="reports/charts/mariia-macbook/heatmap.svg?v=6d8dac10" alt="heatmap" width="760">
 
-<img src="reports/charts/mariia-macbook/models.svg?v=4a8f4ee6" alt="models" width="760">
+<img src="reports/charts/mariia-macbook/models.svg?v=37ae6619" alt="models" width="760">
 
 ## Device: nik
 
@@ -52,11 +52,11 @@ vs the 7 days before: output ▼ 73% · prompts ▼ 65% · cost ▼ 76%
 
 ## Who used Claude when, 01 Oct – 07 Oct
 
-<img src="reports/charts/all/week-hours.svg?v=4ae46728" alt="week-hours" width="760">
+<img src="reports/charts/all/week-hours.svg?v=4668dec7" alt="week-hours" width="760">
 
 ## Usage by hour of day, 01 Oct – 07 Oct
 
-<img src="reports/charts/all/hour-share.svg?v=be6e447c" alt="hour-share" width="760">
+<img src="reports/charts/all/hour-share.svg?v=5d13743e" alt="hour-share" width="760">
 
 ## Weekly limit
 
