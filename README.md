@@ -1,20 +1,20 @@
 # Claude usage
 
-Tracking since 2026-07-28 · 2 devices · 46,221 replies · 1,728 prompts
+Tracking since 2026-07-28 · 2 devices · 46,306 replies · 1,728 prompts
 
 **Jump to:** [mariia-macbook](#device-mariia-macbook) · [nik](#device-nik) · [All devices](#all-devices) · [Weekly limit](#weekly-limit) · [By month](#by-month)
 
 ## Device: mariia-macbook
 
 **This week so far (Mon 05 Oct – today):**  
-689.3M input · 1.6M output · 98% from cache · 103 prompts · $230 API-equivalent  
-vs the same days last week: output ▼ 86% · prompts ▼ 64% · cost ▼ 86%
+752.6M input · 1.7M output · 98% from cache · 103 prompts · $245 API-equivalent  
+vs the same days last week: output ▼ 85% · prompts ▼ 66% · cost ▼ 85%
 
-<img src="reports/charts/mariia-macbook/projects.svg?v=50054854" alt="projects" width="760">
+<img src="reports/charts/mariia-macbook/projects.svg?v=1e447112" alt="projects" width="760">
 
-<img src="reports/charts/mariia-macbook/heatmap.svg?v=3c611902" alt="heatmap" width="760">
+<img src="reports/charts/mariia-macbook/heatmap.svg?v=8d5c3118" alt="heatmap" width="760">
 
-<img src="reports/charts/mariia-macbook/models.svg?v=e02bbfeb" alt="models" width="760">
+<img src="reports/charts/mariia-macbook/models.svg?v=0f8615d8" alt="models" width="760">
 
 ## Device: nik
 
@@ -24,39 +24,39 @@ vs the same days last week: output – · prompts – · cost –
 
 <img src="reports/charts/nik/projects.svg?v=543aa0f8" alt="projects" width="760">
 
-<img src="reports/charts/nik/heatmap.svg?v=67474389" alt="heatmap" width="760">
+<img src="reports/charts/nik/heatmap.svg?v=313095fb" alt="heatmap" width="760">
 
 <img src="reports/charts/nik/models.svg?v=638c1ed5" alt="models" width="760">
 
 ## All devices
 
-Side by side, the last 7 days (02 Oct – 08 Oct).
+Side by side, the last 7 days (03 Oct – 09 Oct).
 
 **Cache:** every message sends the whole conversation again. The part Claude has already seen is read from the cache at about a tenth of the normal price; only the new part costs full price. The Cache column is the share of input read that way: higher is cheaper. A long conversation is re-read on every message, so starting a fresh session for a new task keeps usage down. **Share of usage:** how much of the subscription's usage in these 7 days each device took; the column adds up to 100%.
 
 | Device | Input | Output | Cache | Prompts | Sessions | Share of usage |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| [mariia-macbook](#device-mariia-macbook) | 997.2M | 2.1M | 98% | 146 | 5 | 99% |
+| [mariia-macbook](#device-mariia-macbook) | 901.4M | 2M | 98% | 130 | 4 | 99% |
 | [nik](#device-nik) | 9.1M | 77.1K | 99% | 11 | 1 | 1% |
-| **Total** | 1B | 2.2M | 98% | 157 | 6 | 100% |
+| **Total** | 910.5M | 2.1M | 98% | 141 | 5 | 100% |
 
-vs the 7 days before: output ▼ 83% · prompts ▼ 59% · cost ▼ 81%
+vs the 7 days before: output ▼ 82% · prompts ▼ 54% · cost ▼ 82%
 
-## Usage per device, 02 Oct – 08 Oct
+## Usage per device, 03 Oct – 09 Oct
 
-<img src="reports/charts/all/usage-grid.svg?v=5d88a2f3" alt="usage-grid" width="760">
+<img src="reports/charts/all/usage-grid.svg?v=ddb67f46" alt="usage-grid" width="760">
 
-## Sessions stopped by the limit, 02 Oct – 08 Oct
+## Sessions stopped by the limit, 03 Oct – 09 Oct
 
-<img src="reports/charts/all/limit-grid.svg?v=c38ad569" alt="limit-grid" width="760">
+<img src="reports/charts/all/limit-grid.svg?v=73960da7" alt="limit-grid" width="760">
 
-## Who used Claude when, 02 Oct – 08 Oct
+## Who used Claude when, 03 Oct – 09 Oct
 
-<img src="reports/charts/all/week-hours.svg?v=4002e1d3" alt="week-hours" width="760">
+<img src="reports/charts/all/week-hours.svg?v=f0c38097" alt="week-hours" width="760">
 
-## Usage by hour of day, 02 Oct – 08 Oct
+## Usage by hour of day, 03 Oct – 09 Oct
 
-<img src="reports/charts/all/hour-share.svg?v=13e28cc5" alt="hour-share" width="760">
+<img src="reports/charts/all/hour-share.svg?v=9cbf5a9b" alt="hour-share" width="760">
 
 ## Weekly limit
 
@@ -93,7 +93,7 @@ Tokens are input (including what is read from cache) / output. Weekly and Fable 
 
 | Month | Tokens in / out | Sessions | Prompts | Devices | Windows run out | Locked out time | Weekly limit used | Fable limit used | Status |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| 2026-10 | 1.9B / 4.5M | 9 | 212 | 2 | 3 | 3h 34m | 100% (avg of 1) | 0% | in progress |
+| 2026-10 | 2B / 4.6M | 9 | 212 | 2 | 3 | 3h 34m | 100% (avg of 1) | 0% | in progress |
 | [2026-09](archive/2026-09.json) | 10.3B / 23.2M | 44 | 838 | 1 | 8 | 8h 57m | 78% (avg of 2) | 50% | final |
 | [2026-08](archive/2026-08.json) | 3.9B / 6.3M | 41 | 540 | 1 | 0 | – | – | – | final |
 | [2026-07](archive/2026-07.json) | 2.3B / 3M | 10 | 138 | 1 | 0 | – | – | – | final |
