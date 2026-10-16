@@ -1,20 +1,20 @@
 # Claude usage
 
-Tracking since 2026-07-28 · 2 devices · 50,397 replies · 1,960 prompts
+Tracking since 2026-07-28 · 2 devices · 50,401 replies · 1,960 prompts
 
 **Jump to:** [mariia-macbook](#device-mariia-macbook) · [nik](#device-nik) · [All devices](#all-devices) · [Weekly limit](#weekly-limit) · [By month](#by-month)
 
 ## Device: mariia-macbook
 
 **This week so far (Mon 12 Oct – today):**  
-1.2B input · 2.6M output · 99% from cache · 186 prompts · $369 API-equivalent  
+1.2B input · 2.6M output · 99% from cache · 186 prompts · $370 API-equivalent  
 vs the same days last week: output ▲ 39% · prompts ▲ 50% · cost ▲ 34%
 
-<img src="reports/charts/mariia-macbook/projects.svg?v=fdfd8bdb" alt="projects" width="760">
+<img src="reports/charts/mariia-macbook/projects.svg?v=40d62b98" alt="projects" width="760">
 
 <img src="reports/charts/mariia-macbook/heatmap.svg?v=fe8bee75" alt="heatmap" width="760">
 
-<img src="reports/charts/mariia-macbook/models.svg?v=91d23f9e" alt="models" width="760">
+<img src="reports/charts/mariia-macbook/models.svg?v=0e1f0743" alt="models" width="760">
 
 ## Device: nik
 
@@ -30,9 +30,9 @@ Side by side, the last 7 days (10 Oct – 16 Oct).
 
 | Device | Input | Output | Cache | Prompts | Sessions | Share of usage |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| [mariia-macbook](#device-mariia-macbook) | 1.3B | 2.8M | 99% | 207 | 10 | 87% |
+| [mariia-macbook](#device-mariia-macbook) | 1.3B | 2.9M | 99% | 207 | 10 | 87% |
 | [nik](#device-nik) | 167.8M | 301.6K | 98% | 4 | 1 | 13% |
-| **Total** | 1.5B | 3.1M | 99% | 211 | 11 | 100% |
+| **Total** | 1.5B | 3.2M | 99% | 211 | 11 | 100% |
 
 vs the 7 days before: output ▲ 38% · prompts ▲ 30% · cost ▲ 36%
 
