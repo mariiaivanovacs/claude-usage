@@ -161,5 +161,5 @@ date,device,project,model,replies,input,output,cache_read,cache_write,api_cost_u
 2026-10-15,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc_phase_1,claude-sonnet-5-5,51,102,31894,9234734,583411,4.4997
 2026-10-16,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc_phase_1,claude-opus-5-5,352,706,271270,114977438,1478587,40.2524
 2026-10-16,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc_phase_1,claude-sonnet-5-5,74,148,31078,16751055,1273452,8.7551
-2026-10-18,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc_phase_1,claude-opus-5-5,373,746,383368,197777394,2263785,65.3361
-2026-10-18,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc_phase_1,claude-sonnet-5-5,4,8,1029,1102425,940080,3.9911
+2026-10-18,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc_phase_1,claude-opus-5-5,652,1304,698988,347402490,4095601,116.2303
+2026-10-18,mariia-macbook,geco-ai-labs/sg_geco-ai_websitepoc_phase_1,claude-sonnet-5-5,147,294,107151,60931716,2627146,23.7670
