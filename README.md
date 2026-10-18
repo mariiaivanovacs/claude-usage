@@ -1,20 +1,20 @@
 # Claude usage
 
-Tracking since 2026-07-28 · 2 devices · 50,700 replies · 1,975 prompts
+Tracking since 2026-07-28 · 2 devices · 50,962 replies · 1,987 prompts
 
 **Jump to:** [mariia-macbook](#device-mariia-macbook) · [nik](#device-nik) · [All devices](#all-devices) · [Weekly limit](#weekly-limit) · [By month](#by-month)
 
 ## Device: mariia-macbook
 
 **This week so far (Mon 12 Oct – today):**  
-1.3B input · 2.8M output · 99% from cache · 201 prompts · $421 API-equivalent  
-vs the same days last week: output ▲ 34% · prompts ▲ 39% · cost ▲ 35%
+1.5B input · 3.1M output · 99% from cache · 213 prompts · $469 API-equivalent  
+vs the same days last week: output ▲ 48% · prompts ▲ 47% · cost ▲ 51%
 
-<img src="reports/charts/mariia-macbook/projects.svg?v=da8c51b0" alt="projects" width="760">
+<img src="reports/charts/mariia-macbook/projects.svg?v=52caf41c" alt="projects" width="760">
 
-<img src="reports/charts/mariia-macbook/heatmap.svg?v=3c3aecd5" alt="heatmap" width="760">
+<img src="reports/charts/mariia-macbook/heatmap.svg?v=e67fb9ff" alt="heatmap" width="760">
 
-<img src="reports/charts/mariia-macbook/models.svg?v=361e95a6" alt="models" width="760">
+<img src="reports/charts/mariia-macbook/models.svg?v=c64c6079" alt="models" width="760">
 
 ## Device: nik
 
@@ -30,15 +30,15 @@ Side by side, the last 7 days (12 Oct – 18 Oct).
 
 | Device | Input | Output | Cache | Prompts | Sessions | Share of usage |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| [mariia-macbook](#device-mariia-macbook) | 1.3B | 2.8M | 99% | 201 | 11 | 100% |
+| [mariia-macbook](#device-mariia-macbook) | 1.5B | 3.1M | 99% | 213 | 11 | 100% |
 | [nik](#device-nik) | 0 | 0 | 0% | 0 | 0 | 0% |
-| **Total** | 1.3B | 2.8M | 99% | 201 | 11 | 100% |
+| **Total** | 1.5B | 3.1M | 99% | 213 | 11 | 100% |
 
-vs the 7 days before: output ▲ 14% · prompts ▲ 26% · cost ▲ 13%
+vs the 7 days before: output ▲ 25% · prompts ▲ 33% · cost ▲ 25%
 
 ## Usage per device, 12 Oct – 18 Oct
 
-<img src="reports/charts/all/usage-grid.svg?v=270e6e83" alt="usage-grid" width="760">
+<img src="reports/charts/all/usage-grid.svg?v=7345e906" alt="usage-grid" width="760">
 
 ## Sessions stopped by the limit, 12 Oct – 18 Oct
 
@@ -46,11 +46,11 @@ vs the 7 days before: output ▲ 14% · prompts ▲ 26% · cost ▲ 13%
 
 ## Who used Claude when, 12 Oct – 18 Oct
 
-<img src="reports/charts/all/week-hours.svg?v=2408f6fb" alt="week-hours" width="760">
+<img src="reports/charts/all/week-hours.svg?v=c1a8e2ab" alt="week-hours" width="760">
 
 ## Usage by hour of day, 12 Oct – 18 Oct
 
-<img src="reports/charts/all/hour-share.svg?v=40b69fd6" alt="hour-share" width="760">
+<img src="reports/charts/all/hour-share.svg?v=0e465c5c" alt="hour-share" width="760">
 
 ## Weekly limit
 
@@ -88,7 +88,7 @@ Tokens are input (including what is read from cache) / output. Weekly and Fable 
 
 | Month | Tokens in / out | Sessions | Prompts | Devices | Windows run out | Locked out time | Weekly limit used | Fable limit used | Status |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| 2026-10 | 3.7B / 8.2M | 20 | 459 | 2 | 4 | 3h 58m | 100% (avg of 1) | 0% | in progress |
+| 2026-10 | 3.8B / 8.5M | 20 | 471 | 2 | 4 | 3h 58m | 100% (avg of 1) | 0% | in progress |
 | [2026-09](archive/2026-09.json) | 10.3B / 23.2M | 44 | 838 | 1 | 8 | 8h 57m | 78% (avg of 2) | 50% | final |
 | [2026-08](archive/2026-08.json) | 3.9B / 6.3M | 41 | 540 | 1 | 0 | – | – | – | final |
 | [2026-07](archive/2026-07.json) | 2.3B / 3M | 10 | 138 | 1 | 0 | – | – | – | final |
