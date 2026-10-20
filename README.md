@@ -8,11 +8,11 @@ Tracking since 2026-07-28 · 2 devices · 51,618 replies · 2,052 prompts
 
 **This week so far (Mon 19 Oct – today):**  
 3.8M input · 3.7K output · 100% from cache · 3 prompts · $0.90 API-equivalent  
-vs the same days last week: output ▼ 99% · prompts ▼ 93% · cost ▼ 99%
+vs the same days last week: output ▼ 100% · prompts ▼ 96% · cost ▼ 99%
 
 <img src="reports/charts/mariia-macbook/projects.svg?v=558da58f" alt="projects" width="760">
 
-<img src="reports/charts/mariia-macbook/heatmap.svg?v=f4d55189" alt="heatmap" width="760">
+<img src="reports/charts/mariia-macbook/heatmap.svg?v=9dfdb88a" alt="heatmap" width="760">
 
 <img src="reports/charts/mariia-macbook/models.svg?v=8b6de30c" alt="models" width="760">
 
@@ -20,37 +20,37 @@ vs the same days last week: output ▼ 99% · prompts ▼ 93% · cost ▼ 99%
 
 _No activity this week · last active Sun 11 Oct._
 
-<img src="reports/charts/nik/heatmap.svg?v=5e19fd12" alt="heatmap" width="760">
+<img src="reports/charts/nik/heatmap.svg?v=9fe2f7c3" alt="heatmap" width="760">
 
 ## All devices
 
-Side by side, the last 7 days (13 Oct – 19 Oct).
+Side by side, the last 7 days (14 Oct – 20 Oct).
 
 **Cache:** every message sends the whole conversation again. The part Claude has already seen is read from the cache at about a tenth of the normal price; only the new part costs full price. The Cache column is the share of input read that way: higher is cheaper. A long conversation is re-read on every message, so starting a fresh session for a new task keeps usage down. **Share of usage:** how much of the subscription's usage in these 7 days each device took; the column adds up to 100%.
 
 | Device | Input | Output | Cache | Prompts | Sessions | Share of usage |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| [mariia-macbook](#device-mariia-macbook) | 1.5B | 3M | 98% | 234 | 13 | 100% |
+| [mariia-macbook](#device-mariia-macbook) | 1.2B | 2.3M | 98% | 211 | 13 | 100% |
 | [nik](#device-nik) | 0 | 0 | 0% | 0 | 0 | 0% |
-| **Total** | 1.5B | 3M | 98% | 234 | 13 | 100% |
+| **Total** | 1.2B | 2.3M | 98% | 211 | 13 | 100% |
 
-vs the 7 days before: output ▲ 1% · prompts ▲ 27% · cost ▲ 19%
+vs the 7 days before: output ▼ 35% · prompts ▲ 7% · cost ▼ 23%
 
-## Usage per device, 13 Oct – 19 Oct
+## Usage per device, 14 Oct – 20 Oct
 
-<img src="reports/charts/all/usage-grid.svg?v=8bf094e3" alt="usage-grid" width="760">
+<img src="reports/charts/all/usage-grid.svg?v=2ab80c16" alt="usage-grid" width="760">
 
-## Sessions stopped by the limit, 13 Oct – 19 Oct
+## Sessions stopped by the limit, 14 Oct – 20 Oct
 
-<img src="reports/charts/all/limit-grid.svg?v=2095df43" alt="limit-grid" width="760">
+<img src="reports/charts/all/limit-grid.svg?v=a7e24ac4" alt="limit-grid" width="760">
 
-## Who used Claude when, 13 Oct – 19 Oct
+## Who used Claude when, 14 Oct – 20 Oct
 
-<img src="reports/charts/all/week-hours.svg?v=ce0a2491" alt="week-hours" width="760">
+<img src="reports/charts/all/week-hours.svg?v=e89e6c5b" alt="week-hours" width="760">
 
-## Usage by hour of day, 13 Oct – 19 Oct
+## Usage by hour of day, 14 Oct – 20 Oct
 
-<img src="reports/charts/all/hour-share.svg?v=202a0546" alt="hour-share" width="760">
+<img src="reports/charts/all/hour-share.svg?v=8806e6f9" alt="hour-share" width="760">
 
 ## Weekly limit
 
