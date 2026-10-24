@@ -12,7 +12,7 @@ vs the same days last week: output ▼ 81% · prompts ▼ 72% · cost ▼ 74%
 
 <img src="reports/charts/mariia-macbook/projects.svg?v=6b7e5c9b" alt="projects" width="760">
 
-<img src="reports/charts/mariia-macbook/heatmap.svg?v=6044f9d4" alt="heatmap" width="760">
+<img src="reports/charts/mariia-macbook/heatmap.svg?v=2371b4a9" alt="heatmap" width="760">
 
 <img src="reports/charts/mariia-macbook/models.svg?v=e8d41b2b" alt="models" width="760">
 
@@ -20,11 +20,11 @@ vs the same days last week: output ▼ 81% · prompts ▼ 72% · cost ▼ 74%
 
 _No activity this week · last active Sun 11 Oct._
 
-<img src="reports/charts/nik/heatmap.svg?v=8b0a3418" alt="heatmap" width="760">
+<img src="reports/charts/nik/heatmap.svg?v=c13f0f62" alt="heatmap" width="760">
 
 ## All devices
 
-Side by side, the last 7 days (17 Oct – 23 Oct).
+Side by side, the last 7 days (18 Oct – 24 Oct).
 
 **Cache:** every message sends the whole conversation again. The part Claude has already seen is read from the cache at about a tenth of the normal price; only the new part costs full price. The Cache column is the share of input read that way: higher is cheaper. A long conversation is re-read on every message, so starting a fresh session for a new task keeps usage down. **Share of usage:** how much of the subscription's usage in these 7 days each device took; the column adds up to 100%.
 
@@ -34,21 +34,21 @@ Side by side, the last 7 days (17 Oct – 23 Oct).
 | [nik](#device-nik) | 0 | 0 | 0% | 0 | 0 | 0% |
 | **Total** | 824.9M | 1.4M | 99% | 134 | 7 | 100% |
 
-vs the 7 days before: output ▼ 57% · prompts ▼ 40% · cost ▼ 48%
+vs the 7 days before: output ▼ 53% · prompts ▼ 39% · cost ▼ 43%
 
-## Usage per device, 17 Oct – 23 Oct
+## Usage per device, 18 Oct – 24 Oct
 
-<img src="reports/charts/all/usage-grid.svg?v=4da68fef" alt="usage-grid" width="760">
+<img src="reports/charts/all/usage-grid.svg?v=1d5a2b27" alt="usage-grid" width="760">
 
-## Sessions stopped by the limit, 17 Oct – 23 Oct
+## Sessions stopped by the limit, 18 Oct – 24 Oct
 
-<img src="reports/charts/all/limit-grid.svg?v=2f9872e7" alt="limit-grid" width="760">
+<img src="reports/charts/all/limit-grid.svg?v=0ac2178c" alt="limit-grid" width="760">
 
-## Who used Claude when, 17 Oct – 23 Oct
+## Who used Claude when, 18 Oct – 24 Oct
 
-<img src="reports/charts/all/week-hours.svg?v=68c26a7e" alt="week-hours" width="760">
+<img src="reports/charts/all/week-hours.svg?v=9b5c6122" alt="week-hours" width="760">
 
-## Usage by hour of day, 17 Oct – 23 Oct
+## Usage by hour of day, 18 Oct – 24 Oct
 
 <img src="reports/charts/all/hour-share.svg?v=11138e7a" alt="hour-share" width="760">
 
