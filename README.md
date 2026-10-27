@@ -8,43 +8,43 @@ Tracking since 2026-07-28 · 2 devices · 52,368 replies · 2,105 prompts
 
 _No activity this week · last active Fri 23 Oct._
 
-<img src="reports/charts/mariia-macbook/heatmap.svg?v=a3f4f3d3" alt="heatmap" width="760">
+<img src="reports/charts/mariia-macbook/heatmap.svg?v=624323de" alt="heatmap" width="760">
 
 ## Device: nik
 
 _No activity this week · last active Sun 11 Oct._
 
-<img src="reports/charts/nik/heatmap.svg?v=52ee24e6" alt="heatmap" width="760">
+<img src="reports/charts/nik/heatmap.svg?v=9deb188f" alt="heatmap" width="760">
 
 ## All devices
 
-Side by side, the last 7 days (21 Oct – 27 Oct).
+Side by side, the last 7 days (22 Oct – 28 Oct).
 
 **Cache:** every message sends the whole conversation again. The part Claude has already seen is read from the cache at about a tenth of the normal price; only the new part costs full price. The Cache column is the share of input read that way: higher is cheaper. A long conversation is re-read on every message, so starting a fresh session for a new task keeps usage down. **Share of usage:** how much of the subscription's usage in these 7 days each device took; the column adds up to 100%.
 
 | Device | Input | Output | Cache | Prompts | Sessions | Share of usage |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| [mariia-macbook](#device-mariia-macbook) | 372.7M | 537.2K | 99% | 53 | 2 | 100% |
+| [mariia-macbook](#device-mariia-macbook) | 67.7M | 150.3K | 97% | 26 | 1 | 100% |
 | [nik](#device-nik) | 0 | 0 | 0% | 0 | 0 | 0% |
-| **Total** | 372.7M | 537.2K | 99% | 53 | 2 | 100% |
+| **Total** | 67.7M | 150.3K | 97% | 26 | 1 | 100% |
 
-vs the 7 days before: output ▼ 77% · prompts ▼ 75% · cost ▼ 73%
+vs the 7 days before: output ▼ 93% · prompts ▼ 86% · cost ▼ 93%
 
-## Usage per device, 21 Oct – 27 Oct
+## Usage per device, 22 Oct – 28 Oct
 
-<img src="reports/charts/all/usage-grid.svg?v=3cab557c" alt="usage-grid" width="760">
+<img src="reports/charts/all/usage-grid.svg?v=d702199f" alt="usage-grid" width="760">
 
-## Sessions stopped by the limit, 21 Oct – 27 Oct
+## Sessions stopped by the limit, 22 Oct – 28 Oct
 
-<img src="reports/charts/all/limit-grid.svg?v=03fe4e02" alt="limit-grid" width="760">
+<img src="reports/charts/all/limit-grid.svg?v=838486d3" alt="limit-grid" width="760">
 
-## Who used Claude when, 21 Oct – 27 Oct
+## Who used Claude when, 22 Oct – 28 Oct
 
-<img src="reports/charts/all/week-hours.svg?v=594d958b" alt="week-hours" width="760">
+<img src="reports/charts/all/week-hours.svg?v=d07409fa" alt="week-hours" width="760">
 
-## Usage by hour of day, 21 Oct – 27 Oct
+## Usage by hour of day, 22 Oct – 28 Oct
 
-<img src="reports/charts/all/hour-share.svg?v=fd0dc51f" alt="hour-share" width="760">
+<img src="reports/charts/all/hour-share.svg?v=8d45886d" alt="hour-share" width="760">
 
 ## Weekly limit
 
