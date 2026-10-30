@@ -1,20 +1,20 @@
 # Claude usage
 
-Tracking since 2026-07-28 · 2 devices · 52,625 replies · 2,114 prompts
+Tracking since 2026-07-28 · 2 devices · 52,629 replies · 2,115 prompts
 
 **Jump to:** [mariia-macbook](#device-mariia-macbook) · [nik](#device-nik) · [All devices](#all-devices) · [Weekly limit](#weekly-limit) · [By month](#by-month)
 
 ## Device: mariia-macbook
 
 **This week so far (Mon 26 Oct – today):**  
-42M input · 152.2K output · 98% from cache · 9 prompts · $16.94 API-equivalent  
-vs the same days last week: output ▼ 72% · prompts ▼ 84% · cost ▼ 84%
+43.3M input · 152.8K output · 98% from cache · 10 prompts · $17.22 API-equivalent  
+vs the same days last week: output ▼ 72% · prompts ▼ 82% · cost ▼ 84%
 
-<img src="reports/charts/mariia-macbook/projects.svg?v=23efddd0" alt="projects" width="760">
+<img src="reports/charts/mariia-macbook/projects.svg?v=82cc20fd" alt="projects" width="760">
 
-<img src="reports/charts/mariia-macbook/heatmap.svg?v=acfc9240" alt="heatmap" width="760">
+<img src="reports/charts/mariia-macbook/heatmap.svg?v=f549f719" alt="heatmap" width="760">
 
-<img src="reports/charts/mariia-macbook/models.svg?v=5fc8eb02" alt="models" width="760">
+<img src="reports/charts/mariia-macbook/models.svg?v=561de782" alt="models" width="760">
 
 ## Device: nik
 
@@ -30,9 +30,9 @@ Side by side, the last 7 days (24 Oct – 30 Oct).
 
 | Device | Input | Output | Cache | Prompts | Sessions | Share of usage |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| [mariia-macbook](#device-mariia-macbook) | 42M | 152.2K | 98% | 9 | 2 | 100% |
+| [mariia-macbook](#device-mariia-macbook) | 43.3M | 152.8K | 98% | 10 | 2 | 100% |
 | [nik](#device-nik) | 0 | 0 | 0% | 0 | 0 | 0% |
-| **Total** | 42M | 152.2K | 98% | 9 | 2 | 100% |
+| **Total** | 43.3M | 152.8K | 98% | 10 | 2 | 100% |
 
 vs the 7 days before: output ▼ 89% · prompts ▼ 93% · cost ▼ 93%
 
@@ -50,7 +50,7 @@ vs the 7 days before: output ▼ 89% · prompts ▼ 93% · cost ▼ 93%
 
 ## Usage by hour of day, 24 Oct – 30 Oct
 
-<img src="reports/charts/all/hour-share.svg?v=b5fcb833" alt="hour-share" width="760">
+<img src="reports/charts/all/hour-share.svg?v=349c1262" alt="hour-share" width="760">
 
 ## Weekly limit
 
@@ -90,7 +90,7 @@ Tokens are input (including what is read from cache) / output. Weekly and Fable 
 
 | Month | Tokens in / out | Sessions | Prompts | Devices | Windows run out | Locked out time | Weekly limit used | Fable limit used | Status |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| 2026-10 | 4.5B / 9.7M | 26 | 598 | 2 | 4 | 3h 58m | 100% (avg of 1) | 0% | in progress |
+| 2026-10 | 4.5B / 9.7M | 26 | 599 | 2 | 4 | 3h 58m | 100% (avg of 1) | 0% | in progress |
 | [2026-09](archive/2026-09.json) | 10.3B / 23.2M | 44 | 838 | 1 | 8 | 8h 57m | 78% (avg of 2) | 50% | final |
 | [2026-08](archive/2026-08.json) | 3.9B / 6.3M | 41 | 540 | 1 | 0 | – | – | – | final |
 | [2026-07](archive/2026-07.json) | 2.3B / 3M | 10 | 138 | 1 | 0 | – | – | – | final |
