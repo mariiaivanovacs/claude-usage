@@ -1,26 +1,32 @@
 # Claude usage
 
-Tracking since 2026-07-28 · 2 devices · 52,629 replies · 2,115 prompts
+Tracking since 2026-07-28 · 2 devices · 52,738 replies · 2,122 prompts
 
 **Jump to:** [mariia-macbook](#device-mariia-macbook) · [nik](#device-nik) · [All devices](#all-devices) · [Weekly limit](#weekly-limit) · [By month](#by-month)
 
 ## Device: mariia-macbook
 
 **This week so far (Mon 26 Oct – today):**  
-43.3M input · 152.8K output · 98% from cache · 10 prompts · $17.22 API-equivalent  
-vs the same days last week: output ▼ 72% · prompts ▼ 82% · cost ▼ 84%
+85.6M input · 250.1K output · 98% from cache · 15 prompts · $31.13 API-equivalent  
+vs the same days last week: output ▼ 54% · prompts ▼ 73% · cost ▼ 71%
 
-<img src="reports/charts/mariia-macbook/projects.svg?v=82cc20fd" alt="projects" width="760">
+<img src="reports/charts/mariia-macbook/projects.svg?v=574af54b" alt="projects" width="760">
 
-<img src="reports/charts/mariia-macbook/heatmap.svg?v=f549f719" alt="heatmap" width="760">
+<img src="reports/charts/mariia-macbook/heatmap.svg?v=e4cc0e9d" alt="heatmap" width="760">
 
-<img src="reports/charts/mariia-macbook/models.svg?v=561de782" alt="models" width="760">
+<img src="reports/charts/mariia-macbook/models.svg?v=ff678d09" alt="models" width="760">
 
 ## Device: nik
 
-_No activity this week · last active Sun 11 Oct._
+**This week so far (Mon 26 Oct – today):**  
+630.1K input · 4K output · 93% from cache · 2 prompts · $0.56 API-equivalent  
+vs the same days last week: output – · prompts – · cost –
 
-<img src="reports/charts/nik/heatmap.svg?v=474424e0" alt="heatmap" width="760">
+<img src="reports/charts/nik/projects.svg?v=c637b67a" alt="projects" width="760">
+
+<img src="reports/charts/nik/heatmap.svg?v=f623b2e6" alt="heatmap" width="760">
+
+<img src="reports/charts/nik/models.svg?v=efb51210" alt="models" width="760">
 
 ## All devices
 
@@ -30,15 +36,15 @@ Side by side, the last 7 days (24 Oct – 30 Oct).
 
 | Device | Input | Output | Cache | Prompts | Sessions | Share of usage |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| [mariia-macbook](#device-mariia-macbook) | 43.3M | 152.8K | 98% | 10 | 2 | 100% |
-| [nik](#device-nik) | 0 | 0 | 0% | 0 | 0 | 0% |
-| **Total** | 43.3M | 152.8K | 98% | 10 | 2 | 100% |
+| [mariia-macbook](#device-mariia-macbook) | 85.6M | 250.1K | 98% | 15 | 2 | 98% |
+| [nik](#device-nik) | 630.1K | 4K | 93% | 2 | 1 | 2% |
+| **Total** | 86.2M | 254.2K | 98% | 17 | 3 | 100% |
 
-vs the 7 days before: output ▼ 89% · prompts ▼ 93% · cost ▼ 93%
+vs the 7 days before: output ▼ 82% · prompts ▼ 87% · cost ▼ 88%
 
 ## Usage per device, 24 Oct – 30 Oct
 
-<img src="reports/charts/all/usage-grid.svg?v=6e4d2da7" alt="usage-grid" width="760">
+<img src="reports/charts/all/usage-grid.svg?v=fc41e2e7" alt="usage-grid" width="760">
 
 ## Sessions stopped by the limit, 24 Oct – 30 Oct
 
@@ -46,11 +52,11 @@ vs the 7 days before: output ▼ 89% · prompts ▼ 93% · cost ▼ 93%
 
 ## Who used Claude when, 24 Oct – 30 Oct
 
-<img src="reports/charts/all/week-hours.svg?v=d39db060" alt="week-hours" width="760">
+<img src="reports/charts/all/week-hours.svg?v=6aa20ab1" alt="week-hours" width="760">
 
 ## Usage by hour of day, 24 Oct – 30 Oct
 
-<img src="reports/charts/all/hour-share.svg?v=349c1262" alt="hour-share" width="760">
+<img src="reports/charts/all/hour-share.svg?v=5a162e7f" alt="hour-share" width="760">
 
 ## Weekly limit
 
@@ -65,7 +71,7 @@ vs the 7 days before: output ▼ 89% · prompts ▼ 93% · cost ▼ 93%
 | 05 Oct – 11 Oct | – | – | 2 | 3h 21m | 7 | final |
 | 12 Oct – 18 Oct | – | – | 0 | – | 15 | final |
 | 19 Oct – 25 Oct | – | – | 0 | – | 5 | final |
-| 26 Oct – 01 Nov | – | – | 0 | – | 2 | in progress |
+| 26 Oct – 01 Nov | – | – | 0 | – | 3 | in progress |
 
 ### September 2026
 
@@ -90,7 +96,7 @@ Tokens are input (including what is read from cache) / output. Weekly and Fable 
 
 | Month | Tokens in / out | Sessions | Prompts | Devices | Windows run out | Locked out time | Weekly limit used | Fable limit used | Status |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| 2026-10 | 4.5B / 9.7M | 26 | 599 | 2 | 4 | 3h 58m | 100% (avg of 1) | 0% | in progress |
+| 2026-10 | 4.6B / 9.8M | 27 | 606 | 2 | 4 | 3h 58m | 100% (avg of 1) | 0% | in progress |
 | [2026-09](archive/2026-09.json) | 10.3B / 23.2M | 44 | 838 | 1 | 8 | 8h 57m | 78% (avg of 2) | 50% | final |
 | [2026-08](archive/2026-08.json) | 3.9B / 6.3M | 41 | 540 | 1 | 0 | – | – | – | final |
 | [2026-07](archive/2026-07.json) | 2.3B / 3M | 10 | 138 | 1 | 0 | – | – | – | final |
