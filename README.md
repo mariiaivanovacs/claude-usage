@@ -1,50 +1,56 @@
 # Claude usage
 
-Tracking since 2026-07-28 · 2 devices · 52,368 replies · 2,105 prompts
+Tracking since 2026-07-28 · 2 devices · 52,376 replies · 2,107 prompts
 
 **Jump to:** [mariia-macbook](#device-mariia-macbook) · [nik](#device-nik) · [All devices](#all-devices) · [Weekly limit](#weekly-limit) · [By month](#by-month)
 
 ## Device: mariia-macbook
 
-_No activity this week · last active Fri 23 Oct._
+**This week so far (Mon 26 Oct – today):**  
+1.3M input · 6.7K output · 75% from cache · 2 prompts · $1.77 API-equivalent  
+vs the same days last week: output ▼ 99% · prompts ▼ 96% · cost ▼ 98%
 
-<img src="reports/charts/mariia-macbook/heatmap.svg?v=860f35ee" alt="heatmap" width="760">
+<img src="reports/charts/mariia-macbook/projects.svg?v=ac3b1f94" alt="projects" width="760">
+
+<img src="reports/charts/mariia-macbook/heatmap.svg?v=90d46231" alt="heatmap" width="760">
+
+<img src="reports/charts/mariia-macbook/models.svg?v=e91aa024" alt="models" width="760">
 
 ## Device: nik
 
 _No activity this week · last active Sun 11 Oct._
 
-<img src="reports/charts/nik/heatmap.svg?v=a7ea0411" alt="heatmap" width="760">
+<img src="reports/charts/nik/heatmap.svg?v=474424e0" alt="heatmap" width="760">
 
 ## All devices
 
-Side by side, the last 7 days (23 Oct – 29 Oct).
+Side by side, the last 7 days (24 Oct – 30 Oct).
 
 **Cache:** every message sends the whole conversation again. The part Claude has already seen is read from the cache at about a tenth of the normal price; only the new part costs full price. The Cache column is the share of input read that way: higher is cheaper. A long conversation is re-read on every message, so starting a fresh session for a new task keeps usage down. **Share of usage:** how much of the subscription's usage in these 7 days each device took; the column adds up to 100%.
 
 | Device | Input | Output | Cache | Prompts | Sessions | Share of usage |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| [mariia-macbook](#device-mariia-macbook) | 50.5M | 127.6K | 99% | 22 | 1 | 100% |
+| [mariia-macbook](#device-mariia-macbook) | 1.3M | 6.7K | 75% | 2 | 2 | 100% |
 | [nik](#device-nik) | 0 | 0 | 0% | 0 | 0 | 0% |
-| **Total** | 50.5M | 127.6K | 99% | 22 | 1 | 100% |
+| **Total** | 1.3M | 6.7K | 75% | 2 | 2 | 100% |
 
-vs the 7 days before: output ▼ 92% · prompts ▼ 84% · cost ▼ 95%
+vs the 7 days before: output ▼ 100% · prompts ▼ 99% · cost ▼ 99%
 
-## Usage per device, 23 Oct – 29 Oct
+## Usage per device, 24 Oct – 30 Oct
 
-<img src="reports/charts/all/usage-grid.svg?v=4bd6e3f8" alt="usage-grid" width="760">
+<img src="reports/charts/all/usage-grid.svg?v=6e4d2da7" alt="usage-grid" width="760">
 
-## Sessions stopped by the limit, 23 Oct – 29 Oct
+## Sessions stopped by the limit, 24 Oct – 30 Oct
 
-<img src="reports/charts/all/limit-grid.svg?v=af60b6bd" alt="limit-grid" width="760">
+<img src="reports/charts/all/limit-grid.svg?v=153f452e" alt="limit-grid" width="760">
 
-## Who used Claude when, 23 Oct – 29 Oct
+## Who used Claude when, 24 Oct – 30 Oct
 
-<img src="reports/charts/all/week-hours.svg?v=ab5d1de8" alt="week-hours" width="760">
+<img src="reports/charts/all/week-hours.svg?v=8e012abe" alt="week-hours" width="760">
 
-## Usage by hour of day, 23 Oct – 29 Oct
+## Usage by hour of day, 24 Oct – 30 Oct
 
-<img src="reports/charts/all/hour-share.svg?v=12fd6fb4" alt="hour-share" width="760">
+<img src="reports/charts/all/hour-share.svg?v=c48c74d5" alt="hour-share" width="760">
 
 ## Weekly limit
 
@@ -59,7 +65,7 @@ vs the 7 days before: output ▼ 92% · prompts ▼ 84% · cost ▼ 95%
 | 05 Oct – 11 Oct | – | – | 2 | 3h 21m | 7 | final |
 | 12 Oct – 18 Oct | – | – | 0 | – | 15 | final |
 | 19 Oct – 25 Oct | – | – | 0 | – | 5 | final |
-| 26 Oct – 01 Nov | – | – | 0 | – | 0 | in progress |
+| 26 Oct – 01 Nov | – | – | 0 | – | 2 | in progress |
 
 ### September 2026
 
@@ -84,7 +90,7 @@ Tokens are input (including what is read from cache) / output. Weekly and Fable 
 
 | Month | Tokens in / out | Sessions | Prompts | Devices | Windows run out | Locked out time | Weekly limit used | Fable limit used | Status |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| 2026-10 | 4.5B / 9.6M | 25 | 589 | 2 | 4 | 3h 58m | 100% (avg of 1) | 0% | in progress |
+| 2026-10 | 4.5B / 9.6M | 26 | 591 | 2 | 4 | 3h 58m | 100% (avg of 1) | 0% | in progress |
 | [2026-09](archive/2026-09.json) | 10.3B / 23.2M | 44 | 838 | 1 | 8 | 8h 57m | 78% (avg of 2) | 50% | final |
 | [2026-08](archive/2026-08.json) | 3.9B / 6.3M | 41 | 540 | 1 | 0 | – | – | – | final |
 | [2026-07](archive/2026-07.json) | 2.3B / 3M | 10 | 138 | 1 | 0 | – | – | – | final |
