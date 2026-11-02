@@ -1,18 +1,18 @@
 # Claude usage
 
-Tracking since 2026-07-28 · 2 devices · 54,080 replies · 2,217 prompts
+Tracking since 2026-07-28 · 2 devices · 54,082 replies · 2,218 prompts
 
 **Jump to:** [mariia-macbook](#device-mariia-macbook) · [nik](#device-nik) · [All devices](#all-devices) · [Weekly limit](#weekly-limit) · [By month](#by-month)
 
 ## Device: mariia-macbook
 
 **This week so far (Mon 02 Nov – today):**  
-477.5M input · 962.8K output · 99% from cache · 73 prompts · $149 API-equivalent  
+478M input · 964.3K output · 99% from cache · 74 prompts · $149 API-equivalent  
 vs the same days last week: output – · prompts – · cost –
 
 <img src="reports/charts/mariia-macbook/projects.svg?v=b16af39e" alt="projects" width="760">
 
-<img src="reports/charts/mariia-macbook/heatmap.svg?v=62ea0a93" alt="heatmap" width="760">
+<img src="reports/charts/mariia-macbook/heatmap.svg?v=88a9e051" alt="heatmap" width="760">
 
 <img src="reports/charts/mariia-macbook/models.svg?v=24e67dbf" alt="models" width="760">
 
@@ -28,11 +28,11 @@ Side by side, the last 7 days (27 Oct – 02 Nov).
 
 | Device | Input | Output | Cache | Prompts | Sessions | Share of usage |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| [mariia-macbook](#device-mariia-macbook) | 631.4M | 1.3M | 99% | 108 | 9 | 100% |
+| [mariia-macbook](#device-mariia-macbook) | 632M | 1.3M | 99% | 109 | 9 | 100% |
 | [nik](#device-nik) | 1.1M | 5.3K | 95% | 4 | 1 | 0% |
-| **Total** | 632.6M | 1.3M | 99% | 112 | 10 | 100% |
+| **Total** | 633.1M | 1.4M | 99% | 113 | 10 | 100% |
 
-vs the 7 days before: output ▲ 151% · prompts ▲ 111% · cost ▲ 98%
+vs the 7 days before: output ▲ 152% · prompts ▲ 113% · cost ▲ 98%
 
 ## Usage per device, 27 Oct – 02 Nov
 
@@ -85,7 +85,7 @@ Tokens are input (including what is read from cache) / output. Weekly and Fable 
 
 | Month | Tokens in / out | Sessions | Prompts | Devices | Windows run out | Locked out time | Weekly limit used | Fable limit used | Status |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| 2026-11 | 477.5M / 962.8K | 6 | 73 | 1 | 0 | – | – | – | in progress |
+| 2026-11 | 478M / 964.3K | 6 | 74 | 1 | 0 | – | – | – | in progress |
 | [2026-10](archive/2026-10.json) | 4.6B / 9.9M | 29 | 628 | 2 | 4 | 3h 58m | 100% (avg of 1) | 0% | may still change |
 | [2026-09](archive/2026-09.json) | 10.3B / 23.2M | 44 | 838 | 1 | 8 | 8h 57m | 78% (avg of 2) | 50% | final |
 | [2026-08](archive/2026-08.json) | 3.9B / 6.3M | 41 | 540 | 1 | 0 | – | – | – | final |
