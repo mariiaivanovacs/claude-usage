@@ -1,20 +1,20 @@
 # Claude usage
 
-Tracking since 2026-07-28 · 2 devices · 54,098 replies · 2,219 prompts
+Tracking since 2026-07-28 · 2 devices · 54,171 replies · 2,219 prompts
 
 **Jump to:** [mariia-macbook](#device-mariia-macbook) · [nik](#device-nik) · [All devices](#all-devices) · [Weekly limit](#weekly-limit) · [By month](#by-month)
 
 ## Device: mariia-macbook
 
 **This week so far (Mon 02 Nov – today):**  
-482.5M input · 976.1K output · 99% from cache · 75 prompts · $150 API-equivalent  
+507.6M input · 1M output · 99% from cache · 75 prompts · $157 API-equivalent  
 vs the same days last week: output – · prompts – · cost –
 
-<img src="reports/charts/mariia-macbook/projects.svg?v=6c0f9350" alt="projects" width="760">
+<img src="reports/charts/mariia-macbook/projects.svg?v=0d20ce8b" alt="projects" width="760">
 
-<img src="reports/charts/mariia-macbook/heatmap.svg?v=26dca38e" alt="heatmap" width="760">
+<img src="reports/charts/mariia-macbook/heatmap.svg?v=7b128501" alt="heatmap" width="760">
 
-<img src="reports/charts/mariia-macbook/models.svg?v=5ee03d0e" alt="models" width="760">
+<img src="reports/charts/mariia-macbook/models.svg?v=c89a7d68" alt="models" width="760">
 
 ## Device: nik
 
@@ -22,33 +22,33 @@ _No activity this week · last active Fri 30 Oct._
 
 ## All devices
 
-Side by side, the last 7 days (27 Oct – 02 Nov).
+Side by side, the last 7 days (28 Oct – 03 Nov).
 
 **Cache:** every message sends the whole conversation again. The part Claude has already seen is read from the cache at about a tenth of the normal price; only the new part costs full price. The Cache column is the share of input read that way: higher is cheaper. A long conversation is re-read on every message, so starting a fresh session for a new task keeps usage down. **Share of usage:** how much of the subscription's usage in these 7 days each device took; the column adds up to 100%.
 
 | Device | Input | Output | Cache | Prompts | Sessions | Share of usage |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| [mariia-macbook](#device-mariia-macbook) | 636.5M | 1.4M | 99% | 110 | 9 | 100% |
+| [mariia-macbook](#device-mariia-macbook) | 661.5M | 1.4M | 99% | 110 | 9 | 100% |
 | [nik](#device-nik) | 1.1M | 5.3K | 95% | 4 | 1 | 0% |
-| **Total** | 637.6M | 1.4M | 99% | 114 | 10 | 100% |
+| **Total** | 662.6M | 1.4M | 99% | 114 | 10 | 100% |
 
-vs the 7 days before: output ▲ 154% · prompts ▲ 115% · cost ▲ 99%
+vs the 7 days before: output ▲ 164% · prompts ▲ 115% · cost ▲ 106%
 
-## Usage per device, 27 Oct – 02 Nov
+## Usage per device, 28 Oct – 03 Nov
 
-<img src="reports/charts/all/usage-grid.svg?v=044685b2" alt="usage-grid" width="760">
+<img src="reports/charts/all/usage-grid.svg?v=4e6c4d55" alt="usage-grid" width="760">
 
-## Sessions stopped by the limit, 27 Oct – 02 Nov
+## Sessions stopped by the limit, 28 Oct – 03 Nov
 
-<img src="reports/charts/all/limit-grid.svg?v=e02e32c6" alt="limit-grid" width="760">
+<img src="reports/charts/all/limit-grid.svg?v=4a032cbd" alt="limit-grid" width="760">
 
-## Who used Claude when, 27 Oct – 02 Nov
+## Who used Claude when, 28 Oct – 03 Nov
 
-<img src="reports/charts/all/week-hours.svg?v=cbe2767a" alt="week-hours" width="760">
+<img src="reports/charts/all/week-hours.svg?v=0babea30" alt="week-hours" width="760">
 
-## Usage by hour of day, 27 Oct – 02 Nov
+## Usage by hour of day, 28 Oct – 03 Nov
 
-<img src="reports/charts/all/hour-share.svg?v=2b163bea" alt="hour-share" width="760">
+<img src="reports/charts/all/hour-share.svg?v=b9529843" alt="hour-share" width="760">
 
 ## Weekly limit
 
@@ -85,7 +85,7 @@ Tokens are input (including what is read from cache) / output. Weekly and Fable 
 
 | Month | Tokens in / out | Sessions | Prompts | Devices | Windows run out | Locked out time | Weekly limit used | Fable limit used | Status |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| 2026-11 | 482.5M / 976.1K | 6 | 75 | 1 | 0 | – | – | – | in progress |
+| 2026-11 | 507.6M / 1M | 6 | 75 | 1 | 0 | – | – | – | in progress |
 | [2026-10](archive/2026-10.json) | 4.6B / 9.9M | 29 | 628 | 2 | 4 | 3h 58m | 100% (avg of 1) | 0% | may still change |
 | [2026-09](archive/2026-09.json) | 10.3B / 23.2M | 44 | 838 | 1 | 8 | 8h 57m | 78% (avg of 2) | 50% | final |
 | [2026-08](archive/2026-08.json) | 3.9B / 6.3M | 41 | 540 | 1 | 0 | – | – | – | final |
