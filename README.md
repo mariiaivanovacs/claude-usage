@@ -12,7 +12,7 @@ vs the same days last week: output – · prompts – · cost –
 
 <img src="reports/charts/mariia-macbook/projects.svg?v=0d20ce8b" alt="projects" width="760">
 
-<img src="reports/charts/mariia-macbook/heatmap.svg?v=1eac762c" alt="heatmap" width="760">
+<img src="reports/charts/mariia-macbook/heatmap.svg?v=b0436d83" alt="heatmap" width="760">
 
 <img src="reports/charts/mariia-macbook/models.svg?v=c89a7d68" alt="models" width="760">
 
@@ -22,7 +22,7 @@ _No activity this week · last active Fri 30 Oct._
 
 ## All devices
 
-Side by side, the last 7 days (29 Oct – 04 Nov).
+Side by side, the last 7 days (30 Oct – 05 Nov).
 
 **Cache:** every message sends the whole conversation again. The part Claude has already seen is read from the cache at about a tenth of the normal price; only the new part costs full price. The Cache column is the share of input read that way: higher is cheaper. A long conversation is re-read on every message, so starting a fresh session for a new task keeps usage down. **Share of usage:** how much of the subscription's usage in these 7 days each device took; the column adds up to 100%.
 
@@ -32,21 +32,21 @@ Side by side, the last 7 days (29 Oct – 04 Nov).
 | [nik](#device-nik) | 1.1M | 5.3K | 95% | 4 | 1 | 0% |
 | **Total** | 662.6M | 1.4M | 99% | 114 | 10 | 100% |
 
-vs the 7 days before: output ▲ 842% · prompts ▲ 338% · cost ▲ 725%
+vs the 7 days before: output ▲ 1010% · prompts ▲ 418% · cost ▲ 1296%
 
-## Usage per device, 29 Oct – 04 Nov
+## Usage per device, 30 Oct – 05 Nov
 
-<img src="reports/charts/all/usage-grid.svg?v=fca00ef4" alt="usage-grid" width="760">
+<img src="reports/charts/all/usage-grid.svg?v=d4c30012" alt="usage-grid" width="760">
 
-## Sessions stopped by the limit, 29 Oct – 04 Nov
+## Sessions stopped by the limit, 30 Oct – 05 Nov
 
-<img src="reports/charts/all/limit-grid.svg?v=325c1c1a" alt="limit-grid" width="760">
+<img src="reports/charts/all/limit-grid.svg?v=27402d46" alt="limit-grid" width="760">
 
-## Who used Claude when, 29 Oct – 04 Nov
+## Who used Claude when, 30 Oct – 05 Nov
 
-<img src="reports/charts/all/week-hours.svg?v=e36aa5ac" alt="week-hours" width="760">
+<img src="reports/charts/all/week-hours.svg?v=01215e10" alt="week-hours" width="760">
 
-## Usage by hour of day, 29 Oct – 04 Nov
+## Usage by hour of day, 30 Oct – 05 Nov
 
 <img src="reports/charts/all/hour-share.svg?v=b9529843" alt="hour-share" width="760">
 
